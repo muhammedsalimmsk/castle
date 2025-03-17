@@ -18,9 +18,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.plusJakartaSansTextTheme()
             .copyWith(
-              bodyLarge: GoogleFonts.plusJakartaSans(fontSize: 12),
-              bodyMedium: GoogleFonts.plusJakartaSans(fontSize: 12),
-              bodySmall: GoogleFonts.plusJakartaSans(fontSize: 12),
+              bodyLarge: GoogleFonts.plusJakartaSans(),
+              bodyMedium: GoogleFonts.plusJakartaSans(),
+              bodySmall: GoogleFonts.plusJakartaSans(),
             )
             .apply(
               bodyColor: containerColor, // Set text color

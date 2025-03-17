@@ -1,3 +1,5 @@
+import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
+import 'package:castle/Screens/HomePage/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -64,10 +66,7 @@ class CustomDrawer extends StatelessWidget {
                         onTap: () {
                           resetSelection();
                           overviewSelected.value = true;
-                          Get.offAndToNamed('/home');
-                          if (Scaffold.of(context).isDrawerOpen) {
-                            Navigator.pop(context);
-                          }
+                          Get.offAll(HomePage());
                         },
                       )),
                   Obx(() => DrawerListTile(
@@ -77,10 +76,7 @@ class CustomDrawer extends StatelessWidget {
                         onTap: () {
                           resetSelection();
                           equipmentSelected.value = true;
-
-                          if (Scaffold.of(context).isDrawerOpen) {
-                            Navigator.pop(context);
-                          }
+                          Get.to(EquipmentPage());
                         },
                       )),
                   Obx(() => DrawerListTile(
@@ -103,7 +99,6 @@ class CustomDrawer extends StatelessWidget {
                         onTap: () {
                           resetSelection();
                           routineSelected.value = true;
-
                           if (Scaffold.of(context).isDrawerOpen) {
                             Navigator.pop(context);
                           }
@@ -199,7 +194,7 @@ class DrawerListTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool iSSelected;
 
-  DrawerListTile({
+  const DrawerListTile({
     super.key,
     required this.title,
     required this.icon,

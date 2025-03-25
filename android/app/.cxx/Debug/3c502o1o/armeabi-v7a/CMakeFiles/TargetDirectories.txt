@@ -1,0 +1,2 @@
+/Users/ametzotechnologies/StudioProjects/castle/android/app/.cxx/Debug/3c502o1o/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/ametzotechnologies/StudioProjects/castle/android/app/.cxx/Debug/3c502o1o/armeabi-v7a/CMakeFiles/rebuild_cache.dir

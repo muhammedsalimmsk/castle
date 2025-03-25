@@ -62,10 +62,10 @@ class NewEquipmentsRequest extends StatelessWidget {
                         EdgeInsets.symmetric(vertical: 40, horizontal: 16),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: containerColor)),
+                        borderSide: BorderSide(color: shadeColor)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: containerColor))),
+                        borderSide: BorderSide(color: shadeColor))),
               ),
               CustomTextField(hint: "ZipCode"),
               SizedBox(
@@ -106,13 +106,13 @@ class CustomTextField extends StatelessWidget {
           hintText: hint,
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: containerColor)),
+              borderSide: BorderSide(color: shadeColor)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: containerColor)),
+              borderSide: BorderSide(color: shadeColor)),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: containerColor))),
+              borderSide: BorderSide(color:shadeColor))),
     );
   }
 }

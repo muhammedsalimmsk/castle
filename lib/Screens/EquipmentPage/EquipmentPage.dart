@@ -13,37 +13,106 @@ class EquipmentPage extends StatelessWidget {
     Equipment(
       trackingId: "#20462",
       productName: "HVAC System",
-      productImage:
-          "https://decure.in/cdn/shop/files/1080_f_9502_xgrh.jpg?v=1712318507&width=823",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Matt Dickerson",
       category: "Climate Control",
-      subCategory: "Air Systems",
-      equipmentType: "Central AC",
+      subCategory: "Centralized Air Systems",
+      equipmentType: "Central Air Conditioning Unit",
       status: "Working",
     ),
     Equipment(
       trackingId: "#18933",
-      productName: "Kitchen Range",
-      productImage:
-          "https://as2.ftcdn.net/v2/jpg/00/79/96/21/1000_F_79962155_xVG8d0efElvO4hU1BRtHAoMNSEJNTK0G.jpg",
+      productName: "Commercial Kitchen Range",
+      productImageUrl: 'https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg',
       customer: "Wiktoria",
       category: "Kitchen Equipment",
       subCategory: "Cooking Appliances",
-      equipmentType: "Gas Stove",
+      equipmentType: "Gas Stove with Oven",
       status: "Working",
+    ),
+    Equipment(
+      trackingId: "#45169",
+      productName: "Refrigeration System",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Food Storage",
+      category: "Food Storage",
+      subCategory: "Cold Storage",
+      equipmentType: "Walk-In Freezer",
+      status: "On Work",
+    ),
+    Equipment(
+      trackingId: "#34304",
+      productName: "Laundry Machine",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Brad Mason",
+      category: "Housekeeping",
+      subCategory: "Laundry Systems",
+      equipmentType: "Commercial Washer and Dryer",
+      status: "On Work",
     ),
     Equipment(
       trackingId: "#17188",
       productName: "Elevator",
-      productImage:
-          "https://www.airconditioningdoctor.com.au/wp-content/uploads/2024/03/20231110_084813-1080x675.webp",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Sanderson",
       category: "Guest Transport",
-      subCategory: "Lifting Systems",
+      subCategory: "Vertical Lifting Systems",
       equipmentType: "Passenger Elevator",
       status: "Not Working",
     ),
+    Equipment(
+      trackingId: "#73003",
+      productName: "Water Heater System",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Jun Redfern",
+      category: "Utility Equipment",
+      subCategory: "Hot Water Supply",
+      equipmentType: "Centralized Boiler",
+      status: "Working",
+    ),
+    Equipment(
+      trackingId: "#58825",
+      productName: "Dishwasher",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Miriam Kidd",
+      category: "Kitchen Equipment",
+      subCategory: "Cleaning Appliances",
+      equipmentType: "Commercial Conveyor Dishwasher",
+      status: "Working",
+    ),
+    Equipment(
+      trackingId: "#44122",
+      productName: "Fire Alarm System",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Dominic",
+      category: "Safety Equipment",
+      subCategory: "Fire Detection",
+      equipmentType: "Addressable Fire Alarm Panel",
+      status: "Working",
+    ),
+    Equipment(
+      trackingId: "#89094",
+      productName: "Generator",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Shanice",
+      category: "Power Backup",
+      subCategory: "Emergency Power Systems",
+      equipmentType: "Diesel Generator",
+      status: "On Work",
+    ),
+    Equipment(
+      trackingId: "#85252",
+      productName: "Swimming Pool Filtration System",
+      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      customer: "Poppy-Rose",
+      category: "Recreation",
+      subCategory: "Water Treatment",
+      equipmentType: "Sand Filter System",
+      status: "On Work",
+    ),
   ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +136,7 @@ class EquipmentPage extends StatelessWidget {
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: containerColor)),
+                            borderSide: BorderSide(color: shadeColor)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         )),
@@ -81,11 +150,11 @@ class EquipmentPage extends StatelessWidget {
                     // Your action here
                   },
                   icon: Container(
-                    padding: EdgeInsets.all(11),
+                    padding: EdgeInsets.all(12),
                     // width: 50, // Adjust width
                     // height: 50, // Adjust height
                     decoration: BoxDecoration(
-                      border: Border.all(color: containerColor),
+                      border: Border.all(color: shadeColor),
                       color: secondaryColor, // Background color
                       borderRadius: BorderRadius.circular(
                           4), // Adjust for rounded corners
@@ -133,7 +202,7 @@ class EquipmentPage extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 680,
+              height: MediaQuery.of(context).size.height*0.72,
               child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: equipmentList.length,
@@ -160,7 +229,7 @@ class EquipmentPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                                 image: DecorationImage(
                                     image: NetworkImage(
-                                        equipmentList[index].productImage),
+                                        equipmentList[index].productImageUrl),
                                     fit: BoxFit.cover)),
                           ),
                           title: Text(
@@ -211,7 +280,7 @@ class EquipmentPage extends StatelessWidget {
 class Equipment {
   final String trackingId;
   final String productName;
-  final String productImage;
+  final String productImageUrl;
   final String customer;
   final String category;
   final String subCategory;
@@ -221,7 +290,7 @@ class Equipment {
   Equipment({
     required this.trackingId,
     required this.productName,
-    required this.productImage,
+    required this.productImageUrl,
     required this.customer,
     required this.category,
     required this.subCategory,
@@ -234,7 +303,7 @@ class Equipment {
     return Equipment(
       trackingId: json['trackingId'],
       productName: json['productName'],
-      productImage: json['productImage'],
+      productImageUrl: json['productImage'],
       customer: json['customer'],
       category: json['category'],
       subCategory: json['subCategory'],
@@ -248,7 +317,7 @@ class Equipment {
     return {
       'trackingId': trackingId,
       'productName': productName,
-      'productImage': productImage,
+      'productImage': productImageUrl,
       'customer': customer,
       'category': category,
       'subCategory': subCategory,

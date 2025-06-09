@@ -2,6 +2,8 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+import '../../Widget/CustomTextField.dart';
+
 class NewEquipmentsRequest extends StatelessWidget {
   const NewEquipmentsRequest({super.key});
 
@@ -93,26 +95,4 @@ class NewEquipmentsRequest extends StatelessWidget {
   }
 }
 
-class CustomTextField extends StatelessWidget {
-  final String hint;
-  final IconData? icon;
-  const CustomTextField({super.key, required this.hint, this.icon});
 
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-          suffixIcon: Icon(icon),
-          hintText: hint,
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: shadeColor)),
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: shadeColor)),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color:shadeColor))),
-    );
-  }
-}

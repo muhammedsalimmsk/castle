@@ -1,5 +1,8 @@
+import 'package:castle/Screens/ComplaintsPage/ComplaintPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
+import 'package:castle/Screens/PartsRequestPagee/PartsRequestPage.dart';
+import 'package:castle/Screens/RoutinePage/RoutinePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +19,7 @@ class CustomDrawer extends StatelessWidget {
   final RxBool inventorySelected = false.obs;
   final RxBool accountsSelected = false.obs;
   final RxBool settingsSelected = false.obs;
+  final RxBool partsRequestSelected=false.obs;
 
   void resetSelection() {
     overviewSelected.value = false;
@@ -25,6 +29,7 @@ class CustomDrawer extends StatelessWidget {
     inventorySelected.value = false;
     accountsSelected.value = false;
     settingsSelected.value = false;
+    partsRequestSelected.value=false;
   }
 
   @override
@@ -89,6 +94,7 @@ class CustomDrawer extends StatelessWidget {
 
                           if (Scaffold.of(context).isDrawerOpen) {
                             Navigator.pop(context);
+                            Get.to(ComplaintPage());
                           }
                         },
                       )),
@@ -101,9 +107,23 @@ class CustomDrawer extends StatelessWidget {
                           routineSelected.value = true;
                           if (Scaffold.of(context).isDrawerOpen) {
                             Navigator.pop(context);
+                            Get.to(RoutinePage());
                           }
                         },
                       )),
+                  Obx(() => DrawerListTile(
+                    iSSelected: routineSelected.value,
+                    title: "Parts Request",
+                    icon: Icons.add_circle_outline,
+                    onTap: () {
+                      resetSelection();
+                      partsRequestSelected.value = true;
+                      if (Scaffold.of(context).isDrawerOpen) {
+                        Navigator.pop(context);
+                        Get.to(PartsRequestPage());
+                      }
+                    },
+                  )),
                   Obx(() => DrawerListTile(
                         iSSelected: inventorySelected.value,
                         title: 'Inventory',
@@ -136,49 +156,77 @@ class CustomDrawer extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: containerColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.help_outline, color: Colors.white),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "Help Center",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      const Text(
-                        "Having Trouble in Learning. Please contact us for more questions.",
-                        style: TextStyle(color: Colors.white, fontSize: 10),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: backgroundColor),
-                        child: const Text(
-                          "Go To Help Center",
-                          maxLines: 1,
-                          style: TextStyle(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: containerColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.help_outline, color: Colors.white),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Help Center",
+                            style: TextStyle(
+                              color: Colors.white,
                               fontSize: 12,
-                              color: containerColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          const Text(
+                            "Having Trouble in Learning. Please contact us for more questions.",
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 8),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: backgroundColor),
+                            child: const Text(
+                              "Go To Help Center",
+                              maxLines: 1,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: containerColor,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    top: -100, // Move it upwards
+                    left: -94, // Move it to the left
+                    child: Container(
+                      width: 160,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -70, // Move it upwards
+                    right: -94, // Move it to the left
+                    child: Container(
+                      width: 130,
+                      height: 130,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -204,20 +252,26 @@ class DrawerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: iSSelected ? containerColor : drawerItemColor,
-        size: 20,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: iSSelected ? containerColor : drawerItemColor,
-          fontSize: 12,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Divider(),
+        ListTile(
+          leading: Icon(
+            icon,
+            color: iSSelected ? containerColor : containerColor,
+            size: 25,
+          ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: iSSelected ? containerColor : drawerItemColor,
+
+            ),
+          ),
+          onTap: onTap,
         ),
-      ),
-      onTap: onTap,
+      ],
     );
   }
 }

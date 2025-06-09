@@ -1,5 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
+import 'package:castle/Screens/ComplaintsPage/NewComplaint/NewComplaintPage.dart';
 import 'package:castle/Screens/EquipmentPage/NewEquipments.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
@@ -234,7 +235,7 @@ class ComplaintPage extends StatelessWidget {
                           ),
                           title: Text(
                             equipmentList[index].productName,
-                            style: TextStyle(color: containerColor),
+                            style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(equipmentList[index].customer),
                           trailing: Row(
@@ -243,7 +244,7 @@ class ComplaintPage extends StatelessWidget {
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(equipmentList[index].category),
+                                  Text(equipmentList[index].category,style: TextStyle(color: buttonColor),),
                                   Text(equipmentList[index].status),
                                 ],
                               ),
@@ -251,7 +252,7 @@ class ComplaintPage extends StatelessWidget {
                                   onPressed: () {},
                                   icon: Icon(
                                     Icons.more_vert,
-                                    color: containerColor,
+                                    color: buttonColor,
                                   )),
                             ],
                           ),
@@ -266,7 +267,7 @@ class ComplaintPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: containerColor,
         onPressed: () {
-          Get.to(NewEquipmentsRequest());
+          Get.to(NewComplaintRegister());
         },
         label: Text(
           "Add New",

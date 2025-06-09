@@ -4,6 +4,7 @@ import 'package:castle/Screens/EquipmentPage/NewEquipments.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
@@ -263,16 +264,11 @@ class EquipmentPage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: containerColor,
-        onPressed: () {
-          Get.to(NewEquipmentsRequest());
-        },
-        label: Text(
-          "Add New",
-          style: TextStyle(color: backgroundColor),
-        ),
-      ),
+      floatingActionButton:FloatingActionButton.extended(
+        onPressed: (){
+        Get.to(NewEquipmentsRequest());
+      }, label: Icon(Icons.add,color: backgroundColor,),backgroundColor: containerColor,)
+
     );
   }
 }

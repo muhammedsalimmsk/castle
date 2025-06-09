@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       theme: ThemeData(
+        primaryColor: backgroundColor,
         textTheme: GoogleFonts.plusJakartaSansTextTheme()
             .copyWith(
               bodyLarge: GoogleFonts.plusJakartaSans(),
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
               displayColor: containerColor,
             ),
         scaffoldBackgroundColor: backgroundColor,
+
       ),
       home: HomePage(),
     );

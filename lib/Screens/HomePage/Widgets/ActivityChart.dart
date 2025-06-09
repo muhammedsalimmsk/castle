@@ -12,6 +12,13 @@ class ActivityChart extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: containerColor,
+              blurRadius: 8,
+              spreadRadius: 1,
+            )
+          ],
           color: secondaryColor,
           borderRadius: BorderRadius.circular(10),
         ),

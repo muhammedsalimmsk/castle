@@ -3,7 +3,7 @@ import 'dart:ui';
 const secondaryColor = Color(0xffff5f5f7);
 const backgroundColor = Color(0xffffffff);
 const containerColor = Color(0xfff141522);
-const buttonColor = Color(0xfff546FFF);
+const buttonColor = Color(0xfff5570F1);
 const shadeColor = Color(0xfffCFD3D4);
 const workingWidgetColor = Color(0xfffEBF9F1);
 const workingTextColor = Color(0xfff1F9254);

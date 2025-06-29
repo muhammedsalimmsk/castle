@@ -1,5 +1,7 @@
+import 'package:castle/Controlls/AuthController/AuthController.dart';
+import 'package:castle/Screens/ProfiePage/ProfilePage.dart';
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
@@ -7,6 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(userDetailModel?.data?.firstName);
     return AppBar(
       scrolledUnderElevation: 0,
       backgroundColor: Colors.white,
@@ -30,15 +33,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Hi, Salim..",
+                      "${userDetailModel!.data!.firstName} ${userDetailModel!.data!.lastName}",
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: Colors.black),
                     ),
-                    const Text(
-                      "Let's finish your task today!",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                     Text(
+                      userDetailModel!.data!.role!,
+                      style: TextStyle(fontSize: 14, color: Colors.grey,fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -59,7 +62,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(ProfilePage());
+                  },
                   child: CircleAvatar(
                     radius: 20,
                     backgroundColor: Colors.white,

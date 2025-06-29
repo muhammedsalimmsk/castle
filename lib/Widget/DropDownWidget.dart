@@ -46,7 +46,8 @@ class DropDownOptionWidget extends StatelessWidget {
         );
       }).toList(),
       onChanged: (value) {},
-      icon: Icon(Icons.arrow_drop_down, color: Colors.grey), // ✅ Match arrow style
+      icon: Icon(Icons.arrow_drop_down,
+          color: Colors.grey), // ✅ Match arrow style
     );
   }
 }

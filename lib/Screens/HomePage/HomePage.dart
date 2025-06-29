@@ -1,3 +1,4 @@
+import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ComplaintController());
+    print(token);
     return Scaffold(
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),

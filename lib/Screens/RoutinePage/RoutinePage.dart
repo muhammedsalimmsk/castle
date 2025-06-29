@@ -1,8 +1,7 @@
 import 'package:castle/Colors/Colors.dart';
-import 'package:castle/Widget/DropDownWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
+
 class RoutinePage extends StatelessWidget {
   const RoutinePage({super.key});
 
@@ -10,7 +9,10 @@ class RoutinePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Routine",style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),),
+        title: Text(
+          "Routine",
+          style: TextStyle(color: containerColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: backgroundColor,
         surfaceTintColor: backgroundColor,
@@ -22,15 +24,13 @@ class RoutinePage extends StatelessWidget {
           children: [
             TextFormField(
               decoration: InputDecoration(
-                hintText: "Search here..",
-                enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: containerColor)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: containerColor)
-                )
-              ),
+                  hintText: "Search here..",
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: containerColor)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: containerColor))),
             ),
             Gap(10),
             Row(
@@ -46,7 +46,8 @@ class RoutinePage extends StatelessWidget {
                     // handle the selected sort option
                     print("Selected: $value");
                   },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: 'name',
                       child: Text('Sort by Name'),
@@ -66,41 +67,47 @@ class RoutinePage extends StatelessWidget {
             SizedBox(
               height: 560,
               child: ListView.builder(
-                itemCount: 100,
-                  itemBuilder: (context,index){
-                return ListTile(
-                  leading: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(image: NetworkImage('https://www.voltasbeko.com/media/catalog/product/v/w/vwm915647-final-copy.jpg'))
-                    ),
-                  ),
-                  title: Text("Washing Mechine",style: TextStyle(color: containerColor),),
-                  subtitle: Text("Brad Mason"),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(onPressed: (){}, icon: Icon(Icons.edit)),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
-                    ],
-                  ),
-                );
-              }),
+                  itemCount: 100,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    'https://www.voltasbeko.com/media/catalog/product/v/w/vwm915647-final-copy.jpg'))),
+                      ),
+                      title: Text(
+                        "Washing Mechine",
+                        style: TextStyle(color: containerColor),
+                      ),
+                      subtitle: Text("Brad Mason"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                          IconButton(
+                              onPressed: () {}, icon: Icon(Icons.delete)),
+                        ],
+                      ),
+                    );
+                  }),
             ),
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: containerColor,
-                borderRadius: BorderRadius.circular(10)
-              ),
+                  color: containerColor,
+                  borderRadius: BorderRadius.circular(10)),
               child: Center(
-                child: Text("Add New",style: TextStyle(color: backgroundColor),),
+                child: Text(
+                  "Add New",
+                  style: TextStyle(color: backgroundColor),
+                ),
               ),
             )
-
           ],
         ),
       ),

@@ -14,7 +14,7 @@ class CustomPhoneNumberField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: "Phone Number",
         focusedBorder: OutlineInputBorder(
-          borderRadius:  BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: containerColor),
         ),
         border: OutlineInputBorder(

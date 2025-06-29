@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../../Colors/Colors.dart';
 import '../../../Controlls/ComplaintController/NewComplaintController/NewComplaintController.dart';
 import 'Widgets/TaskAddWidgetOne.dart';
+
 class NewComplaintRegister extends StatelessWidget {
   const NewComplaintRegister({super.key});
 
@@ -35,7 +36,8 @@ class NewComplaintRegister extends StatelessWidget {
                     children: [
                       Text(
                         "Client Details",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       progressIndicator(controller.currentPage.value, 0),
                       SizedBox(height: 40),
@@ -60,7 +62,8 @@ class NewComplaintRegister extends StatelessWidget {
                       children: [
                         Text(
                           "Assign Work",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         progressIndicator(controller.currentPage.value, 1),
                         SizedBox(height: 20),
@@ -75,7 +78,9 @@ class NewComplaintRegister extends StatelessWidget {
                                     VideoSection(),
                                     SizedBox(height: 20),
                                     WorkDetails(),
-                                    SizedBox(height: 10,),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
                                     TaskAddWidgetOne(),
                                     SizedBox(height: 10),
                                   ],
@@ -84,7 +89,6 @@ class NewComplaintRegister extends StatelessWidget {
                             ),
                           ),
                         )
-                    
                       ],
                     ),
                   ),
@@ -94,26 +98,26 @@ class NewComplaintRegister extends StatelessWidget {
 
             // 🔹 Bottom Button (Next / Submit)
             Obx(() => InkWell(
-              onTap: controller.nextPage,
-              child: Container(
-                padding: EdgeInsets.all(12),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: containerColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    controller.currentPage.value == 0 ? "Next" : "Submit",
-                    style: TextStyle(
-                      color: backgroundColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                  onTap: controller.nextPage,
+                  child: Container(
+                    padding: EdgeInsets.all(12),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: containerColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        controller.currentPage.value == 0 ? "Next" : "Submit",
+                        style: TextStyle(
+                          color: backgroundColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            )),
+                )),
           ],
         ),
       ),

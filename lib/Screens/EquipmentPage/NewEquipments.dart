@@ -94,5 +94,3 @@ class NewEquipmentsRequest extends StatelessWidget {
     );
   }
 }
-
-

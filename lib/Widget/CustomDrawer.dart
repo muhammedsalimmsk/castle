@@ -1,3 +1,5 @@
+import 'package:castle/Controlls/AuthController/AuthController.dart';
+import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Screens/ComplaintsPage/ComplaintPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
@@ -19,7 +21,7 @@ class CustomDrawer extends StatelessWidget {
   final RxBool inventorySelected = false.obs;
   final RxBool accountsSelected = false.obs;
   final RxBool settingsSelected = false.obs;
-  final RxBool partsRequestSelected=false.obs;
+  final RxBool partsRequestSelected = false.obs;
 
   void resetSelection() {
     overviewSelected.value = false;
@@ -29,7 +31,7 @@ class CustomDrawer extends StatelessWidget {
     inventorySelected.value = false;
     accountsSelected.value = false;
     settingsSelected.value = false;
-    partsRequestSelected.value=false;
+    partsRequestSelected.value = false;
   }
 
   @override
@@ -112,27 +114,41 @@ class CustomDrawer extends StatelessWidget {
                         },
                       )),
                   Obx(() => DrawerListTile(
-                    iSSelected: routineSelected.value,
-                    title: "Parts Request",
-                    icon: Icons.add_circle_outline,
-                    onTap: () {
-                      resetSelection();
-                      partsRequestSelected.value = true;
-                      if (Scaffold.of(context).isDrawerOpen) {
-                        Navigator.pop(context);
-                        Get.to(PartsRequestPage());
-                      }
-                    },
-                  )),
-                  Obx(() => DrawerListTile(
-                        iSSelected: inventorySelected.value,
-                        title: 'Inventory',
-                        icon: Icons.inventory,
+                        iSSelected: routineSelected.value,
+                        title: "Parts Request",
+                        icon: Icons.add_circle_outline,
                         onTap: () {
                           resetSelection();
-                          inventorySelected.value = true;
+                          partsRequestSelected.value = true;
+                          if (Scaffold.of(context).isDrawerOpen) {
+                            Navigator.pop(context);
+                            Get.to(PartsRequestPage());
+                          }
                         },
                       )),
+                  userDetailModel!.data!.role=='ADMIN'?Obx(() => DrawerListTile(
+                    iSSelected: inventorySelected.value,
+                    title: 'Clients',
+                    icon: Icons.person,
+                    onTap: () {
+                      resetSelection();
+                      inventorySelected.value = true;
+                      if (Scaffold.of(context).isDrawerOpen) {
+                        Navigator.pop(context);
+                        Get.to(ClientPage());
+
+                      }
+                    },
+                  )):SizedBox.shrink(),
+                  // Obx(() => DrawerListTile(
+                  //       iSSelected: inventorySelected.value,
+                  //       title: 'Inventory',
+                  //       icon: Icons.inventory,
+                  //       onTap: () {
+                  //         resetSelection();
+                  //         inventorySelected.value = true;
+                  //       },
+                  //     )),
                   Obx(() => DrawerListTile(
                         iSSelected: accountsSelected.value,
                         title: "Accounts",
@@ -266,7 +282,6 @@ class DrawerListTile extends StatelessWidget {
             title,
             style: TextStyle(
               color: iSSelected ? containerColor : drawerItemColor,
-
             ),
           ),
           onTap: onTap,

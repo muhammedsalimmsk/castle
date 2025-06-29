@@ -4,7 +4,6 @@ import 'package:dotted_border/dotted_border.dart';
 import '../../../../Colors/Colors.dart';
 import '../../../../Widget/CustomDatePicker.dart';
 
-
 class TaskAddWidgetOne extends StatelessWidget {
   const TaskAddWidgetOne({super.key});
 
@@ -67,8 +66,7 @@ class TaskAddWidgetOne extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
-                  color: buttonShadeColor
-              ),
+                  color: buttonShadeColor),
             ),
             Text(
               "1 Jan 2025",
@@ -90,7 +88,7 @@ class TaskAddWidgetOne extends StatelessWidget {
           borderType: BorderType.RRect,
           radius: const Radius.circular(8),
           padding: const EdgeInsets.all(6),
-          child: Container(
+          child: SizedBox(
               height: 150,
               width: double.infinity,
               child: Icon(
@@ -111,11 +109,13 @@ class TaskAddWidgetOne extends StatelessWidget {
         decoration: InputDecoration(
           hintText: label,
           floatingLabelBehavior:
-          FloatingLabelBehavior.always, // Keep label on top
+              FloatingLabelBehavior.always, // Keep label on top
           contentPadding: const EdgeInsets.all(16), // Adjust padding
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8), // Rounded corners
-            borderSide: const BorderSide(color: shadeColor,),
+            borderSide: const BorderSide(
+              color: shadeColor,
+            ),
           ),
         ),
       ),

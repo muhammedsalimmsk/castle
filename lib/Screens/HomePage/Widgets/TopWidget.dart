@@ -21,14 +21,10 @@ class TopWidgetOfHomePage extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: 120, // Dynamically set height
-            padding: EdgeInsets.all( 16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               boxShadow: [
-                BoxShadow(
-                  color: containerColor,
-                  blurRadius: 5,
-                  spreadRadius:1
-                )
+                BoxShadow(color: containerColor, blurRadius: 5, spreadRadius: 1)
               ],
               color: containerColor,
               borderRadius: BorderRadius.circular(10),
@@ -41,25 +37,25 @@ class TopWidgetOfHomePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                       children: [
-                         const Text(
-                           "Running Task",
-                           style: TextStyle(
-                             color: backgroundColor,
-                             fontSize: 16,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                         SizedBox(height:  8),
-                         const Text(
-                           "65",
-                           style: TextStyle(
-                             color: backgroundColor,
-                             fontWeight: FontWeight.bold,
-                             fontSize: 22,
-                           ),
-                         ),
-                       ],
+                      children: [
+                        const Text(
+                          "Running Task",
+                          style: TextStyle(
+                            color: backgroundColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        const Text(
+                          "65",
+                          style: TextStyle(
+                            color: backgroundColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 30),
@@ -79,7 +75,7 @@ class TopWidgetOfHomePage extends StatelessWidget {
                             progressColor: buttonColor,
                             backgroundColor: shadeColor,
                           ),
-                          SizedBox(width:  8),
+                          SizedBox(width: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -88,15 +84,12 @@ class TopWidgetOfHomePage extends StatelessWidget {
                                 style: TextStyle(
                                     color: backgroundColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize:
-                                     12),
+                                    fontSize: 12),
                               ),
                               Text(
                                 "Tasks",
-                                style: TextStyle(
-                                    color: shadeColor,
-                                    fontSize:
-                                    12),
+                                style:
+                                    TextStyle(color: shadeColor, fontSize: 12),
                               ),
                             ],
                           ),
@@ -109,7 +102,9 @@ class TopWidgetOfHomePage extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
 
         // Activity Chart
         SizedBox(

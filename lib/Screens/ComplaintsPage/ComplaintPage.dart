@@ -14,7 +14,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#20462",
       productName: "HVAC System",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Matt Dickerson",
       category: "Climate Control",
       subCategory: "Centralized Air Systems",
@@ -24,7 +25,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#18933",
       productName: "Commercial Kitchen Range",
-      productImageUrl: 'https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg',
+      productImageUrl:
+          'https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg',
       customer: "Wiktoria",
       category: "Kitchen Equipment",
       subCategory: "Cooking Appliances",
@@ -34,7 +36,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#45169",
       productName: "Refrigeration System",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Food Storage",
       category: "Food Storage",
       subCategory: "Cold Storage",
@@ -44,7 +47,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#34304",
       productName: "Laundry Machine",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Brad Mason",
       category: "Housekeeping",
       subCategory: "Laundry Systems",
@@ -54,7 +58,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#17188",
       productName: "Elevator",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Sanderson",
       category: "Guest Transport",
       subCategory: "Vertical Lifting Systems",
@@ -64,7 +69,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#73003",
       productName: "Water Heater System",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Jun Redfern",
       category: "Utility Equipment",
       subCategory: "Hot Water Supply",
@@ -74,7 +80,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#58825",
       productName: "Dishwasher",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Miriam Kidd",
       category: "Kitchen Equipment",
       subCategory: "Cleaning Appliances",
@@ -84,7 +91,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#44122",
       productName: "Fire Alarm System",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Dominic",
       category: "Safety Equipment",
       subCategory: "Fire Detection",
@@ -94,7 +102,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#89094",
       productName: "Generator",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Shanice",
       category: "Power Backup",
       subCategory: "Emergency Power Systems",
@@ -104,7 +113,8 @@ class ComplaintPage extends StatelessWidget {
     Equipment(
       trackingId: "#85252",
       productName: "Swimming Pool Filtration System",
-      productImageUrl: "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
+      productImageUrl:
+          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
       customer: "Poppy-Rose",
       category: "Recreation",
       subCategory: "Water Treatment",
@@ -112,8 +122,6 @@ class ComplaintPage extends StatelessWidget {
       status: "On Work",
     ),
   ];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -179,31 +187,31 @@ class ComplaintPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Obx(() => DropdownButton<String>(
-                      isDense: true,
-                      padding: EdgeInsets.zero,
-                      value: controller.selectedValue.value,
-                      icon: Icon(Icons.arrow_drop_down), // Down arrow icon
-                      underline: SizedBox(), // Removes default underline
-                      borderRadius: BorderRadius.circular(10),
-                      style: TextStyle(
-                          color: Colors.black), // Customize text style
-                      items: controller.sortOptions
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        controller.selectedValue.value = newValue!;
-                      },
-                    )),
+                          isDense: true,
+                          padding: EdgeInsets.zero,
+                          value: controller.selectedValue.value,
+                          icon: Icon(Icons.arrow_drop_down), // Down arrow icon
+                          underline: SizedBox(), // Removes default underline
+                          borderRadius: BorderRadius.circular(10),
+                          style: TextStyle(
+                              color: Colors.black), // Customize text style
+                          items: controller.sortOptions
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            controller.selectedValue.value = newValue!;
+                          },
+                        )),
                   ],
                 )
               ],
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height*0.72,
+              height: MediaQuery.of(context).size.height * 0.72,
               child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: equipmentList.length,
@@ -235,7 +243,9 @@ class ComplaintPage extends StatelessWidget {
                           ),
                           title: Text(
                             equipmentList[index].productName,
-                            style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: containerColor,
+                                fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(equipmentList[index].customer),
                           trailing: Row(
@@ -244,7 +254,10 @@ class ComplaintPage extends StatelessWidget {
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(equipmentList[index].category,style: TextStyle(color: buttonColor),),
+                                  Text(
+                                    equipmentList[index].category,
+                                    style: TextStyle(color: buttonColor),
+                                  ),
                                   Text(equipmentList[index].status),
                                 ],
                               ),

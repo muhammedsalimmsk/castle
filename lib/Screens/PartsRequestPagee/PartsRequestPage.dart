@@ -1,6 +1,7 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+
 class PartsRequestPage extends StatelessWidget {
   const PartsRequestPage({super.key});
 
@@ -11,7 +12,10 @@ class PartsRequestPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: backgroundColor,
         surfaceTintColor: backgroundColor,
-        title: Text("Parts Request",style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),),
+        title: Text(
+          "Parts Request",
+          style: TextStyle(color: containerColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -36,14 +40,17 @@ class PartsRequestPage extends StatelessWidget {
                 const SizedBox(width: 8), // spacing between field and button
                 Container(
                   height: 58,
-                  width: 58,// match TextFormField height
+                  width: 58, // match TextFormField height
                   decoration: BoxDecoration(
                     color: containerColor,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: containerColor),
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.add,color: backgroundColor,),
+                    icon: Icon(
+                      Icons.add,
+                      color: backgroundColor,
+                    ),
                     onPressed: () {
                       // add your search function here
                     },
@@ -52,31 +59,42 @@ class PartsRequestPage extends StatelessWidget {
               ],
             ),
             Gap(10),
-            Text("Parts List",style: TextStyle(color: containerColor,fontWeight: FontWeight.bold,fontSize: 16),),
+            Text(
+              "Parts List",
+              style: TextStyle(
+                  color: containerColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
             Container(
               height: 590,
               child: ListView.builder(
-                itemCount: 100,
-                  itemBuilder: (context,index){
-                return ListTile(
-                  leading: Text("562969",style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),),
-                  title: Text("Parts Name"),
-                  subtitle: Text("Stock : 32"),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text("Available",style: TextStyle(color: Colors.green,fontSize: 12),),
-                      Gap(10),
-                      Icon(Icons.more_vert_outlined)
-                    ],
-                  ),
-                );
-              }),
+                  itemCount: 100,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Text(
+                        "562969",
+                        style: TextStyle(
+                            color: containerColor, fontWeight: FontWeight.bold),
+                      ),
+                      title: Text("Parts Name"),
+                      subtitle: Text("Stock : 32"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Available",
+                            style: TextStyle(color: Colors.green, fontSize: 12),
+                          ),
+                          Gap(10),
+                          Icon(Icons.more_vert_outlined)
+                        ],
+                      ),
+                    );
+                  }),
             ),
             InkWell(
-              onTap: (){
-
-              },
+              onTap: () {},
               child: Container(
                 padding: EdgeInsets.all(12),
                 width: double.infinity,
@@ -84,7 +102,12 @@ class PartsRequestPage extends StatelessWidget {
                   color: containerColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Center(child: Text("Request Now",style: TextStyle(color: backgroundColor,fontWeight: FontWeight.bold),)),
+                child: Center(
+                    child: Text(
+                  "Request Now",
+                  style: TextStyle(
+                      color: backgroundColor, fontWeight: FontWeight.bold),
+                )),
               ),
             )
           ],

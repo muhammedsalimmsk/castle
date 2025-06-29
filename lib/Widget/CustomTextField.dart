@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../Colors/Colors.dart';
+
 class CustomTextField extends StatelessWidget {
   final String hint;
   final IconData? icon;
@@ -14,13 +15,14 @@ class CustomTextField extends StatelessWidget {
           hintText: hint,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: containerColor),),
+            borderSide: BorderSide(color: containerColor),
+          ),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: shadeColor)),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color:shadeColor))),
+              borderSide: BorderSide(color: shadeColor))),
     );
   }
 }

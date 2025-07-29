@@ -6,51 +6,32 @@ import '../../Controlls/ClientController/ClientController.dart';
 import '../../Colors/Colors.dart';
 import '../../Widget/CustomTextField.dart';
 import 'ClientRegisterTwo.dart';
+
 class ClientRegisterOne extends StatelessWidget {
-  final controller = Get.put(ClientRegisterController());
+  final ClientRegisterController controller =
+      Get.put(ClientRegisterController());
+  final formKeyOne = GlobalKey<FormState>();
 
   ClientRegisterOne({super.key});
 
-  Widget _buildInput({
-    required String label,
-    required TextEditingController controller,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blueGrey),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.blueAccent)),
-        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      ),
-      validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    String initialCountry = 'IN';
     PhoneNumber number = PhoneNumber(isoCode: 'IN');
-    RxBool isObscure=true.obs;
-    RxBool isObscure2=true.obs;
+    RxBool isObscure = true.obs;
+    RxBool isObscure2 = true.obs;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      resizeToAvoidBottomInset: false,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("User Details", style: GoogleFonts.poppins()),
+        title: Text("Client Details", style: GoogleFonts.poppins()),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,
         foregroundColor: Colors.black87,
       ),
       body: Form(
-        key: controller.formKey,
+        key: formKeyOne,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -61,10 +42,26 @@ class ClientRegisterOne extends StatelessWidget {
                 spacing: 10,
                 children: [
                   CustomTextField(
+                    controller: controller.firstName,
                     hint: "First Name",
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'First name is required'
+                        : null,
                   ),
-                  CustomTextField(hint: "Last Name"),
-                  CustomTextField(hint: "Email"),
+                  CustomTextField(
+                    controller: controller.lastName,
+                    hint: "Last Name",
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Last name is required'
+                        : null,
+                  ),
+                  CustomTextField(
+                    controller: controller.email,
+                    hint: "Email",
+                    validator: (value) => value == null || value.trim().isEmpty
+                        ? 'Email is required'
+                        : null,
+                  ),
                   InternationalPhoneNumberInput(
                     inputBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -81,55 +78,84 @@ class ClientRegisterOne extends StatelessWidget {
                       labelText: "Phone Number",
                     ),
                   ),
-          Obx(()=>TextFormField(
-            obscureText: isObscure.value,
-            decoration: InputDecoration(
-                suffixIcon:IconButton(onPressed: (){
-                  isObscure.value=!isObscure.value;
-                }, icon: isObscure.value?Icon(Icons.visibility_off):Icon(Icons.visibility)),
-                hintText: "Password",
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: containerColor),
-                ),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: shadeColor)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: shadeColor))),
-          )),
-                  Obx(()=>TextFormField(
-                    obscureText: isObscure2.value,
-                    decoration: InputDecoration(
-                        suffixIcon:IconButton(onPressed: (){
-                          isObscure2.value=!isObscure2.value;
-                        }, icon: isObscure2.value?Icon(Icons.visibility_off):Icon(Icons.visibility)),
-                        hintText: "Conform Password",
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: containerColor),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: shadeColor)),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: shadeColor))),
-                  )),
-
-
+                  Obx(() => TextFormField(
+                        controller: controller.password,
+                        validator: (val) {
+                          if (val == null) {
+                            return "Password is required";
+                          } else if (val.length < 6) {
+                            return "Password should be more than 6 letter";
+                          } else {
+                            return null;
+                          }
+                        },
+                        obscureText: isObscure.value,
+                        decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  isObscure.value = !isObscure.value;
+                                },
+                                icon: isObscure.value
+                                    ? Icon(Icons.visibility_off)
+                                    : Icon(Icons.visibility)),
+                            hintText: "Password",
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: containerColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: shadeColor)),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: shadeColor))),
+                      )),
+                  Obx(() => TextFormField(
+                        validator: (val) {
+                          if (val == null) {
+                            return "Password is required";
+                          } else if (val.length < 6) {
+                            return "Password should be more than 6 letter";
+                          } else if (controller.password.text != val) {
+                            return "Password doesn't match";
+                          } else {
+                            return null;
+                          }
+                        },
+                        obscureText: isObscure2.value,
+                        decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                                onPressed: () {
+                                  isObscure2.value = !isObscure2.value;
+                                },
+                                icon: isObscure2.value
+                                    ? Icon(Icons.visibility_off)
+                                    : Icon(Icons.visibility)),
+                            hintText: "Conform Password",
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: containerColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: shadeColor)),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(color: shadeColor))),
+                      )),
                 ],
               ),
               InkWell(
-                onTap: (){
-                  Get.to(ClientRegisterPageTwo());
+                onTap: () {
+                  if (formKeyOne.currentState!.validate()) {
+                    Get.to(ClientRegisterPageTwo());
+                  }
                 },
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: containerColor,
+                    color: buttonColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(

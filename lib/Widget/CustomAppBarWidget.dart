@@ -2,6 +2,7 @@ import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Screens/ProfiePage/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
@@ -39,9 +40,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           fontSize: 18,
                           color: Colors.black),
                     ),
-                     Text(
+                    Text(
                       userDetailModel!.data!.role!,
-                      style: TextStyle(fontSize: 14, color: Colors.grey,fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

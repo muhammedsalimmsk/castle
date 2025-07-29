@@ -3,13 +3,16 @@ import 'package:castle/Model/auth_model/UserModel.dart';
 import 'package:castle/Model/auth_model/auth_model.dart';
 import 'package:castle/Model/user_detail_model/user_detail_model.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
+import 'package:castle/Screens/LoginPage/LoginPage.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String? token;
+
 UserDetailModel? userDetailModel;
+
 class AuthController extends GetxController {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -19,7 +22,7 @@ class AuthController extends GetxController {
   late AuthModel model = AuthModel();
   Future loginWithUserName() async {
     final data = {
-      "email": userNameController.text,
+      "email": userNameController.text.toLowerCase().trim(),
       "password": passwordController.text
     };
     if (userNameController.text.isEmpty || passwordController.text.isEmpty) {
@@ -113,7 +116,8 @@ class AuthController extends GetxController {
             'refreshToken', refreshedModel.data?.refreshToken ?? '');
         await prefs.setString('expiresAt',
             refreshedModel.data?.expiresAt?.toIso8601String() ?? '');
-
+        print(response.body);
+        print(refreshToken);
         print('Token refreshed successfully');
       } else {
         print('Failed to refresh token: ${response.body}');
@@ -130,9 +134,12 @@ class AuthController extends GetxController {
       print("profile data fetched successfully");
       if (response.isOk) {
         print(response.body);
-        userDetailModel=UserDetailModel.fromJson(response.body);
+        userDetailModel = UserDetailModel.fromJson(response.body);
       } else {
         print(response.body);
+        if (response.body['error'] == "Invalid or inactive user") {
+          Get.offAll(LoginPage());
+        }
       }
     } catch (e) {
       print(e);

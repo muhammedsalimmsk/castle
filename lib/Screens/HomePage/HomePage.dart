@@ -1,4 +1,5 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
+import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,9 @@ import 'Widgets/ComplaintWidget.dart';
 import 'Widgets/TopWidget.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+  EquipmentController equipmentController =
+      Get.put(EquipmentController(), permanent: true);
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,5 @@
+import 'package:castle/Screens/ClientPage/ClientPage.dart';
+import 'package:castle/Widget/CustomTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,99 +8,136 @@ import '../../Colors/Colors.dart';
 
 class ClientRegisterPageTwo extends StatelessWidget {
   final controller = Get.find<ClientRegisterController>();
+  final formKeyTwo = GlobalKey<FormState>();
 
   ClientRegisterPageTwo({super.key});
 
-  Widget _buildInput({
-    required String label,
-    required TextEditingController controller,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blueGrey),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.blueAccent)),
-        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      ),
-      validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final hotelFields = [
-      ["Hotel Name", controller.hotelName, Icons.business, false],
-      ["Hotel Address", controller.hotelAddress, Icons.location_on, false],
-      ["Hotel City", controller.hotelCity, Icons.location_city, false],
-      ["Hotel State", controller.hotelState, Icons.map, false],
-      ["Hotel Country", controller.hotelCountry, Icons.flag, false],
-      ["Hotel Postal Code", controller.hotelPostalCode, Icons.mail, false],
-      ["Hotel Phone", controller.hotelPhone, Icons.phone_android, false],
-      ["Hotel Email", controller.hotelEmail, Icons.email_outlined, false],
-      ["Contact Person", controller.contactPerson, Icons.contact_page, false],
+    final clientFields = [
+      [
+        "client Name",
+        controller.clientName,
+        Icons.business,
+        (String? val) =>
+            val == null || val.isEmpty ? "client name required" : null
+      ],
+      [
+        "client Address",
+        controller.clientAddress,
+        Icons.location_on,
+        (String? val) => val == null || val.isEmpty ? "Address required" : null
+      ],
+      [
+        "client City",
+        controller.clientCity,
+        Icons.location_city,
+        (String? val) => val == null || val.isEmpty ? "City required" : null
+      ],
+      [
+        "client State",
+        controller.clientState,
+        Icons.map,
+        (String? val) => val == null || val.isEmpty ? "State required" : null
+      ],
+      [
+        "client Country",
+        controller.clientCountry,
+        Icons.flag,
+        (String? val) => val == null || val.isEmpty ? "Country required" : null
+      ],
+      [
+        "client Postal Code",
+        controller.clientPostalCode,
+        Icons.mail,
+        (String? val) =>
+            val == null || val.isEmpty ? "Postal code required" : null
+      ],
+      [
+        "client Phone",
+        controller.clientPhone,
+        Icons.phone_android,
+        (String? val) => val == null || val.isEmpty ? "Phone required" : null
+      ],
+      [
+        "client Email",
+        controller.clientEmail,
+        Icons.email_outlined,
+        (String? val) {
+          if (val == null || val.isEmpty) return "Email required";
+          final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+          return emailRegex.hasMatch(val) ? null : "Invalid email";
+        }
+      ],
+      [
+        "Contact Person",
+        controller.contactPerson,
+        Icons.contact_page,
+        (String? val) =>
+            val == null || val.isEmpty ? "Contact person required" : null
+      ],
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Hotel Details", style: GoogleFonts.poppins()),
+        title: Text("client Details", style: GoogleFonts.poppins()),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,
         foregroundColor: Colors.black87,
       ),
       body: Form(
-        key: controller.formKey,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
+        key: formKeyTwo,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Card(
-                color: buttonShadeColor,
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: hotelFields
-                        .map((e) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: _buildInput(
-                        label: e[0] as String,
-                        controller: e[1] as TextEditingController,
-                        icon: e[2] as IconData,
-                        isPassword: e[3] as bool,
+              Expanded(
+                child: ListView.separated(
+                  itemCount: clientFields.length,
+                  separatorBuilder: (context, index) => SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final item = clientFields[index];
+                    return CustomTextField(
+                      controller: item[1] as TextEditingController,
+                      icon: item[2] as IconData,
+                      hint: item[0] as String,
+                      validator: item[3] as String? Function(String?),
+                    );
+                  },
+                ),
+              ),
+              Obx(
+                () => controller.isLoading.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : InkWell(
+                        onTap: () async {
+                          if (formKeyTwo.currentState!.validate()) {
+                            // Add submit API logic here
+                            await controller.createClient();
+                            Get.off(ClientPage());
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: buttonColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Submit",
+                              style: TextStyle(
+                                  color: backgroundColor, fontSize: 16),
+                            ),
+                          ),
+                        ),
                       ),
-                    ))
-                        .toList(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: () {
-                  if (controller.formKey.currentState!.validate()) {
-                    // Submit API here
-                    Get.snackbar("Success", "Client registration data is ready to submit",
-                        snackPosition: SnackPosition.BOTTOM);
-                  }
-                },
-                icon: Icon(Icons.check_circle),
-                label: Text("Submit", style: GoogleFonts.poppins(fontSize: 16)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-              ),
+              )
             ],
           ),
         ),

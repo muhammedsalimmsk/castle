@@ -1,23 +1,23 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Controlls/PartsController/PartsController.dart';
+import 'package:castle/Screens/PartsRequestPagee/NewPartsPage.dart';
+import 'package:castle/Screens/PartsRequestPagee/PartsListPage.dart';
+import 'package:castle/Widget/CustomAppBarWidget.dart';
+import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
-class PartsRequestPage extends StatelessWidget {
-  const PartsRequestPage({super.key});
+class RequestedPartsPage extends StatelessWidget {
+  RequestedPartsPage({super.key});
+  PartsController controller = Get.put(PartsController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: backgroundColor,
-        surfaceTintColor: backgroundColor,
-        title: Text(
-          "Parts Request",
-          style: TextStyle(color: containerColor, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -51,9 +51,7 @@ class PartsRequestPage extends StatelessWidget {
                       Icons.add,
                       color: backgroundColor,
                     ),
-                    onPressed: () {
-                      // add your search function here
-                    },
+                    onPressed: () {},
                   ),
                 ),
               ],
@@ -66,35 +64,61 @@ class PartsRequestPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
-            Container(
-              height: 590,
-              child: ListView.builder(
-                  itemCount: 100,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Text(
-                        "562969",
-                        style: TextStyle(
-                            color: containerColor, fontWeight: FontWeight.bold),
-                      ),
-                      title: Text("Parts Name"),
-                      subtitle: Text("Stock : 32"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Available",
-                            style: TextStyle(color: Colors.green, fontSize: 12),
+            Obx(
+              () => SizedBox(
+                height: 590,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    controller.hasMore2 = true;
+                    controller.isRefresh = true;
+                    await controller.getRequestedList();
+                    controller.isRefresh = false;
+                  },
+                  child: ListView.builder(
+                      itemCount: controller.requestedParts.length,
+                      itemBuilder: (context, index) {
+                        final data = controller.requestedParts[index];
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: shadeColor),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: containerColor
+                                    .withOpacity(0.1), // soft shadow
+                                offset: Offset(0, 4), // X and Y offset
+                                blurRadius: 6,
+                                spreadRadius: 1,
+                              ),
+                            ],
                           ),
-                          Gap(10),
-                          Icon(Icons.more_vert_outlined)
-                        ],
-                      ),
-                    );
-                  }),
+                          child: ListTile(
+                            title: Text(
+                              data.worker!.firstName!,
+                            ),
+                            subtitle: Text(data.part!.partName!),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  data.status!,
+                                  style: TextStyle(
+                                      color: Colors.green, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                ),
+              ),
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.to(PartsListPage());
+              },
               child: Container(
                 padding: EdgeInsets.all(12),
                 width: double.infinity,
@@ -104,7 +128,7 @@ class PartsRequestPage extends StatelessWidget {
                 ),
                 child: Center(
                     child: Text(
-                  "Request Now",
+                  "Parts List",
                   style: TextStyle(
                       color: backgroundColor, fontWeight: FontWeight.bold),
                 )),

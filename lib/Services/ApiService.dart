@@ -25,6 +25,50 @@ class ApiService extends GetConnect {
     }
   }
 
+  Future<Response> deleteRequest(
+    String endpoint, {
+    String? bearerToken,
+  }) async {
+    try {
+      final headers = {
+        if (bearerToken != null) 'Authorization': 'Bearer $bearerToken',
+      };
+      return await delete(
+        endpoint,
+        headers: headers,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> patchRequest(
+    String endpoint, {
+    dynamic data,
+    String? bearerToken,
+  }) async {
+    try {
+      final headers = {
+        if (bearerToken != null) 'Authorization': 'Bearer $bearerToken',
+      };
+      if (data != null) {
+        return await patch(
+          endpoint,
+          data,
+          headers: headers,
+        );
+      } else {
+        return await patch(
+          endpoint,
+          null,
+          headers: headers,
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> postRequest(String endpoint, dynamic data,
       {String? bearerToken, bool isMultipart = false}) async {
     try {

@@ -4,6 +4,9 @@ import 'package:castle/Screens/LoginPage/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../Controlls/ComplaintController/ComplaintController.dart';
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -15,7 +18,7 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Colors.white,
         title: const Text(
           'Profile',
-          style: TextStyle(color: containerColor,fontWeight: FontWeight.bold),
+          style: TextStyle(color: containerColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 1,
@@ -30,7 +33,7 @@ class ProfilePage extends StatelessWidget {
             child: Icon(Icons.person, size: 50, color: Colors.white),
           ),
           const SizedBox(height: 16),
-           Text(
+          Text(
             '${userDetailModel!.data!.firstName} ${userDetailModel!.data!.lastName}',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -44,43 +47,49 @@ class ProfilePage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.phone),
             title: const Text('Phone'),
-            subtitle:  Text(userDetailModel!.data!.phone!),
+            subtitle: Text(userDetailModel!.data!.phone ?? "N/A"),
           ),
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Role'),
             subtitle: Text(userDetailModel!.data!.role!),
           ),
-
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: containerColor,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
-              onPressed: ()async {
+              onPressed: () async {
                 await Get.defaultDialog(
-                  middleText: "Do you want to logout?",
-                  onCancel: (){
-                    Get.back();
-                  },
-                  onConfirm: ()async{
-                    SharedPreferences pref=await SharedPreferences.getInstance();
-                    pref.clear();
-                    userDetailModel=null;
-                    Get.offAll(LoginPage());
-                  }
-                );
+                    middleText: "Do you want to logout?",
+                    onCancel: () {
+                      Get.back();
+                    },
+                    onConfirm: () async {
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
+                      pref.clear();
+                      userDetailModel = null;
+                      token = null;
+                      Get.delete<ComplaintController>();
+                      Get.offAll(LoginPage());
+                    });
                 // Handle logout or action
               },
               icon: const Icon(Icons.logout, color: Colors.white),
-              label: const Text('Logout', style: TextStyle(color: Colors.white)),
+              label:
+                  const Text('Logout', style: TextStyle(color: Colors.white)),
             ),
           ),
-          SizedBox(height: 20,)
+          SizedBox(
+            height: 20,
+          )
         ],
       ),
     );

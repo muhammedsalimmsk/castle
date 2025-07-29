@@ -49,9 +49,12 @@ class NewComplaintRegister extends StatelessWidget {
                       SizedBox(height: 20),
                       CustomPhoneNumberField(),
                       SizedBox(height: 20),
-                      CustomTextField(hint: "Email"),
+                      CustomTextField(
+                          controller: controller.email, hint: "Email"),
                       SizedBox(height: 20),
-                      CustomTextField(hint: "Contact person name"),
+                      CustomTextField(
+                          controller: controller.contactPerson,
+                          hint: "Contact person name"),
                     ],
                   ),
 

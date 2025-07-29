@@ -1,127 +1,23 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Controlls/ComplaintController/ComplaintController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
-import 'package:castle/Screens/ComplaintsPage/NewComplaint/NewComplaintPage.dart';
-import 'package:castle/Screens/EquipmentPage/NewEquipments.dart';
+import 'package:castle/Controlls/WorkersController/WorkerController.dart';
+import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
+import 'package:get/get.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../Controlls/AuthController/AuthController.dart';
+import 'Widgets/FilterPage.dart';
+
 class ComplaintPage extends StatelessWidget {
   ComplaintPage({super.key});
-  List<Equipment> equipmentList = [
-    Equipment(
-      trackingId: "#20462",
-      productName: "HVAC System",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Matt Dickerson",
-      category: "Climate Control",
-      subCategory: "Centralized Air Systems",
-      equipmentType: "Central Air Conditioning Unit",
-      status: "Working",
-    ),
-    Equipment(
-      trackingId: "#18933",
-      productName: "Commercial Kitchen Range",
-      productImageUrl:
-          'https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg',
-      customer: "Wiktoria",
-      category: "Kitchen Equipment",
-      subCategory: "Cooking Appliances",
-      equipmentType: "Gas Stove with Oven",
-      status: "Working",
-    ),
-    Equipment(
-      trackingId: "#45169",
-      productName: "Refrigeration System",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Food Storage",
-      category: "Food Storage",
-      subCategory: "Cold Storage",
-      equipmentType: "Walk-In Freezer",
-      status: "On Work",
-    ),
-    Equipment(
-      trackingId: "#34304",
-      productName: "Laundry Machine",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Brad Mason",
-      category: "Housekeeping",
-      subCategory: "Laundry Systems",
-      equipmentType: "Commercial Washer and Dryer",
-      status: "On Work",
-    ),
-    Equipment(
-      trackingId: "#17188",
-      productName: "Elevator",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Sanderson",
-      category: "Guest Transport",
-      subCategory: "Vertical Lifting Systems",
-      equipmentType: "Passenger Elevator",
-      status: "Not Working",
-    ),
-    Equipment(
-      trackingId: "#73003",
-      productName: "Water Heater System",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Jun Redfern",
-      category: "Utility Equipment",
-      subCategory: "Hot Water Supply",
-      equipmentType: "Centralized Boiler",
-      status: "Working",
-    ),
-    Equipment(
-      trackingId: "#58825",
-      productName: "Dishwasher",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Miriam Kidd",
-      category: "Kitchen Equipment",
-      subCategory: "Cleaning Appliances",
-      equipmentType: "Commercial Conveyor Dishwasher",
-      status: "Working",
-    ),
-    Equipment(
-      trackingId: "#44122",
-      productName: "Fire Alarm System",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Dominic",
-      category: "Safety Equipment",
-      subCategory: "Fire Detection",
-      equipmentType: "Addressable Fire Alarm Panel",
-      status: "Working",
-    ),
-    Equipment(
-      trackingId: "#89094",
-      productName: "Generator",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Shanice",
-      category: "Power Backup",
-      subCategory: "Emergency Power Systems",
-      equipmentType: "Diesel Generator",
-      status: "On Work",
-    ),
-    Equipment(
-      trackingId: "#85252",
-      productName: "Swimming Pool Filtration System",
-      productImageUrl:
-          "https://www.lg.com/content/dam/channel/wcms/in/images/washing-machines/fhm1408bdl_alsqeil_eail_in_c/gallery/FHM1408BDL-Washing-Machines-Front-View-DZ-01-v1.jpg",
-      customer: "Poppy-Rose",
-      category: "Recreation",
-      subCategory: "Water Treatment",
-      equipmentType: "Sand Filter System",
-      status: "On Work",
-    ),
-  ];
+  final ComplaintController complaintController =
+      Get.put(ComplaintController());
+  final WorkerController workerController = Get.put(WorkerController());
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +37,7 @@ class ComplaintPage extends StatelessWidget {
                     decoration: InputDecoration(
                         suffixIcon: Icon(Icons.search),
                         hintText: "Search here..",
-                        fillColor: secondaryColor,
+                        fillColor: backgroundColor,
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -156,6 +52,7 @@ class ComplaintPage extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
+                    Get.dialog(FilterDialog());
                     // Your action here
                   },
                   icon: Container(
@@ -164,13 +61,13 @@ class ComplaintPage extends StatelessWidget {
                     // height: 50, // Adjust height
                     decoration: BoxDecoration(
                       border: Border.all(color: shadeColor),
-                      color: secondaryColor, // Background color
+                      color: buttonColor, // Background color
                       borderRadius: BorderRadius.circular(
-                          4), // Adjust for rounded corners
+                          8), // Adjust for rounded corners
                     ),
                     child: Icon(
                       FontAwesomeIcons.sliders,
-                      color: containerColor,
+                      color: backgroundColor,
                     ), // Your icon
                   ),
                 )
@@ -212,131 +109,227 @@ class ComplaintPage extends StatelessWidget {
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.72,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: equipmentList.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      child: Container(
-                        padding: EdgeInsets.zero,
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: shadeColor,
-                                spreadRadius: 0.8,
-                                blurRadius: 3,
+              child: Obx(() => RefreshIndicator(
+                    onRefresh: () async {
+                      complaintController.hasMore = true;
+                      complaintController.isRefresh = true;
+                      await complaintController.getComplaint(
+                        role: userDetailModel!.data!.role!.toLowerCase(),
+                      );
+                      complaintController.isRefresh = false;
+                    },
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) {
+                        return Divider(
+                          color: buttonColor,
+                        );
+                      },
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      controller: complaintController.scrollController,
+                      itemCount: complaintController.details.length +
+                          1, // +1 for loading indicator
+                      itemBuilder: (context, index) {
+                        if (index < complaintController.details.length) {
+                          var datas = complaintController.details[index];
+                          return GestureDetector(
+                            onTap: () async {
+                              await workerController.getWorkers();
+                              Get.to(ComplaintDetailsPage(
+                                  complaintId:
+                                      complaintController.details[index].id!));
+                            },
+                            child: ListTile(
+                              title: Text(
+                                datas.equipment!.name!,
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ],
-                            borderRadius: BorderRadius.circular(10),
-                            color: secondaryColor),
-                        child: ListTile(
-                          leading: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                    image: NetworkImage(
-                                        equipmentList[index].productImageUrl),
-                                    fit: BoxFit.cover)),
-                          ),
-                          title: Text(
-                            equipmentList[index].productName,
-                            style: TextStyle(
-                                color: containerColor,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(equipmentList[index].customer),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
+                              subtitle: Text(datas.title!),
+                              trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    equipmentList[index].category,
-                                    style: TextStyle(color: buttonColor),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(datas.priority!,
+                                          style: TextStyle(color: buttonColor)),
+                                      Text(datas.status!),
+                                    ],
                                   ),
-                                  Text(equipmentList[index].status),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  if (userDetailModel!.data!.role == "ADMIN")
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: datas.status == "OPEN"
+                                            ? buttonColor
+                                            : Colors.green.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        datas.status ?? "Assign",
+                                        style: TextStyle(
+                                          color: datas.status == "OPEN"
+                                              ? Colors.red
+                                              : Colors.green[800],
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.more_vert,
-                                    color: buttonColor,
-                                  )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                            ),
+                          );
+                        } else {
+                          // Loading indicator at the bottom
+                          return complaintController.hasMore
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                )
+                              : SizedBox.shrink();
+                        }
+                      },
+                    ),
+                  )),
             )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: containerColor,
-        onPressed: () {
-          Get.to(NewComplaintRegister());
-        },
-        label: Text(
-          "Add New",
-          style: TextStyle(color: backgroundColor),
-        ),
-      ),
-    );
-  }
-}
-
-class Equipment {
-  final String trackingId;
-  final String productName;
-  final String productImageUrl;
-  final String customer;
-  final String category;
-  final String subCategory;
-  final String equipmentType;
-  final String status;
-
-  Equipment({
-    required this.trackingId,
-    required this.productName,
-    required this.productImageUrl,
-    required this.customer,
-    required this.category,
-    required this.subCategory,
-    required this.equipmentType,
-    required this.status,
-  });
-
-  // Factory method to create an object from JSON
-  factory Equipment.fromJson(Map<String, dynamic> json) {
-    return Equipment(
-      trackingId: json['trackingId'],
-      productName: json['productName'],
-      productImageUrl: json['productImage'],
-      customer: json['customer'],
-      category: json['category'],
-      subCategory: json['subCategory'],
-      equipmentType: json['equipmentType'],
-      status: json['status'],
     );
   }
 
-  // Convert an object to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'trackingId': trackingId,
-      'productName': productName,
-      'productImage': productImageUrl,
-      'customer': customer,
-      'category': category,
-      'subCategory': subCategory,
-      'equipmentType': equipmentType,
-      'status': status,
-    };
-  }
+  // void showAssignWorkerDialog(BuildContext context, String complaintId) async {
+  //   await workerController.getWorkers(); // Load worker list
+  //   if (workerController.workerList.isEmpty) {
+  //     Get.snackbar("No Workers", "No workers found to assign");
+  //     return;
+  //   }
+  //
+  //   Get.bottomSheet(
+  //     Container(
+  //       padding: EdgeInsets.all(16),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //       ),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Text("Assign to Worker",
+  //               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+  //           SizedBox(height: 10),
+  //           ...workerController.workerList.map((worker) => ListTile(
+  //                 title: Text(worker.firstName ?? ''),
+  //                 subtitle: Text(worker.email ?? ''),
+  //                 onTap: () {
+  //                   Get.back();
+  //                   Get.dialog(
+  //                     Dialog(
+  //                       backgroundColor: backgroundColor,
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10)),
+  //                       child: Padding(
+  //                         padding: const EdgeInsets.all(20),
+  //                         child: Column(
+  //                           mainAxisSize: MainAxisSize.min,
+  //                           crossAxisAlignment: CrossAxisAlignment.stretch,
+  //                           children: [
+  //                             Text(
+  //                               "Confirm Assignment",
+  //                               style: TextStyle(
+  //                                 fontSize: 18,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                               textAlign: TextAlign.center,
+  //                             ),
+  //                             const SizedBox(height: 12),
+  //                             Text(
+  //                               "Are you sure you want to assign this complaint to ${worker.firstName}?",
+  //                               textAlign: TextAlign.center,
+  //                             ),
+  //                             const SizedBox(height: 24),
+  //                             Row(
+  //                               mainAxisAlignment:
+  //                                   MainAxisAlignment.spaceEvenly,
+  //                               children: [
+  //                                 // ❌ Cancel Button
+  //                                 Expanded(
+  //                                   child: ElevatedButton(
+  //                                     onPressed: () => Get.back(),
+  //                                     style: ElevatedButton.styleFrom(
+  //                                       backgroundColor: Colors.grey[300],
+  //                                       shape: RoundedRectangleBorder(
+  //                                         borderRadius:
+  //                                             BorderRadius.circular(10),
+  //                                       ),
+  //                                       padding:
+  //                                           EdgeInsets.symmetric(vertical: 12),
+  //                                     ),
+  //                                     child: Text(
+  //                                       "Cancel",
+  //                                       style: TextStyle(color: Colors.black),
+  //                                     ),
+  //                                   ),
+  //                                 ),
+  //                                 SizedBox(width: 16),
+  //                                 // ✅ Confirm Button
+  //                                 Obx(
+  //                                   () => complaintController.isLoading.value
+  //                                       ? Center(
+  //                                           child: CircularProgressIndicator(),
+  //                                         )
+  //                                       : Expanded(
+  //                                           child: ElevatedButton(
+  //                                             onPressed: () async {
+  //                                               await complaintController
+  //                                                   .assignComplaint(
+  //                                                 worker.id!,
+  //                                                 complaintId,
+  //                                               );
+  //                                               Get.back();
+  //                                               await complaintController
+  //                                                   .getComplaint(
+  //                                                       role: userDetailModel!
+  //                                                           .data!.role!
+  //                                                           .toLowerCase());
+  //                                             },
+  //                                             style: ElevatedButton.styleFrom(
+  //                                               backgroundColor: containerColor,
+  //                                               shape: RoundedRectangleBorder(
+  //                                                 borderRadius:
+  //                                                     BorderRadius.circular(10),
+  //                                               ),
+  //                                               padding: EdgeInsets.symmetric(
+  //                                                   vertical: 12),
+  //                                             ),
+  //                                             child: Text(
+  //                                               "Assign",
+  //                                               style: TextStyle(
+  //                                                   color: backgroundColor),
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                 )
+  //                               ],
+  //                             )
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   );
+  //                 },
+  //               )),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

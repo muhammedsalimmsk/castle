@@ -65,14 +65,14 @@ class ComplaintController extends GetxController {
     final endpoint = "/api/v1/worker/part-requests/$partRequestId/collect";
 
     try {
-      final response =
-          await _apiService.patchRequest(endpoint, bearerToken: token);
+      final response = await _apiService.patchRequest(endpoint,
+          data: null, bearerToken: token);
       if (response.isOk) {
         print(response.body);
         Get.snackbar("Success", "Collected update successfully",
             backgroundColor: Colors.green);
       } else {
-        print(response.body);
+        print("sghjkjhgshshjjjjjj${response.body}");
       }
     } catch (e) {
       Get.snackbar("Error", "Something went wrong");
@@ -479,7 +479,6 @@ class ComplaintController extends GetxController {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () async {
-                      Get.back();
                       Get.back();
                       Get.back();
                       // Dismiss the dialog

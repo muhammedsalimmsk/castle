@@ -2,41 +2,35 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/PartsController/PartsController.dart';
 import 'package:castle/Model/parts_list_model/datum.dart';
 import 'package:castle/Screens/PartsRequestPagee/NewPartsPage.dart';
+import 'package:castle/Widget/CustomAppBarWidget.dart';
+import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class PartsListPage extends StatelessWidget {
   PartsListPage({super.key});
-  PartsController controller = Get.find();
+  PartsController controller = Get.put(PartsController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: backgroundColor,
-        backgroundColor: backgroundColor,
-        centerTitle: true,
-        title: Text("Parts List"),
-      ),
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: shadeColor)),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: containerColor)),
-                  hintText: "Search here..",
-                  suffixIcon:
-                      IconButton(onPressed: () {}, icon: Icon(Icons.search))),
+            Text(
+              "Parts",
+              style: TextStyle(
+                  color: buttonColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
             SizedBox(
-              height: 10,
+              height: 20,
             ),
             Obx(
               () => controller.isLoading.value
@@ -51,10 +45,10 @@ class PartsListPage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             PartsDetail parts = controller.partsData[index];
                             return Container(
-                              margin: EdgeInsets.only(bottom: 10),
+                              margin: EdgeInsets.only(bottom: 8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border: Border.all(color: shadeColor),
+                                border: Border.all(color: buttonColor),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
@@ -87,7 +81,7 @@ class PartsListPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: containerColor,
+          backgroundColor: buttonColor,
           onPressed: () {
             Get.to(PartRegisterPage());
           },

@@ -59,7 +59,7 @@ class ProfilePage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: containerColor,
+                backgroundColor: buttonColor,
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 shape: RoundedRectangleBorder(
@@ -67,19 +67,52 @@ class ProfilePage extends StatelessWidget {
               ),
               onPressed: () async {
                 await Get.defaultDialog(
-                    middleText: "Do you want to logout?",
-                    onCancel: () {
-                      Get.back();
-                    },
-                    onConfirm: () async {
+                  backgroundColor: backgroundColor,
+                  title: "Logout",
+                  middleText: "Do you want to logout?",
+                  radius: 10,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  confirm: ElevatedButton(
+                    onPressed: () async {
                       SharedPreferences pref =
                           await SharedPreferences.getInstance();
-                      pref.clear();
+                      await pref.clear();
                       userDetailModel = null;
                       token = null;
                       Get.delete<ComplaintController>();
                       Get.offAll(LoginPage());
-                    });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor, // 🔴 Confirm button color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text(
+                      "Logout",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  cancel: OutlinedButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.grey),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                    ),
+                    child: const Text("Cancel",
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                );
+
                 // Handle logout or action
               },
               icon: const Icon(Icons.logout, color: Colors.white),

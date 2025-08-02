@@ -98,7 +98,12 @@ class _EquipmentPageState extends State<EquipmentPage> {
                       items: controller.sortOptions
                           .map((value) => DropdownMenuItem(
                                 value: value,
-                                child: Text(value),
+                                child: Text(
+                                  value,
+                                  style: TextStyle(
+                                      color: buttonColor,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ))
                           .toList(),
                       onChanged: (value) {
@@ -188,9 +193,10 @@ class _EquipmentPageState extends State<EquipmentPage> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: buttonColor),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Color(0xfff0431A4).withOpacity(0.25),
+                                    color: Color(0xfff0431a4).withOpacity(0.25),
                                     spreadRadius: 0.8,
                                     blurRadius: 3,
                                   ),

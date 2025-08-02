@@ -37,8 +37,10 @@ class RequestedPartsWorkerPage extends StatelessWidget {
             final part = parts[index];
 
             return Card(
-              color: shadeColor,
+              shadowColor: containerColor,
+              color: backgroundColor,
               shape: RoundedRectangleBorder(
+                  side: BorderSide(color: buttonColor),
                   borderRadius: BorderRadius.circular(10)),
               child: Padding(
                 padding: const EdgeInsets.all(12),

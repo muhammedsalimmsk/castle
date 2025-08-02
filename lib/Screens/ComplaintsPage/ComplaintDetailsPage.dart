@@ -23,6 +23,25 @@ class ComplaintDetailsPage extends StatelessWidget {
 
   ComplaintDetailsPage({super.key, required this.complaintId});
 
+  /// Formats a raw API string (e.g., "IN_PROGRESS" or "parts_requested")
+  /// into a user-friendly format (e.g., "In Progress" or "Parts Requested").
+  String formatApiString(String? rawString) {
+    if (rawString == null || rawString.isEmpty) {
+      return "N/A";
+    }
+    // Replace underscores with spaces, convert to lowercase, and split into words
+    final words = rawString.replaceAll('_', ' ').toLowerCase().split(' ');
+
+    // Capitalize the first letter of each word
+    final capitalizedWords = words.map((word) {
+      if (word.isEmpty) return '';
+      return word[0].toUpperCase() + word.substring(1);
+    });
+
+    // Join the words back together with a space
+    return capitalizedWords.join(' ');
+  }
+
   String formatDate(DateTime? date) {
     if (date == null) return "N/A";
     return DateFormat('dd MMM yyyy, hh:mm a').format(date);
@@ -35,7 +54,7 @@ class ComplaintDetailsPage extends StatelessWidget {
     for (var s in statusUpdates) {
       entries.add(TimelineEntry(
         type: "STATUS",
-        title: s.status ?? "Status Updated",
+        title: formatApiString(s.status), // Use the formatter
         subtitle: s.notes ?? "",
         time: s.updatedAt ?? DateTime.now(),
       ));
@@ -106,7 +125,7 @@ class ComplaintDetailsPage extends StatelessWidget {
           final complaint = complaintController.complaintDetailModel.data!;
           final combinedTimeline = getCombinedTimeline(
             complaint.statusUpdates ?? [],
-            complaint.comments ?? [], // assuming this is fetched
+            complaint.comments ?? [],
           );
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -127,21 +146,13 @@ class ComplaintDetailsPage extends StatelessWidget {
                       Row(
                         children: [
                           Chip(
-                            label: Text(complaint.status![0].toUpperCase() +
-                                    complaint.status!
-                                        .substring(1)
-                                        .toLowerCase() ??
-                                'Unknown'),
+                            label: Text(formatApiString(complaint.status)),
                             backgroundColor: getStatusColor(complaint.status),
                             labelStyle: const TextStyle(color: Colors.white),
                           ),
                           const SizedBox(width: 8),
                           Chip(
-                            label: Text(complaint.priority![0].toUpperCase() +
-                                    complaint.priority!
-                                        .substring(1)
-                                        .toLowerCase() ??
-                                'Unknown'),
+                            label: Text(formatApiString(complaint.priority)),
                             backgroundColor:
                                 getPriorityColor(complaint.priority),
                             labelStyle: const TextStyle(color: Colors.white),
@@ -228,7 +239,7 @@ class ComplaintDetailsPage extends StatelessWidget {
                           await complaintController.getPartsList();
                           Get.dialog(PartRequestDialog(
                             complaintId: complaint.id!,
-                            type: 'CLIENT_INVENTORY',
+                            type: 'CLIENT_PROVIDED',
                           ));
                         },
                         icon: Icon(Icons.build),

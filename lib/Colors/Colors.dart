@@ -6,6 +6,7 @@ const containerColor = Color(0xfff141522);
 const borderColor = Color(0xfffCFD3D4);
 const textColor = Color(0xfff141522);
 const buttonColor = Color(0xfff5570F1);
+const progressBackround = Color(0xfffE2E6F9);
 const subtitleColor = Color(0xfffABAFB1);
 const shadeColor = Color(0xfffCFD3D4);
 const workingWidgetColor = Color(0xfffEBF9F1);

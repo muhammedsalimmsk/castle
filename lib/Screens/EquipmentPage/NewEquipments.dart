@@ -2,6 +2,7 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../Controlls/EquipmentController/EquipmentController.dart';
 import '../../Widget/CustomTextField.dart';
@@ -17,6 +18,7 @@ class NewEquipmentsRequest extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        surfaceTintColor: backgroundColor,
         centerTitle: true,
         backgroundColor: backgroundColor,
         title: const Text(
@@ -26,178 +28,200 @@ class NewEquipmentsRequest extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Obx(() => Column(
-              spacing: 10,
-              children: [
-                CustomTextField(
-                    controller: controller.nameController, hint: "Name"),
-                CustomTextField(
-                  controller: controller.modelController,
-                  hint: "Model",
-                ),
-                CustomTextField(
-                    controller: controller.serialNumberController,
-                    hint: "Serial Number"),
-                CustomTextField(
-                    controller: controller.manufacturerController,
-                    hint: "Manufacture"),
-                CustomTextField(
-                    controller: controller.locationController,
-                    hint: "Location"),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "Step 2 of 2",
+                style:
+                    GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700]),
+              ),
+            ),
+            SizedBox(height: 4),
+            LinearProgressIndicator(
+              minHeight: 10,
+              value: 1,
+              color: buttonColor,
+              backgroundColor: progressBackround,
+            ),
+            SizedBox(height: 16),
+            Obx(() => Column(
+                  spacing: 10,
+                  children: [
+                    CustomTextField(
+                        controller: controller.nameController, hint: "Name"),
+                    CustomTextField(
+                      controller: controller.modelController,
+                      hint: "Model",
+                    ),
+                    CustomTextField(
+                        controller: controller.serialNumberController,
+                        hint: "Serial Number"),
+                    CustomTextField(
+                        controller: controller.manufacturerController,
+                        hint: "Manufacture"),
+                    CustomTextField(
+                        controller: controller.locationController,
+                        hint: "Location"),
 
-                Obx(() => TextFormField(
-                      readOnly: true,
-                      controller: TextEditingController(
-                        text: controller.installationDate.value != null
-                            ? controller.installationDate.value!
-                                .toLocal()
-                                .toString()
-                                .split(' ')[0]
-                            : '',
-                      ),
-                      onTap: () async {
-                        FocusScope.of(context)
-                            .requestFocus(FocusNode()); // to prevent keyboard
-                        DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: controller.installationDate.value ??
-                              DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (picked != null) {
-                          controller.installationDate.value = picked;
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Installation Date",
-                        hintText: "Select Installation Date",
-                        suffixIcon: Icon(Icons.calendar_today),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    )),
-                Obx(() => TextFormField(
-                      readOnly: true,
-                      controller: TextEditingController(
-                        text: controller.warrantyExpiry.value != null
-                            ? controller.warrantyExpiry.value!
-                                .toLocal()
-                                .toString()
-                                .split(' ')[0]
-                            : '',
-                      ),
-                      onTap: () async {
-                        FocusScope.of(context)
-                            .requestFocus(FocusNode()); // to prevent keyboard
-                        DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate:
-                              controller.warrantyExpiry.value ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (picked != null) {
-                          controller.warrantyExpiry.value = picked;
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: "Warranty Expiry",
-                        hintText: "Select Warranty Expiry",
-                        suffixIcon: Icon(Icons.calendar_today),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    )),
-                Text("Specifications",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                TextField(
-                  controller: controller.specificationInput,
-                  decoration: InputDecoration(
-                    hintText: "Type and press Enter or Space",
-                    border: OutlineInputBorder(),
-                  ),
-                  onSubmitted: (_) => controller.addSpecificationFromInput(),
-                  onChanged: (value) {
-                    if (value.endsWith(" ")) {
-                      controller.addSpecificationFromInput();
-                    }
-                  },
-                ),
-                Obx(() => Wrap(
-                      spacing: 8,
-                      children: controller.specifications.map((spec) {
-                        return Chip(
-                          label: Text(spec),
-                          deleteIcon: Icon(Icons.close),
-                          onDeleted: () => controller.removeSpecification(spec),
-                        );
-                      }).toList(),
-                    )),
-
-                // Dropdown for Category
-                DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: "Select Category",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  items: controller.catList.map((cat) {
-                    return DropdownMenuItem<String>(
-                      value: cat.id,
-                      child: Text(cat.name ?? 'Unnamed'),
-                    );
-                  }).toList(),
-                  onChanged: (value) =>
-                      controller.categoryId.value = value ?? '',
-                ),
-
-                // // Only for Admins
-                // if (userDetailModel!.data!.role == "ADMIN") ...[
-                //   Obx(() => TextFormField(
-                //         readOnly: true,
-                //         controller: TextEditingController(
-                //             text: controller.selectedClientName.value),
-                //         decoration: InputDecoration(
-                //           labelText: "Select Client",
-                //           suffixIcon: Icon(Icons.arrow_drop_down),
-                //           border: OutlineInputBorder(),
-                //         ),
-                //         onTap: () => _showClientDialog(context),
-                //       )),
-                // ],
-
-                const SizedBox(height: 20),
-                Obx(() => controller.isLoading.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : InkWell(
-                        onTap: () => userDetailModel!.data!.role == "ADMIN"
-                            ? controller.createEquipment(clientId)
-                            : controller
-                                .createEquipment(userDetailModel!.data!.id),
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: buttonColor),
-                          child: Center(
-                            child: Text(
-                              "Submit",
-                              style: TextStyle(
-                                  color: backgroundColor,
-                                  fontWeight: FontWeight.bold),
+                    Obx(() => TextFormField(
+                          readOnly: true,
+                          controller: TextEditingController(
+                            text: controller.installationDate.value != null
+                                ? controller.installationDate.value!
+                                    .toLocal()
+                                    .toString()
+                                    .split(' ')[0]
+                                : '',
+                          ),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(
+                                FocusNode()); // to prevent keyboard
+                            DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: controller.installationDate.value ??
+                                  DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              controller.installationDate.value = picked;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Installation Date",
+                            hintText: "Select Installation Date",
+                            suffixIcon: Icon(Icons.calendar_today),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ),
-                      ))
-              ],
-            )),
+                        )),
+                    Obx(() => TextFormField(
+                          readOnly: true,
+                          controller: TextEditingController(
+                            text: controller.warrantyExpiry.value != null
+                                ? controller.warrantyExpiry.value!
+                                    .toLocal()
+                                    .toString()
+                                    .split(' ')[0]
+                                : '',
+                          ),
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(
+                                FocusNode()); // to prevent keyboard
+                            DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: controller.warrantyExpiry.value ??
+                                  DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              controller.warrantyExpiry.value = picked;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Warranty Expiry",
+                            hintText: "Select Warranty Expiry",
+                            suffixIcon: Icon(Icons.calendar_today),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        )),
+                    Text("Specifications",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextField(
+                      controller: controller.specificationInput,
+                      decoration: InputDecoration(
+                        hintText: "Type and press Enter or Space",
+                        border: OutlineInputBorder(),
+                      ),
+                      onSubmitted: (_) =>
+                          controller.addSpecificationFromInput(),
+                      onChanged: (value) {
+                        if (value.endsWith(" ")) {
+                          controller.addSpecificationFromInput();
+                        }
+                      },
+                    ),
+                    Obx(() => Wrap(
+                          spacing: 8,
+                          children: controller.specifications.map((spec) {
+                            return Chip(
+                              label: Text(spec),
+                              deleteIcon: Icon(Icons.close),
+                              onDeleted: () =>
+                                  controller.removeSpecification(spec),
+                            );
+                          }).toList(),
+                        )),
+
+                    // Dropdown for Category
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: "Select Category",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      items: controller.catList.map((cat) {
+                        return DropdownMenuItem<String>(
+                          value: cat.id,
+                          child: Text(cat.name ?? 'Unnamed'),
+                        );
+                      }).toList(),
+                      onChanged: (value) =>
+                          controller.categoryId.value = value ?? '',
+                    ),
+
+                    // // Only for Admins
+                    // if (userDetailModel!.data!.role == "ADMIN") ...[
+                    //   Obx(() => TextFormField(
+                    //         readOnly: true,
+                    //         controller: TextEditingController(
+                    //             text: controller.selectedClientName.value),
+                    //         decoration: InputDecoration(
+                    //           labelText: "Select Client",
+                    //           suffixIcon: Icon(Icons.arrow_drop_down),
+                    //           border: OutlineInputBorder(),
+                    //         ),
+                    //         onTap: () => _showClientDialog(context),
+                    //       )),
+                    // ],
+
+                    const SizedBox(height: 20),
+                    Obx(() => controller.isLoading.value
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : InkWell(
+                            onTap: () => userDetailModel!.data!.role == "ADMIN"
+                                ? controller.createEquipment(clientId)
+                                : controller
+                                    .createEquipment(userDetailModel!.data!.id),
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: buttonColor),
+                              child: Center(
+                                child: Text(
+                                  "Submit",
+                                  style: TextStyle(
+                                      color: backgroundColor,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ))
+                  ],
+                )),
+          ],
+        ),
       ),
     );
   }

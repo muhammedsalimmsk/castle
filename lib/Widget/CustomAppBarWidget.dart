@@ -1,3 +1,4 @@
+import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Screens/ProfiePage/ProfilePage.dart';
 import 'package:flutter/material.dart';
@@ -56,13 +57,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                onPressed: () {
-                  // Handle notification tap
-                },
-                icon: const Icon(Icons.notifications_outlined,
-                    size: 25, color: Colors.black),
-              ),
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: InkWell(
@@ -71,13 +65,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   },
                   child: CircleAvatar(
                     radius: 20,
-                    backgroundColor: Colors.white,
-                    child: ClipOval(
-                      child: Image.network(
-                        'https://img.freepik.com/free-photo/handsome-unshaven-european-man-has-serious-self-confident-expression-wears-glasses_273609-17344.jpg',
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
+                    backgroundColor: buttonColor,
+                    child: Text(
+                      '${userDetailModel?.data?.firstName?.substring(0, 1).toUpperCase() ?? ''}'
+                      '${userDetailModel?.data?.lastName?.substring(0, 1).toUpperCase() ?? ''}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

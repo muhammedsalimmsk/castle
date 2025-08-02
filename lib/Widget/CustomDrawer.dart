@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../Colors/Colors.dart';
+import '../Screens/ClientPartPage/ClientPartsPage.dart';
+import '../Screens/PartsRequestPagee/PartsListPage.dart';
 import '../Screens/RoutineScreens/RoutinePage/RoutinePage.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -25,6 +27,7 @@ class CustomDrawer extends StatelessWidget {
   final RxBool settingsSelected = false.obs;
   final RxBool partsRequestSelected = false.obs;
   final RxBool workersRequestSelected = false.obs;
+  final RxBool requestedPartsSelected = false.obs;
 
   void resetSelection() {
     overviewSelected.value = false;
@@ -35,6 +38,7 @@ class CustomDrawer extends StatelessWidget {
     accountsSelected.value = false;
     settingsSelected.value = false;
     partsRequestSelected.value = false;
+    requestedPartsSelected.value = false;
   }
 
   @override
@@ -136,14 +140,14 @@ class CustomDrawer extends StatelessWidget {
                   userDetailModel!.data!.role == 'ADMIN'
                       ? Obx(() => DrawerListTile(
                             iSSelected: routineSelected.value,
-                            title: "Parts Request",
+                            title: "Parts List",
                             icon: Icons.add_circle_outline,
                             onTap: () {
                               resetSelection();
                               partsRequestSelected.value = true;
                               if (Scaffold.of(context).isDrawerOpen) {
                                 Navigator.pop(context);
-                                Get.to(RequestedPartsPage());
+                                Get.to(PartsListPage());
                               }
                             },
                           ))
@@ -178,24 +182,22 @@ class CustomDrawer extends StatelessWidget {
                             },
                           ))
                       : SizedBox.shrink(),
-                  Obx(() => DrawerListTile(
-                        iSSelected: accountsSelected.value,
-                        title: "Accounts",
-                        icon: Icons.account_balance,
-                        onTap: () {
-                          resetSelection();
-                          accountsSelected.value = true;
-                        },
-                      )),
-                  Obx(() => DrawerListTile(
-                        iSSelected: settingsSelected.value,
-                        title: "Settings",
-                        icon: Icons.settings,
-                        onTap: () {
-                          resetSelection();
-                          settingsSelected.value = true;
-                        },
-                      )),
+                  userDetailModel!.data!.role == 'CLIENT' ||
+                          userDetailModel!.data!.role == 'ADMIN'
+                      ? Obx(() => DrawerListTile(
+                            iSSelected: accountsSelected.value,
+                            title: "Requested Parts",
+                            icon: Icons.settings_applications,
+                            onTap: () {
+                              resetSelection();
+                              requestedPartsSelected.value = true;
+                              if (Scaffold.of(context).isDrawerOpen) {
+                                Navigator.pop(context);
+                                Get.to(RequestedPartsListPage());
+                              }
+                            },
+                          ))
+                      : SizedBox.shrink(),
                 ],
               ),
             ),

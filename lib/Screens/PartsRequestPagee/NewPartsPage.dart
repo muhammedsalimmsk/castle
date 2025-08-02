@@ -49,72 +49,105 @@ class PartRegisterPage extends StatelessWidget {
                         controller: partName,
                         hint: "Part Name",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.precision_manufacturing),
+                        suffixIcon: Icon(
+                          Icons.precision_manufacturing,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: partNumber,
                         hint: "Part Number",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.confirmation_number_outlined),
+                        suffixIcon: Icon(
+                          Icons.confirmation_number_outlined,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: description,
                         hint: "Description",
                         maxLines: 3,
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.description_outlined),
+                        suffixIcon: Icon(
+                          Icons.description_outlined,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: category,
                         hint: "Category",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.category_outlined),
+                        suffixIcon: Icon(
+                          Icons.category_outlined,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: unit,
                         hint: "Unit (e.g., pcs, kg)",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.straighten),
+                        suffixIcon: Icon(
+                          Icons.straighten,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: currentStock,
                         hint: "Current Stock",
                         keyboardType: TextInputType.number,
                         validator: _numberValidator,
-                        suffixIcon: Icon(Icons.inventory),
+                        suffixIcon: Icon(
+                          Icons.inventory,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: minStockLevel,
                         hint: "Minimum Stock Level",
                         keyboardType: TextInputType.number,
                         validator: _numberValidator,
-                        suffixIcon: Icon(Icons.minimize),
+                        suffixIcon: Icon(
+                          Icons.minimize,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: maxStockLevel,
                         hint: "Maximum Stock Level",
                         keyboardType: TextInputType.number,
                         validator: _numberValidator,
-                        suffixIcon: Icon(Icons.maximize),
+                        suffixIcon: Icon(
+                          Icons.maximize,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: unitPrice,
                         hint: "Unit Price",
                         keyboardType: TextInputType.number,
                         validator: _numberValidator,
-                        suffixIcon: Icon(Icons.attach_money),
+                        suffixIcon: Icon(
+                          Icons.attach_money,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: supplier,
                         hint: "Supplier",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.store_outlined),
+                        suffixIcon: Icon(
+                          Icons.store_outlined,
+                          color: buttonColor,
+                        ),
                       ),
                       CustomTextField(
                         controller: location,
                         hint: "Location",
                         validator: _requiredValidator,
-                        suffixIcon: Icon(Icons.location_on_outlined),
+                        suffixIcon: Icon(
+                          Icons.location_on_outlined,
+                          color: buttonColor,
+                        ),
                       ),
                     ],
                   ),
@@ -143,7 +176,10 @@ class PartRegisterPage extends StatelessWidget {
                       "location": location.text.trim(),
                     };
                     Get.dialog(
-                      Center(child: CircularProgressIndicator()),
+                      Center(
+                          child: CircularProgressIndicator(
+                        color: buttonColor,
+                      )),
                       barrierDismissible: false,
                     );
                     final success = await controller.createParts(data);
@@ -163,7 +199,7 @@ class PartRegisterPage extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: containerColor,
+                    color: buttonColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Center(
@@ -241,7 +277,7 @@ class CustomTextField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: containerColor),
+            borderSide: BorderSide(color: buttonColor),
           ),
         ),
       ),

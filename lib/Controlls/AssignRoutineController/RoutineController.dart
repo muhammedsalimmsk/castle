@@ -31,7 +31,7 @@ class AssignRoutineController extends GetxController {
   RxList<TaskDetail> taskDetails = <TaskDetail>[].obs;
   final RxString selectedStatus = ''.obs;
   EquipmentModel equipmentModel = EquipmentModel();
-  RxList<EquipmentDetails> equipmentDetail = <EquipmentDetails>[].obs;
+  RxList<EquipmentDetailData> equipmentDetail = <EquipmentDetailData>[].obs;
   final TextEditingController notesController = TextEditingController();
 
   int taskPage = 1;

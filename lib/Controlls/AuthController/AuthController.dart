@@ -63,6 +63,12 @@ class AuthController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
           );
           return;
+        } else if (responseBody['error'] == "Invalid credentials") {
+          Get.snackbar(
+            "Error",
+            "Invalid Credentials",
+            snackPosition: SnackPosition.BOTTOM,
+          );
         }
       }
     } catch (e) {

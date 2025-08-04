@@ -11,7 +11,7 @@ class EquipmentDetailsPage extends StatelessWidget {
   final String equipmentId;
   final String modelNumber;
   final String serialNumber;
-  final String manufacturer;
+  final String category;
   final DateTime installationDate;
   final DateTime warrantyExpiry;
   final String location;
@@ -22,7 +22,7 @@ class EquipmentDetailsPage extends StatelessWidget {
     required this.name,
     required this.modelNumber,
     required this.serialNumber,
-    required this.manufacturer,
+    required this.category,
     required this.installationDate,
     required this.warrantyExpiry,
     required this.location,
@@ -76,7 +76,7 @@ class EquipmentDetailsPage extends StatelessWidget {
             ),
             SizedBox(height: 24),
             _buildDetailItem("Serial Number", serialNumber),
-            _buildDetailItem("Manufacturer", manufacturer),
+            _buildDetailItem("Category", category),
             _buildDetailItem("Installation Date", formatDate(installationDate)),
             _buildDetailItem("Warranty Expiry", formatDate(warrantyExpiry)),
             _buildDetailItem("Location", location),

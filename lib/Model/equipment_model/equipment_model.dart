@@ -3,7 +3,7 @@ import 'meta.dart';
 
 class EquipmentModel {
   bool? success;
-  List<EquipmentDetails>? data;
+  List<EquipmentDetailData>? data;
   Meta? meta;
 
   EquipmentModel({this.success, this.data, this.meta});
@@ -12,7 +12,7 @@ class EquipmentModel {
     return EquipmentModel(
       success: json['success'] as bool?,
       data: (json['data'] as List<dynamic>?)
-          ?.map((e) => EquipmentDetails.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => EquipmentDetailData.fromJson(e as Map<String, dynamic>))
           .toList(),
       meta: json['meta'] == null
           ? null

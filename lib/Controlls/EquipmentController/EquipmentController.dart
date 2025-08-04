@@ -23,7 +23,7 @@ class EquipmentController extends GetxController {
   EquipmentModel equipmentModel = EquipmentModel();
   SubCategoryModel subCategoryModel = SubCategoryModel();
   RxList<SubCategoryData> subCatData = <SubCategoryData>[].obs;
-  RxList<EquipmentDetails> equipmentDetail = <EquipmentDetails>[].obs;
+  RxList<EquipmentDetailData> equipmentDetail = <EquipmentDetailData>[].obs;
   EquipmentTypeListModel dataList = EquipmentTypeListModel();
   RxList<EquipmentType> equipType = <EquipmentType>[].obs;
   var selectedEquipmentTypeName = ''.obs;
@@ -227,7 +227,7 @@ class EquipmentController extends GetxController {
     final endpoint = '/api/v1/admin/equipment';
     final data = {
       "name": nameController.text,
-      "model": modelController.text,
+      "modelNumber": modelController.text,
       "serialNumber": serialNumberController.text,
       "manufacturer": manufacturerController.text,
       "installationDate":
@@ -251,6 +251,7 @@ class EquipmentController extends GetxController {
         print('successfully');
         resetForm();
         await getEquipment();
+        await getEquipmentDetail("admin");
         controller.dispose();
         Get.back();
         Get.back();
@@ -280,7 +281,7 @@ class EquipmentController extends GetxController {
     }
   }
 
-  Future<List<EquipmentDetails>?> getEquipmentDetail(String role) async {
+  Future<List<EquipmentDetailData>?> getEquipmentDetail(String role) async {
     final endpoint = '/api/v1/$role/equipment';
     try {
       print(endpoint);

@@ -23,7 +23,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
 
   String role = userDetailModel!.data!.role!.toLowerCase();
 
-  Future<List<EquipmentDetails>?>? _equipmentFuture;
+  Future<List<EquipmentDetailData>?>? _equipmentFuture;
   @override
   void initState() {
     // TODO: implement initState
@@ -170,6 +170,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                       itemCount: equipmentList.length,
                       itemBuilder: (context, index) {
                         final datas = equipmentList[index];
+
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: InkWell(
@@ -178,10 +179,10 @@ class _EquipmentPageState extends State<EquipmentPage> {
                                 name: datas.name!,
                                 modelNumber: datas.modelNumber!,
                                 serialNumber: datas.serialNumber!,
-                                manufacturer: datas.manufacturer!,
+                                category: datas.category!.name!,
                                 installationDate: datas.installationDate!,
                                 warrantyExpiry: datas.warrantyExpiry!,
-                                location: datas.location!,
+                                location: datas.locationRemarks ?? "N/A",
                                 isActive: datas.isActive!,
                                 equipmentId: datas.id!,
                               ));
@@ -204,7 +205,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                                   datas.name!,
                                   style: TextStyle(color: containerColor),
                                 ),
-                                subtitle: Text(datas.modelNumber ?? "N/A"),
+                                subtitle: Text(datas.serialNumber ?? "N/A"),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

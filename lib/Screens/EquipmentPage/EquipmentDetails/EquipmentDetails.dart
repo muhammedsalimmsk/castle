@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 class EquipmentDetailsPage extends StatelessWidget {
   final String name;
   final String equipmentId;
-  final String model;
+  final String modelNumber;
   final String serialNumber;
   final String manufacturer;
   final DateTime installationDate;
@@ -20,7 +20,7 @@ class EquipmentDetailsPage extends StatelessWidget {
   EquipmentDetailsPage({
     super.key,
     required this.name,
-    required this.model,
+    required this.modelNumber,
     required this.serialNumber,
     required this.manufacturer,
     required this.installationDate,
@@ -71,7 +71,7 @@ class EquipmentDetailsPage extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              model,
+              modelNumber,
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
             SizedBox(height: 24),

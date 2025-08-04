@@ -1,17 +1,15 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
-import 'package:castle/Model/equipment_model/datum.dart';
+
 import 'package:castle/Screens/EquipmentPage/EquipmentDetails/ClientAddPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentDetails/EquipmentDetails.dart';
-import 'package:castle/Screens/EquipmentPage/NewEquipments.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-
-import '../../Model/equipment_model/equipment_model.dart';
+import '../../Model/equipment_model/datum.dart';
 
 class EquipmentPage extends StatefulWidget {
   EquipmentPage({super.key});
@@ -26,7 +24,6 @@ class _EquipmentPageState extends State<EquipmentPage> {
   String role = userDetailModel!.data!.role!.toLowerCase();
 
   Future<List<EquipmentDetails>?>? _equipmentFuture;
-  // Make sure this returns Future<List<EquipmentModel>>
   @override
   void initState() {
     // TODO: implement initState
@@ -179,7 +176,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                             onTap: () {
                               Get.to(EquipmentDetailsPage(
                                 name: datas.name!,
-                                model: datas.model!,
+                                modelNumber: datas.modelNumber!,
                                 serialNumber: datas.serialNumber!,
                                 manufacturer: datas.manufacturer!,
                                 installationDate: datas.installationDate!,
@@ -207,7 +204,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                                   datas.name!,
                                   style: TextStyle(color: containerColor),
                                 ),
-                                subtitle: Text(datas.model!),
+                                subtitle: Text(datas.modelNumber ?? "N/A"),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

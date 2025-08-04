@@ -6,7 +6,7 @@ import 'specifications.dart';
 class EquipmentDetails {
   String? id;
   String? name;
-  String? model;
+  String? modelNumber;
   String? serialNumber;
   String? manufacturer;
   DateTime? installationDate;
@@ -28,7 +28,7 @@ class EquipmentDetails {
   EquipmentDetails({
     this.id,
     this.name,
-    this.model,
+    this.modelNumber,
     this.serialNumber,
     this.manufacturer,
     this.installationDate,
@@ -52,7 +52,7 @@ class EquipmentDetails {
       EquipmentDetails(
         id: json['id'] as String?,
         name: json['name'] as String?,
-        model: json['model'] as String?,
+        modelNumber: json['modelNumberNumber'] as String?,
         serialNumber: json['serialNumber'] as String?,
         manufacturer: json['manufacturer'] as String?,
         installationDate: json['installationDate'] == null
@@ -92,7 +92,7 @@ class EquipmentDetails {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'model': model,
+        'modelNumberNumber': modelNumber,
         'serialNumber': serialNumber,
         'manufacturer': manufacturer,
         'installationDate': installationDate?.toIso8601String(),

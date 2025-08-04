@@ -5,6 +5,10 @@ import 'package:castle/Model/equipment_category_model/datum.dart';
 import 'package:castle/Model/equipment_category_model/equipment_category_model.dart';
 import 'package:castle/Model/equipment_model/datum.dart';
 import 'package:castle/Model/equipment_model/equipment_model.dart';
+import 'package:castle/Model/equipment_type_list_model/datum.dart';
+import 'package:castle/Model/equipment_type_list_model/equipment_type_list_model.dart';
+import 'package:castle/Model/sub_category_model/datum.dart';
+import 'package:castle/Model/sub_category_model/sub_category_model.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +21,30 @@ class EquipmentController extends GetxController {
   ClientRegisterController controller = Get.put(ClientRegisterController());
   EquipmentCategoryModel model = EquipmentCategoryModel();
   EquipmentModel equipmentModel = EquipmentModel();
+  SubCategoryModel subCategoryModel = SubCategoryModel();
+  RxList<SubCategoryData> subCatData = <SubCategoryData>[].obs;
   RxList<EquipmentDetails> equipmentDetail = <EquipmentDetails>[].obs;
+  EquipmentTypeListModel dataList = EquipmentTypeListModel();
+  RxList<EquipmentType> equipType = <EquipmentType>[].obs;
+  var selectedEquipmentTypeName = ''.obs;
+  TextEditingController locationRemarksController = TextEditingController();
+  var equipmentTypeId = ''.obs;
+  var locationType = ''.obs;
   RxList<EquipCat> catList = <EquipCat>[].obs;
   final clientData = <ClientData>[].obs;
   final searchQuery = ''.obs;
   final isFetchingClients = false.obs;
   int page = 1;
+  String? lastSearch;
+  String? lastCategoryId;
+  RxString selectedSubCategoryName = ''.obs;
+  var isSubCategoryLoading = false.obs;
   bool hasMoreClients = true;
   final selectedClientName = ''.obs;
   ClientModel clientModel = ClientModel();
   RxBool isLoading = false.obs;
-
+  RxBool isLoadingMore = false.obs;
+  RxBool hasMoreData = true.obs;
   final nameController = TextEditingController();
   final modelController = TextEditingController();
   final serialNumberController = TextEditingController();
@@ -35,8 +52,10 @@ class EquipmentController extends GetxController {
   final locationController = TextEditingController();
   final clientIdController = TextEditingController();
   final categoryId = ''.obs;
+  RxString? subCategoryId = "".obs;
   final specificationsController = TextEditingController();
-
+  int currentPage = 1;
+  final int limit = 10;
   final installationDate = Rxn<DateTime>();
   final warrantyExpiry = Rxn<DateTime>();
 
@@ -62,6 +81,19 @@ class EquipmentController extends GetxController {
     isOpen.value = !isOpen.value;
   }
 
+  Future<void> getEquipmentTypes() async {
+    try {
+      final response = await _apiService
+          .getRequest('/api/v1/admin/equipment-types', bearerToken: token);
+      if (response.isOk) {
+        final model = EquipmentTypeListModel.fromJson(response.body);
+        equipType.value = model.data ?? [];
+      }
+    } catch (e) {
+      print('Error loading equipment types: $e');
+    }
+  }
+
   Future getCategory() async {
     final endpoint = '/api/v1/admin/equipment-categories';
     try {
@@ -77,6 +109,62 @@ class EquipmentController extends GetxController {
     } catch (e) {
       print(e);
       rethrow;
+    }
+  }
+
+  Future<void> getSubCategories({
+    String? search,
+    String? categoryId,
+    bool isLoadMore = false,
+  }) async {
+    if (!isLoadMore) {
+      subCatData.clear();
+      currentPage = 1;
+      hasMoreData.value = true;
+      isSubCategoryLoading.value = true; // 👈 Start loading for dialog/search
+    }
+
+    if (!hasMoreData.value) return;
+
+    final baseUrl = '/api/v1/admin/equipment-subcategories';
+
+    final queryParams = <String, String>{
+      'page': currentPage.toString(),
+      'limit': limit.toString(),
+      if (search != null && search.isNotEmpty) 'search': search,
+      if (categoryId != null && categoryId.isNotEmpty) 'categoryId': categoryId,
+    };
+
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+
+    try {
+      if (isLoadMore) {
+        isLoadingMore.value = true; // 👈 only for list bottom loader
+      }
+
+      final response =
+          await _apiService.getRequest(uri.toString(), bearerToken: token);
+
+      if (response.isOk) {
+        final model = SubCategoryModel.fromJson(response.body);
+        final newItems = model.data ?? [];
+
+        if (newItems.length < limit) {
+          hasMoreData.value = false;
+        }
+
+        subCatData.addAll(newItems);
+        currentPage++;
+        lastSearch = search;
+        lastCategoryId = categoryId;
+      } else {
+        hasMoreData.value = false;
+      }
+    } catch (e) {
+      print('Error fetching subcategories: $e');
+    } finally {
+      if (!isLoadMore) isSubCategoryLoading.value = false;
+      isLoadingMore.value = false;
     }
   }
 
@@ -146,12 +234,15 @@ class EquipmentController extends GetxController {
           installationDate.value?.toIso8601String().split('T').first,
       "warrantyExpiry":
           warrantyExpiry.value?.toIso8601String().split('T').first,
-      "location": locationController.text,
-      "specifications": {for (var spec in specifications) spec: ""},
+      "locationRemarks": locationRemarksController.text,
+      'locationType': locationType.value.toUpperCase(),
+      "categoryId": categoryId.value,
+      "equipmentTypeId": equipmentTypeId.value,
+      "subCategoryId": subCategoryId!.value,
       "clientId": clientId ?? clientIdController.text,
-      "categoryId": categoryId.value
     };
     try {
+      print(data);
       print(clientId);
       final response =
           await _apiService.postRequest(endpoint, data, bearerToken: token);
@@ -255,6 +346,7 @@ class EquipmentController extends GetxController {
     await getEquipment();
     if (userDetailModel!.data!.role == "ADMIN") {
       await getClientList();
+      await getEquipmentTypes();
     }
   }
 }

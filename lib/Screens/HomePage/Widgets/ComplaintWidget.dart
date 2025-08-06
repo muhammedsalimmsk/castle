@@ -6,14 +6,17 @@ class ComplaintWidget extends StatelessWidget {
   final String title;
   final String subtitle;
   final String paragraph;
+  final String date;
+  final String location;
 
-  const ComplaintWidget({
-    super.key,
-    required this.imagePath,
-    required this.title,
-    required this.paragraph,
-    required this.subtitle,
-  });
+  const ComplaintWidget(
+      {super.key,
+      required this.imagePath,
+      required this.title,
+      required this.paragraph,
+      required this.subtitle,
+      required this.location,
+      required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class ComplaintWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
@@ -97,7 +100,7 @@ class ComplaintWidget extends StatelessWidget {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              "New York",
+                              location,
                               style: TextStyle(
                                 fontSize: 12,
                               ),
@@ -112,7 +115,7 @@ class ComplaintWidget extends StatelessWidget {
                             ),
                             SizedBox(width: 4),
                             Text(
-                              "Jan 23, 2025",
+                              date,
                               style: TextStyle(
                                 fontSize: 12,
                               ),

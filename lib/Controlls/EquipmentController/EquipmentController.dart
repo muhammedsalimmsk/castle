@@ -1,3 +1,4 @@
+import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
 import 'package:castle/Model/client_model/datum.dart';
@@ -79,6 +80,54 @@ class EquipmentController extends GetxController {
 
   void toggle() {
     isOpen.value = !isOpen.value;
+  }
+
+  Future<void> updateEquipment(String equipId) async {
+    final data = {
+      "name": nameController.text,
+      "model": modelController.text,
+      "serialNumber": serialNumberController.text,
+      // "manufacturer": manufacturerController.text,
+      "installationDate": installationDate.value?.toIso8601String(),
+      "warrantyExpiry": warrantyExpiry.value?.toIso8601String(),
+      "equipmentTypeId": equipmentTypeId.value,
+      "locationType": locationType.value,
+      "locationRemarks": locationRemarksController.text,
+      "categoryId": categoryId.value,
+      "subCategoryId": subCategoryId?.value,
+    };
+
+    final endpoint = "/api/v1/admin/equipment/$equipId";
+    try {
+      // Show loader
+      Get.dialog(
+        Center(child: CircularProgressIndicator(color: buttonColor)),
+        barrierDismissible: false,
+      );
+
+      final response = await _apiService.patchRequest(
+        endpoint,
+        data: data,
+        bearerToken: token,
+      );
+
+      if (response.isOk) {
+        await getEquipment(); // refresh list
+        Get.back(); // Close the loading dialog
+        Get.back(); // Go back to previous screen
+        Get.snackbar("Updated", "Updated Successfully",
+            backgroundColor: Colors.green, colorText: Colors.white);
+      } else {
+        Get.back(); // Close the dialog
+        Get.snackbar("Error", "Update failed",
+            backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e) {
+      Get.back(); // Ensure dialog is closed on error
+      Get.snackbar("Error", "Something went wrong",
+          backgroundColor: Colors.red, colorText: Colors.white);
+      rethrow;
+    }
   }
 
   Future<void> getEquipmentTypes() async {

@@ -176,15 +176,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                           child: InkWell(
                             onTap: () {
                               Get.to(EquipmentDetailsPage(
-                                name: datas.name!,
-                                modelNumber: datas.modelNumber!,
-                                serialNumber: datas.serialNumber!,
-                                category: datas.category!.name!,
-                                installationDate: datas.installationDate!,
-                                warrantyExpiry: datas.warrantyExpiry!,
-                                location: datas.locationRemarks ?? "N/A",
-                                isActive: datas.isActive!,
-                                equipmentId: datas.id!,
+                                equipment: datas,
                               ));
                             },
                             child: Container(

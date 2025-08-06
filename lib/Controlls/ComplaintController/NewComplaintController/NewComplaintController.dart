@@ -38,7 +38,8 @@ class NewComplaintController extends GetxController {
           await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
-        await controller.getEquipment();
+
+        await controller.getEquipmentDetail(role);
         Get.back();
 
         Get.snackbar("Success", "Successfully registered complaint",

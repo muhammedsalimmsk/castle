@@ -2,7 +2,6 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
 import 'package:castle/Model/client_model/datum.dart';
-import 'package:castle/Model/equipment_category_model/datum.dart';
 import 'package:castle/Model/equipment_category_model/equipment_category_model.dart';
 import 'package:castle/Model/equipment_model/datum.dart';
 import 'package:castle/Model/equipment_model/equipment_model.dart';
@@ -13,7 +12,6 @@ import 'package:castle/Model/sub_category_model/sub_category_model.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-
 import '../../Model/client_model/client_model.dart';
 
 class EquipmentController extends GetxController {

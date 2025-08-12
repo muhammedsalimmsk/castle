@@ -12,9 +12,17 @@ class TopWidgetOfHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalTasks = data?.overview?.complaints?.total ?? 0;
-    final runningTaskPercent = totalTasks > 0 ? 0.45 : 0.0;
+    final completedTask = data?.overview?.complaints?.closed ?? 0;
+    final runningTask = data?.overview?.complaints?.inProgress ?? 0;
+
+// Prevent division by zero
+    final runningTaskPercent =
+        totalTasks > 0 ? (runningTask / totalTasks) : 0.0;
+    final taskPercent = totalTasks > 100 ? (runningTask / totalTasks) : 0.0;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -33,6 +41,7 @@ class TopWidgetOfHomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
@@ -42,9 +51,8 @@ class TopWidgetOfHomePage extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
                     Text(
-                      "$totalTasks",
+                      "$runningTask",
                       style: const TextStyle(
                           color: backgroundColor,
                           fontWeight: FontWeight.bold,
@@ -52,50 +60,58 @@ class TopWidgetOfHomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    CircularPercentIndicator(
-                      radius: 20,
-                      lineWidth: 4.0,
-                      percent: runningTaskPercent,
-                      center: const Text(
-                        "45%",
-                        style: TextStyle(color: backgroundColor, fontSize: 12),
+                Padding(
+                  padding: const EdgeInsets.only(right: 30),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircularPercentIndicator(
+                        radius: 20,
+                        lineWidth: 4.0,
+                        percent: runningTaskPercent,
+                        center: Text(
+                          taskPercent.toString(),
+                          style: TextStyle(
+                            color: backgroundColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                        progressColor: buttonColor,
+                        backgroundColor: shadeColor,
                       ),
-                      progressColor: buttonColor,
-                      backgroundColor: shadeColor,
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "$totalTasks",
-                          style: const TextStyle(
-                              color: backgroundColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12),
-                        ),
-                        const Text(
-                          "Tasks",
-                          style: TextStyle(color: shadeColor, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ],
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            totalTasks.toString(),
+                            style: TextStyle(
+                                color: backgroundColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            "Tasks",
+                            style: TextStyle(color: shadeColor, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 10),
-        const SizedBox(
-          height: 180,
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: ActivityChart(),
-          ),
-        ),
+        // const SizedBox(
+        //   height: 180,
+        //   child: Padding(
+        //     padding: EdgeInsets.all(8.0),
+        //     child: ActivityChart(),
+        //   ),
+        // ),
       ],
     );
   }

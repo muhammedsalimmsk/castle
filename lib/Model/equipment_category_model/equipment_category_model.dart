@@ -2,7 +2,7 @@ import 'datum.dart';
 
 class EquipmentCategoryModel {
   bool? success;
-  List<Datum>? data;
+  List<EquipCat>? data;
 
   EquipmentCategoryModel({this.success, this.data});
 
@@ -10,7 +10,7 @@ class EquipmentCategoryModel {
     return EquipmentCategoryModel(
       success: json['success'] as bool?,
       data: (json['data'] as List<dynamic>?)
-          ?.map((e) => Datum.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => EquipCat.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

@@ -304,7 +304,27 @@ class ComplaintDetailsPage extends StatelessWidget {
                         ),
                       ),
                     ],
-                  )
+                  ),
+                userDetailModel!.data!.role == "ADMIN" &&
+                        complaint.assignedWorkers!.isEmpty
+                    ? GestureDetector(
+                        onTap: () {
+                          Get.to(AssignWorkPage(complaintId: complaintId));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: buttonColor),
+                          child: Center(
+                              child: Text(
+                            "Assign Complaint",
+                            style: TextStyle(color: backgroundColor),
+                          )),
+                        ),
+                      )
+                    : SizedBox.shrink()
               ],
             ),
           );

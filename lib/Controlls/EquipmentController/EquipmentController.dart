@@ -13,6 +13,7 @@ import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../Model/client_model/client_model.dart';
+import '../../Model/equipment_category_model/datum.dart';
 
 class EquipmentController extends GetxController {
   var selectedValue = "Name".obs;

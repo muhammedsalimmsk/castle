@@ -1,14 +1,14 @@
 import 'count.dart';
 import 'sub_category.dart';
 
-class Datum {
+class EquipCat {
   String? id;
   String? name;
   String? description;
   Count? count;
   List<SubCategory>? subCategories;
 
-  Datum({
+  EquipCat({
     this.id,
     this.name,
     this.description,
@@ -16,7 +16,7 @@ class Datum {
     this.subCategories,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory EquipCat.fromJson(Map<String, dynamic> json) => EquipCat(
         id: json['id'] as String?,
         name: json['name'] as String?,
         description: json['description'] as String?,

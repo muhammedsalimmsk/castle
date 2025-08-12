@@ -1,4 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Screens/HomePage/ClientHomePage.dart';
+import 'package:castle/Screens/HomePage/WorkerHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
 import 'package:castle/Screens/LoginPage/LoginPage.dart';
@@ -14,7 +16,13 @@ class SplashScreen extends StatelessWidget {
     bool isTokenValid = await checkTokenStatus();
     if (isTokenValid) {
       await controller.getProfile();
-      return HomePage();
+      if (userDetailModel?.data?.role == "CLIENT") {
+        return ClientHomePage();
+      } else if (userDetailModel?.data?.role == "WORKER") {
+        return WorkerHomePage();
+      } else {
+        return HomePage();
+      }
     } else {
       return LoginPage();
     }

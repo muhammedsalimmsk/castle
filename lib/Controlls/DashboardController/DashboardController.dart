@@ -22,6 +22,7 @@ class DashboardController extends GetxController {
       final response = await _apiService.getRequest(endpoint,
           bearerToken: token); // Your API call
       if (response.isOk) {
+        print(response.body);
         final data = DashboardModel.fromJson(response.body);
         dashboardData.value = data.data!;
       } else {

@@ -100,7 +100,7 @@ class HomePage extends StatelessWidget {
                                 .format(complaint.createdAt!),
                             title: complaint.title ?? "N/A",
                             paragraph: complaint.description ?? "",
-                            subtitle: complaint.teamLead ?? "N/A",
+                            subtitle: complaint.teamLead?.lastName ?? "N/A",
                           ),
                         );
                       },

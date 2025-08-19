@@ -1,3 +1,6 @@
+import 'package:castle/Model/complaint_detail_model/assigned_worker.dart';
+import 'package:castle/Model/complaint_detail_model/team_lead.dart';
+
 import 'client.dart';
 import 'equipment.dart';
 
@@ -21,7 +24,7 @@ class RecentComplaint {
   dynamic teamLeadId;
   Client? client;
   Equipment? equipment;
-  dynamic teamLead;
+  TeamLead? teamLead;
   List<dynamic>? assignedWorkers;
 
   RecentComplaint({
@@ -79,7 +82,7 @@ class RecentComplaint {
       equipment: json['equipment'] == null
           ? null
           : Equipment.fromJson(json['equipment'] as Map<String, dynamic>),
-      teamLead: json['teamLead'] as dynamic,
+      teamLead: json['teamLead']==null?null:TeamLead.fromJson(json['teamLead'] as Map<String, dynamic>),
       assignedWorkers: json['assignedWorkers'] as List<dynamic>?,
     );
   }
@@ -104,7 +107,7 @@ class RecentComplaint {
         'teamLeadId': teamLeadId,
         'client': client?.toJson(),
         'equipment': equipment?.toJson(),
-        'teamLead': teamLead,
+        'teamLead': teamLead?.toJson(),
         'assignedWorkers': assignedWorkers,
       };
 }

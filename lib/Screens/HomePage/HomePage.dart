@@ -1,6 +1,8 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
+import 'package:castle/Model/complaint_detail_model/complaint_detail_model.dart';
+import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
@@ -94,13 +96,19 @@ class HomePage extends StatelessWidget {
                         return Padding(
                           // Added padding around complaint widgets
                           padding: const EdgeInsets.only(right: 12.0),
-                          child: ComplaintWidget(
-                            location: complaint.client!.clientName ?? "N/A",
-                            date: DateFormat('MMM dd, yyyy')
-                                .format(complaint.createdAt!),
-                            title: complaint.title ?? "N/A",
-                            paragraph: complaint.description ?? "",
-                            subtitle: complaint.teamLead?.lastName ?? "N/A",
+                          child: GestureDetector(
+                            onTap: (){
+
+                              Get.to(ComplaintDetailsPage(complaintId: complaint.id!,));
+                            },
+                            child: ComplaintWidget(
+                              location: complaint.client!.clientName ?? "N/A",
+                              date: DateFormat('MMM dd, yyyy')
+                                  .format(complaint.createdAt!),
+                              title: complaint.title ?? "N/A",
+                              paragraph: complaint.description ?? "",
+                              subtitle: complaint.teamLead?.lastName ?? "N/A",
+                            ),
                           ),
                         );
                       },

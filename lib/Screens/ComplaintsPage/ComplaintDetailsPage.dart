@@ -19,7 +19,7 @@ import 'Widgets/StatusUpdateDialogue.dart';
 
 class ComplaintDetailsPage extends StatelessWidget {
   final String complaintId;
-  final ComplaintController complaintController = Get.find();
+  final ComplaintController complaintController = Get.put(ComplaintController());
 
   ComplaintDetailsPage({super.key, required this.complaintId});
 

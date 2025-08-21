@@ -134,6 +134,7 @@ class EquipmentController extends GetxController {
       final response = await _apiService
           .getRequest('/api/v1/admin/equipment-types', bearerToken: token);
       if (response.isOk) {
+        print(response.body);
         final model = EquipmentTypeListModel.fromJson(response.body);
         equipType.value = model.data ?? [];
       }

@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
       final totalClients = data.overview?.clients?.total.toString() ?? "N/A";
       final totalEquipments =
           data.overview?.equipment?.total.toString() ?? "N/A";
-
+print(token);
       return Scaffold(
         drawer: CustomDrawer(),
         appBar: CustomAppBar(),

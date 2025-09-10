@@ -6,7 +6,7 @@ import 'package:get/get_connect/connect.dart';
 class ApiService extends GetConnect {
   ApiService() {
     // Set your base URL
-    baseUrl = "https://api-tekcastle.onrender.com";
+    baseUrl = "https://api-tekcastle-9360.onrender.com";
   }
   Future<Response> getRequest(String endpoint, {String? bearerToken}) async {
     try {

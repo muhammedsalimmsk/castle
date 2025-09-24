@@ -434,6 +434,27 @@ class ComplaintDetailsPage extends StatelessWidget {
                       foregroundColor: Colors.white,
                     ),
                   ),
+                GestureDetector(
+                  onTap: () {
+                    Get.dialog(StatusUpdateDialog(
+                      complaintId: complaintId,
+                    ));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: buttonColor,
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Update Status", // 🔥 changes here
+                        style: TextStyle(color: backgroundColor),
+                      ),
+                    ),
+                  ),
+                ),
                 if (combinedTimeline.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

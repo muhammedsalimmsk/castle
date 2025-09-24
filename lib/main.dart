@@ -70,11 +70,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       theme: ThemeData(
         primaryColor: backgroundColor,
-        textTheme: GoogleFonts.plusJakartaSansTextTheme()
+        textTheme: GoogleFonts.poppinsTextTheme()
             .copyWith(
-              bodyLarge: GoogleFonts.plusJakartaSans(),
-              bodyMedium: GoogleFonts.plusJakartaSans(),
-              bodySmall: GoogleFonts.plusJakartaSans(),
+              bodyLarge: GoogleFonts.poppins(),
+              bodyMedium: GoogleFonts.poppins(),
+              bodySmall: GoogleFonts.poppins(),
             )
             .apply(
               bodyColor: containerColor, // Set text color

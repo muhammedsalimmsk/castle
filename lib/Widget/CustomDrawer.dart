@@ -7,6 +7,7 @@ import 'package:castle/Screens/PartsRequestPagee/PartsRequestPage.dart';
 import 'package:castle/Screens/RoutineScreens/WorkerRoutinePage.dart';
 import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../Colors/Colors.dart';
@@ -76,7 +77,12 @@ class CustomDrawer extends StatelessWidget {
                   Obx(() => DrawerListTile(
                         iSSelected: overviewSelected.value,
                         title: "Overview",
-                        icon: Icons.dashboard_outlined,
+                        iconWidget: Image.asset(
+                          'assets/icons/category-2.png',
+                          width: 24,
+                          height: 24,
+                          // optional
+                        ),
                         onTap: () {
                           resetSelection();
                           overviewSelected.value = true;
@@ -86,7 +92,13 @@ class CustomDrawer extends StatelessWidget {
                   Obx(() => DrawerListTile(
                         iSSelected: equipmentSelected.value,
                         title: "Equipment",
-                        icon: Icons.build,
+                        iconWidget: Image.asset(
+                          'assets/icons/equipment.png',
+                          width: 24,
+                          height: 24,
+                          color: Colors.black,
+                          // optional
+                        ),
                         onTap: () {
                           resetSelection();
                           equipmentSelected.value = true;
@@ -96,7 +108,12 @@ class CustomDrawer extends StatelessWidget {
                   Obx(() => DrawerListTile(
                         iSSelected: complaintsSelected.value,
                         title: "Complaints",
-                        icon: Icons.book_outlined,
+                        iconWidget: Image.asset(
+                          'assets/icons/book.png',
+                          width: 24,
+                          height: 24,
+                          // optional
+                        ),
                         onTap: () {
                           resetSelection();
                           complaintsSelected.value = true;
@@ -111,7 +128,12 @@ class CustomDrawer extends StatelessWidget {
                       ? Obx(() => DrawerListTile(
                             iSSelected: routineSelected.value,
                             title: "Routine",
-                            icon: Icons.repeat,
+                            iconWidget: Image.asset(
+                              'assets/icons/routing.png',
+                              width: 24,
+                              height: 24,
+                              // optional
+                            ),
                             onTap: () {
                               resetSelection();
                               routineSelected.value = true;
@@ -285,17 +307,19 @@ class CustomDrawer extends StatelessWidget {
 
 class DrawerListTile extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final IconData? icon;
+  final Widget? iconWidget; // optional
+
   final VoidCallback onTap;
   final bool iSSelected;
 
-  const DrawerListTile({
-    super.key,
-    required this.title,
-    required this.icon,
-    required this.onTap,
-    required this.iSSelected,
-  });
+  const DrawerListTile(
+      {super.key,
+      required this.title,
+      this.icon,
+      required this.onTap,
+      required this.iSSelected,
+      this.iconWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -304,11 +328,12 @@ class DrawerListTile extends StatelessWidget {
       children: [
         Divider(),
         ListTile(
-          leading: Icon(
-            icon,
-            color: iSSelected ? containerColor : containerColor,
-            size: 25,
-          ),
+          leading: iconWidget ??
+              Icon(
+                icon,
+                color: iSSelected ? containerColor : containerColor,
+                size: 25,
+              ),
           title: Text(
             title,
             style: TextStyle(

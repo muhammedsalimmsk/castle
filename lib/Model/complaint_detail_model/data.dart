@@ -1,3 +1,6 @@
+import 'package:castle/Model/client_detail_model/client_detail_model.dart';
+import 'package:castle/Model/client_detail_model/data.dart';
+
 import 'assigned_worker.dart';
 import 'comment.dart';
 import 'equipment.dart';
@@ -19,7 +22,7 @@ class ComplaintDetailsData {
   dynamic rating;
   DateTime? createdAt;
   DateTime? updatedAt;
-  String? clientId;
+  ClientDetailsData? clientData;
   String? equipmentId;
   String? teamLeadId;
   Equipment? equipment;
@@ -44,7 +47,7 @@ class ComplaintDetailsData {
     this.rating,
     this.createdAt,
     this.updatedAt,
-    this.clientId,
+    this.clientData,
     this.equipmentId,
     this.teamLeadId,
     this.equipment,
@@ -81,7 +84,9 @@ class ComplaintDetailsData {
         updatedAt: json['updatedAt'] == null
             ? null
             : DateTime.parse(json['updatedAt'] as String),
-        clientId: json['clientId'] as String?,
+        clientData: json['client'] != null
+            ? ClientDetailsData.fromJson(json['client'])
+            : null,
         equipmentId: json['equipmentId'] as String?,
         teamLeadId: json['teamLeadId'] as String?,
         equipment: json['equipment'] == null
@@ -117,7 +122,7 @@ class ComplaintDetailsData {
         'rating': rating,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
-        'clientId': clientId,
+        'client': clientData?.toJson(),
         'equipmentId': equipmentId,
         'teamLeadId': teamLeadId,
         'equipment': equipment?.toJson(),

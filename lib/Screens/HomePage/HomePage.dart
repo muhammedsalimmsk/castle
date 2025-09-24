@@ -2,7 +2,10 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
 import 'package:castle/Model/complaint_detail_model/complaint_detail_model.dart';
+import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
+import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
+import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
@@ -36,7 +39,7 @@ class HomePage extends StatelessWidget {
       final totalClients = data.overview?.clients?.total.toString() ?? "N/A";
       final totalEquipments =
           data.overview?.equipment?.total.toString() ?? "N/A";
-print(token);
+      print(token);
       return Scaffold(
         drawer: CustomDrawer(),
         appBar: CustomAppBar(),
@@ -97,9 +100,10 @@ print(token);
                           // Added padding around complaint widgets
                           padding: const EdgeInsets.only(right: 12.0),
                           child: GestureDetector(
-                            onTap: (){
-
-                              Get.to(ComplaintDetailsPage(complaintId: complaint.id!,));
+                            onTap: () {
+                              Get.to(ComplaintDetailsPage(
+                                complaintId: complaint.id!,
+                              ));
                             },
                             child: ComplaintWidget(
                               location: complaint.client!.clientName ?? "N/A",
@@ -250,72 +254,82 @@ print(token);
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildStatCard(
-              icon: Icons.people_outline,
-              label: "Total Workers",
-              value: totalWorkers,
-            ),
+                icon: Icons.people_outline,
+                label: "Total Workers",
+                value: totalWorkers,
+                onTapFun: () {
+                  Get.to(WorkersPage());
+                }),
             const SizedBox(width: 12), // Spacing between cards
             _buildStatCard(
-              icon: Icons.business_center_outlined,
-              label: "Total Clients",
-              value: totalClients,
-              // Different color for variety
-            ),
+                icon: Icons.business_center_outlined,
+                label: "Total Clients",
+                value: totalClients,
+                onTapFun: () {
+                  Get.to(ClientPage());
+                }
+                // Different color for variety
+                ),
             const SizedBox(width: 12), // Spacing between cards
             _buildStatCard(
-              icon: Icons.build_circle_outlined,
-              label: "Total Equipment",
-              value: totalEquipments,
-            ),
+                icon: Icons.build_circle_outlined,
+                label: "Total Equipment",
+                value: totalEquipments,
+                onTapFun: () {
+                  Get.to(EquipmentPage());
+                }),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
+  Widget _buildStatCard(
+      {required IconData icon,
+      required String label,
+      required String value,
+      required GestureTapCallback onTapFun}) {
     return Expanded(
       // Ensures cards take available space and wrap if needed on smaller screens
-      child: Card(
-        elevation: 4.0, // Adds a subtle shadow
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0), // Rounded corners
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0), color: buttonColor),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, size: 36, color: backgroundColor),
-              const SizedBox(height: 10),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: containerColor,
+      child: InkWell(
+        onTap: onTapFun,
+        child: Card(
+          elevation: 4.0, // Adds a subtle shadow
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0), // Rounded corners
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0), color: buttonColor),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, size: 36, color: backgroundColor),
+                const SizedBox(height: 10),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: containerColor,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: backgroundColor,
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: backgroundColor,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2, // Allow label to wrap if long
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2, // Allow label to wrap if long
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

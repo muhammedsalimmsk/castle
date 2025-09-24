@@ -60,7 +60,7 @@ class ApiService extends GetConnect {
       } else {
         return await patch(
           endpoint,
-          null,
+          {},
           headers: headers,
         );
       }

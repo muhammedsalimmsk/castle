@@ -90,6 +90,7 @@ class ComplaintController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLoading2 = false.obs;
   RxBool isLoading3 = false.obs;
+  RxBool closeLoading = false.obs;
   RxList<ComplaintDetails> details = <ComplaintDetails>[].obs;
   int page = 1;
   int limit = 10;
@@ -434,6 +435,27 @@ class ComplaintController extends GetxController {
     } catch (e) {
       rethrow;
     } finally {}
+  }
+
+  Future closeComplaint(String complaintId) async {
+    final endpoint = "/api/v1/admin/complaints/$complaintId/close";
+    closeLoading.value = true;
+    try {
+      final response =
+          await _apiService.patchRequest(endpoint, bearerToken: token);
+      if (response.isOk) {
+        await getComplaint(role: "admin");
+        Get.back();
+        Get.back();
+      } else {
+        print(response.body);
+        Get.snackbar("Error", "Something error please try again later");
+      }
+    } catch (e) {
+      rethrow;
+    } finally {
+      closeLoading.value = false;
+    }
   }
 
   Future requestPart(data) async {

@@ -1,12 +1,15 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
+import 'package:castle/Screens/EquipmentPage/EquipmentCategoryPage/EquipmentCategoryPage.dart';
 
 import 'package:castle/Screens/EquipmentPage/EquipmentDetails/ClientAddPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentDetails/EquipmentDetails.dart';
+import 'package:castle/Screens/EquipmentPage/EquipmentTypePage/EquipmentTypePage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../Model/equipment_model/datum.dart';
@@ -22,6 +25,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
   final EquipmentController controller = Get.put(EquipmentController());
 
   String role = userDetailModel!.data!.role!.toLowerCase();
+  final _key = GlobalKey<ExpandableFabState>();
 
   Future<List<EquipmentDetailData>?>? _equipmentFuture;
   @override
@@ -186,7 +190,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                                 border: Border.all(color: buttonColor),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Color(0xfff0431a4).withOpacity(0.25),
+                                    color: Color(0xfff0431a4).withOpacity(0.20),
                                     spreadRadius: 0.8,
                                     blurRadius: 3,
                                   ),
@@ -226,12 +230,88 @@ class _EquipmentPageState extends State<EquipmentPage> {
         ),
       ),
       floatingActionButton: userDetailModel!.data!.role == "ADMIN"
-          ? FloatingActionButton.extended(
-              onPressed: () => Get.to(ClientAddPage()),
-              label: const Icon(Icons.add, color: backgroundColor),
-              backgroundColor: buttonColor,
+          ? ExpandableFab(
+              openButtonBuilder: RotateFloatingActionButtonBuilder(
+                child: const Icon(Icons.menu),
+                fabSize: ExpandableFabSize.regular,
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+              ),
+              closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                child: const Icon(Icons.close),
+                fabSize: ExpandableFabSize.small,
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                shape: const CircleBorder(),
+              ),
+              key: _key,
+              type: ExpandableFabType.up,
+              childrenAnimation: ExpandableFabAnimation.none,
+              distance: 70,
+              overlayStyle: ExpandableFabOverlayStyle(
+                color: Colors.white.withOpacity(0.9),
+              ),
+              children: [
+                Row(
+                  children: [
+                    Text('New Equipment',
+                        style: TextStyle(
+                            color: buttonColor, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 20),
+                    FloatingActionButton(
+                      backgroundColor: buttonColor,
+                      heroTag: "f12",
+                      onPressed: () => Get.to(ClientAddPage()),
+                      child: Image.asset(
+                        'assets/icons/equipment.png',
+                        width: 24,
+                        height: 24,
+                        color: Colors.white,
+                        // optional
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Categories',
+                      style: TextStyle(
+                          color: buttonColor, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 20),
+                    FloatingActionButton(
+                      foregroundColor: Colors.white,
+                      backgroundColor: buttonColor,
+                      heroTag: ":f14",
+                      onPressed: () {
+                        Get.to(EquipmentCategoryPage());
+                      },
+                      child: Icon(Icons.category),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('Equipment Type',
+                        style: TextStyle(
+                            color: buttonColor, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 20),
+                    FloatingActionButton(
+                      foregroundColor: Colors.white,
+                      backgroundColor: buttonColor,
+                      heroTag: ":f34",
+                      onPressed: () {
+                        Get.to(EquipmentTypePage());
+                      },
+                      child: Icon(Icons.type_specimen),
+                    ),
+                  ],
+                ),
+              ],
             )
-          : const SizedBox.shrink(),
+          : SizedBox.shrink(),
+      floatingActionButtonLocation: ExpandableFab.location,
     );
   }
 }

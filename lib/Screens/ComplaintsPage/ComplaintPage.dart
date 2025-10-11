@@ -109,110 +109,121 @@ class ComplaintPage extends StatelessWidget {
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.72,
-              child: Obx(() {
-                if (complaintController.details.isEmpty &&
-                    !complaintController.isRefresh) {
-                  // Show "No complaint here" when list is empty and not refreshing
-                  return Center(
-                    child: Text(
-                      "No complaint here",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  );
-                }
-
-                // If data is there, show list
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    complaintController.hasMore = true;
-                    complaintController.isRefresh = true;
-                    await complaintController.getComplaint(
-                      role: userDetailModel!.data!.role!.toLowerCase(),
+              child: GetBuilder<ComplaintController>(
+                builder: (complaintController) {
+                  if (complaintController.isLoading.value) {
+                    // Show loading while fetching data
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
-                    complaintController.isRefresh = false;
-                  },
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        color: buttonColor,
+                  }
+
+                  if (complaintController.details.isEmpty &&
+                      !complaintController.isRefresh) {
+                    // Show message when list is empty and not refreshing
+                    return const Center(
+                      child: Text(
+                        "No complaint here",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    );
+                  }
+
+                  // When data is available
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      complaintController.hasMore = true;
+                      complaintController.isRefresh = true;
+                      await complaintController.getComplaint(
+                        role: userDetailModel!.data!.role!.toLowerCase(),
                       );
+                      complaintController.isRefresh = false;
+                      complaintController.update(); // update UI after refresh
                     },
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: complaintController.scrollController,
-                    itemCount: complaintController.details.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index < complaintController.details.length) {
-                        var datas = complaintController.details[index];
-                        return GestureDetector(
-                          onTap: () async {
-                            await workerController.getWorkers();
-                            Get.to(ComplaintDetailsPage(
-                                complaintId:
-                                    complaintController.details[index].id!));
-                          },
-                          child: ListTile(
-                            title: Text(
-                              datas.equipment!.name!,
-                              style: TextStyle(
-                                color: containerColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(datas.title!),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(datas.priority!,
-                                        style: TextStyle(color: buttonColor)),
-                                    Text(datas.status!),
-                                  ],
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) =>
+                          Divider(color: buttonColor),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      controller: complaintController.scrollController,
+                      itemCount: complaintController.details.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < complaintController.details.length) {
+                          var datas = complaintController.details[index];
+                          return GestureDetector(
+                            onTap: () async {
+                              Get.to(
+                                ComplaintDetailsPage(
+                                  complaintId: datas.id!,
                                 ),
-                                SizedBox(width: 10),
-                                if (userDetailModel!.data!.role == "ADMIN")
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                      color: datas.status == "OPEN"
-                                          ? buttonColor
-                                          : Colors.green.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      datas.status ?? "Assign",
-                                      style: TextStyle(
+                              );
+                              await workerController.getWorkers();
+                            },
+                            child: ListTile(
+                              title: Text(
+                                datas.equipment!.name!,
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(datas.title ?? ""),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        datas.priority ?? "",
+                                        style: TextStyle(color: buttonColor),
+                                      ),
+                                      Text(datas.status ?? ""),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 10),
+                                  if (userDetailModel!.data!.role == "ADMIN")
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
                                         color: datas.status == "OPEN"
-                                            ? Colors.red
-                                            : Colors.green[800],
-                                        fontWeight: FontWeight.bold,
+                                            ? buttonColor
+                                            : Colors.green.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        datas.status ?? "Assign",
+                                        style: TextStyle(
+                                          color: datas.status == "OPEN"
+                                              ? Colors.red
+                                              : Colors.green[800],
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        return complaintController.hasMore
-                            ? Padding(
-                                padding: const EdgeInsets.all(16),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
-                              )
-                            : SizedBox.shrink();
-                      }
-                    },
-                  ),
-                );
-              }),
+                          );
+                        } else {
+                          return complaintController.hasMore
+                              ? const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                )
+                              : const SizedBox.shrink();
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

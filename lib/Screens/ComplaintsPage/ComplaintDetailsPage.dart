@@ -110,7 +110,12 @@ class ComplaintDetailsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text('Complaint Details'),
+        surfaceTintColor: backgroundColor,
+        title: const Text(
+          'Complaint Details',
+          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
+        ),
+        iconTheme: IconThemeData(color: buttonColor),
         backgroundColor: backgroundColor,
         elevation: 0,
         foregroundColor: containerColor,
@@ -171,8 +176,12 @@ class ComplaintDetailsPage extends StatelessWidget {
         ],
       ),
       body: GetBuilder<ComplaintController>(
-        initState: (_) => complaintController.fetchComplaintDetails(
-            complaintId, userDetailModel!.data!.role!.toLowerCase()),
+        initState: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
+          complaintController.fetchComplaintDetails(
+            complaintId,
+            userDetailModel!.data!.role!.toLowerCase(),
+          );
+        }),
         builder: (_) {
           if (complaintController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -434,6 +443,9 @@ class ComplaintDetailsPage extends StatelessWidget {
                       foregroundColor: Colors.white,
                     ),
                   ),
+                SizedBox(
+                  height: 10,
+                ),
                 GestureDetector(
                   onTap: () {
                     Get.dialog(StatusUpdateDialog(
@@ -444,13 +456,17 @@ class ComplaintDetailsPage extends StatelessWidget {
                     padding: EdgeInsets.all(8),
                     width: double.infinity,
                     decoration: BoxDecoration(
+                      color: buttonColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
-                      color: buttonColor,
+                      border: Border.all(color: buttonColor),
                     ),
                     child: Center(
                       child: Text(
                         "Update Status", // 🔥 changes here
-                        style: TextStyle(color: backgroundColor),
+                        style: TextStyle(
+                            color: buttonColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -476,15 +492,19 @@ class ComplaintDetailsPage extends StatelessWidget {
                           padding: EdgeInsets.all(8),
                           width: double.infinity,
                           decoration: BoxDecoration(
+                            color: buttonColor.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(8),
-                            color: buttonColor,
+                            border: Border.all(color: buttonColor),
                           ),
                           child: Center(
                             child: Text(
                               complaint.assignedWorkers!.isEmpty
                                   ? "Assign Complaint"
                                   : "Update Worker", // 🔥 changes here
-                              style: TextStyle(color: backgroundColor),
+                              style: TextStyle(
+                                  color: buttonColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
                             ),
                           ),
                         ),

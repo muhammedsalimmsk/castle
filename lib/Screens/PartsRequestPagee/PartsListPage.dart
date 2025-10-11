@@ -38,7 +38,7 @@ class PartsListPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     )
                   : SizedBox(
-                      height: 730,
+                      height: 720,
                       child: ListView.builder(
                           shrinkWrap: true,
                           itemCount: controller.partsData.length,
@@ -61,6 +61,10 @@ class PartsListPage extends StatelessWidget {
                                 ],
                               ),
                               child: ListTile(
+                                leading: Icon(
+                                  Icons.build,
+                                  color: buttonColor,
+                                ),
                                 title: Text(
                                   parts.partName!,
                                   style: TextStyle(fontWeight: FontWeight.bold),

@@ -27,14 +27,18 @@ class ClientPage extends StatelessWidget {
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                    suffixIcon:
-                        IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+                    suffixIcon: IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.search,
+                          color: buttonColor,
+                        )),
                     hintText: "Search here..",
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: containerColor)),
+                        borderSide: BorderSide(color: buttonColor)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: shadeColor))),
+                        borderSide: BorderSide(color: buttonColor))),
               ),
               Text(
                 "All Clients",
@@ -49,10 +53,17 @@ class ClientPage extends StatelessWidget {
                       final ClientData client = controller.clientData[index];
                       print(client.clientAddress);
                       return ListTile(
-                        title: Text(client.clientName!),
+                        title: Text(
+                          client.clientName!,
+                          style: TextStyle(
+                              color: buttonColor, fontWeight: FontWeight.bold),
+                        ),
                         subtitle:
                             Text("${client.firstName} ${client.lastName}"),
-                        leading: Icon(Icons.person),
+                        leading: Icon(
+                          Icons.person,
+                          color: buttonColor,
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -126,7 +137,7 @@ class ClientPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: containerColor,
+        backgroundColor: buttonColor,
         onPressed: () {
           Get.to(ClientRegisterOne());
         },

@@ -30,7 +30,7 @@ class EquipmentTypeController extends GetxController {
   }
 
   Future createType(String name, String description) async {
-    final endpoint = "/api/v1/admin/equipment-categories";
+    final endpoint = "/api/v1/admin/equipment-types";
     final data = {'name': name, 'description': description};
     isLoading1.value = true;
     try {

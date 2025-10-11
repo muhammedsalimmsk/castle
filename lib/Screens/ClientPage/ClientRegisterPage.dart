@@ -24,7 +24,9 @@ class ClientRegisterOne extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Client Details", style: GoogleFonts.poppins()),
+        iconTheme: IconThemeData(color: buttonColor),
+        surfaceTintColor: backgroundColor,
+        title: Text("Client Details", style: TextStyle(color: buttonColor)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,

@@ -66,7 +66,7 @@ class EquipmentTypePage extends StatelessWidget {
                         style: TextStyle(
                             color: buttonColor, fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(equipType.description ?? ""),
+                      subtitle: Text(equipType.description ?? "No Description"),
                       trailing: Icon(
                         Icons.arrow_forward_ios,
                         size: 18,
@@ -115,7 +115,7 @@ class EquipmentTypePage extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    "Create Category",
+                    "Create A Type",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -129,9 +129,9 @@ class EquipmentTypePage extends StatelessWidget {
                     controller: nameController,
                     cursorColor: buttonColor,
                     decoration: InputDecoration(
-                      labelText: "Category Name",
+                      labelText: "Type Name",
                       labelStyle: TextStyle(color: containerColor),
-                      hintText: "Enter category name",
+                      hintText: "Enter Type name",
                       hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -147,7 +147,7 @@ class EquipmentTypePage extends StatelessWidget {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return "Please enter category name";
+                        return "Please enter type name";
                       }
                       return null;
                     },
@@ -162,7 +162,7 @@ class EquipmentTypePage extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: "Description",
                       labelStyle: TextStyle(color: containerColor),
-                      hintText: "Enter category description",
+                      hintText: "Enter type description",
                       hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -193,7 +193,10 @@ class EquipmentTypePage extends StatelessWidget {
                         onPressed: controller.isLoading1.value
                             ? null
                             : () => Get.back(),
-                        child: const Text("Cancel"),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(color: buttonColor),
+                        ),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(

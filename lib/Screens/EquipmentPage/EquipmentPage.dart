@@ -41,7 +41,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
         child: Column(
           children: [
             // 🔍 Search & Filter UI
@@ -81,8 +81,6 @@ class _EquipmentPageState extends State<EquipmentPage> {
                 )
               ],
             ),
-            const SizedBox(height: 16),
-
             // 🧾 Title & Sort Dropdown
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,7 +112,6 @@ class _EquipmentPageState extends State<EquipmentPage> {
                     )),
               ],
             ),
-            const SizedBox(height: 8),
 
             // 📋 Equipment List using FutureBuilder
             Expanded(
@@ -176,7 +173,8 @@ class _EquipmentPageState extends State<EquipmentPage> {
                         final datas = equipmentList[index];
 
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 4),
                           child: InkWell(
                             onTap: () {
                               Get.to(EquipmentDetailsPage(
@@ -187,7 +185,6 @@ class _EquipmentPageState extends State<EquipmentPage> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: buttonColor),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Color(0xfff0431a4).withOpacity(0.20),
@@ -197,6 +194,10 @@ class _EquipmentPageState extends State<EquipmentPage> {
                                 ],
                               ),
                               child: ListTile(
+                                leading: Icon(
+                                  Icons.precision_manufacturing,
+                                  color: buttonColor,
+                                ),
                                 title: Text(
                                   datas.name!,
                                   style: TextStyle(color: containerColor),

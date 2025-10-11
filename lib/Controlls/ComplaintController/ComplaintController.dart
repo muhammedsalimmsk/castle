@@ -261,7 +261,9 @@ class ComplaintController extends GetxController {
         } else {
           page++;
         }
+        update();
       } else {
+        update();
         print(response.body);
       }
     } catch (e) {
@@ -269,6 +271,7 @@ class ComplaintController extends GetxController {
       rethrow;
     } finally {
       isLoading.value = false;
+      update();
     }
   }
 

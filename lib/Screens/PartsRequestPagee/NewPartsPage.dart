@@ -27,7 +27,11 @@ class PartRegisterPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Add Part", style: GoogleFonts.poppins()),
+        iconTheme: IconThemeData(color: buttonColor),
+        title: Text(
+          "Add Part",
+          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,

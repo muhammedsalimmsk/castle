@@ -12,6 +12,7 @@ import 'Model/auth_model/auth_model.dart';
 import 'Services/ApiService.dart';
 
 void main() {
+  GoogleFonts.config.allowRuntimeFetching = true;
   runApp(const MyApp());
 }
 
@@ -70,16 +71,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       theme: ThemeData(
         primaryColor: backgroundColor,
-        textTheme: GoogleFonts.poppinsTextTheme()
-            .copyWith(
-              bodyLarge: GoogleFonts.poppins(),
-              bodyMedium: GoogleFonts.poppins(),
-              bodySmall: GoogleFonts.poppins(),
-            )
-            .apply(
-              bodyColor: containerColor, // Set text color
-              displayColor: containerColor,
-            ),
+        fontFamily: GoogleFonts.ptSans().fontFamily, // 👈 Add this line
+        textTheme: GoogleFonts.ptSansTextTheme().apply(
+          bodyColor: containerColor,
+          displayColor: containerColor,
+        ),
         scaffoldBackgroundColor: backgroundColor,
       ),
       home: SplashScreen(),

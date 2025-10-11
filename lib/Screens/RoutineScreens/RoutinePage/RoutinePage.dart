@@ -31,10 +31,10 @@ class RoutinePage extends StatelessWidget {
                 hintText: "Search here..",
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: containerColor)),
+                    borderSide: BorderSide(color: buttonColor)),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: containerColor)),
+                    borderSide: BorderSide(color: buttonColor)),
               ),
             ),
             const Gap(10),
@@ -44,10 +44,15 @@ class RoutinePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text("Routine",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: buttonColor)),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.sort),
+                  icon: const Icon(
+                    Icons.sort,
+                    color: buttonColor,
+                  ),
                   onSelected: (value) => print("Selected: $value"),
                   itemBuilder: (_) => const [
                     PopupMenuItem(value: 'name', child: Text('Sort by Name')),
@@ -98,7 +103,9 @@ class RoutinePage extends StatelessWidget {
                             child: ListTile(
                               title: Text(
                                 routine.name ?? "Unnamed",
-                                style: TextStyle(color: containerColor),
+                                style: TextStyle(
+                                    color: buttonColor,
+                                    fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
                                   routine.assignedWorker?.firstName ??
@@ -112,7 +119,10 @@ class RoutinePage extends StatelessWidget {
                                               .deleteRoutine(routine.id!);
                                         });
                                       },
-                                      icon: const Icon(Icons.delete))
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.grey,
+                                      ))
                                   : SizedBox.shrink(),
                             ),
                           ),
@@ -133,7 +143,7 @@ class RoutinePage extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.only(top: 10),
                       decoration: BoxDecoration(
-                        color: containerColor,
+                        color: buttonColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Center(

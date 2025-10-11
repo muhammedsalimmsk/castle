@@ -32,10 +32,10 @@ class WorkersPage extends StatelessWidget {
                         IconButton(onPressed: () {}, icon: Icon(Icons.search)),
                     hintText: "Search here..",
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: containerColor)),
+                        borderSide: BorderSide(color: buttonColor)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: shadeColor))),
+                        borderSide: BorderSide(color: buttonColor))),
               ),
               Text(
                 "All Workers",
@@ -68,9 +68,17 @@ class WorkersPage extends StatelessWidget {
                               ));
                             },
                             child: ListTile(
-                              title: Text(worker.lastName!),
+                              title: Text(
+                                worker.lastName!,
+                                style: TextStyle(
+                                    color: buttonColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
                               subtitle: Text(worker.email!),
-                              leading: Icon(Icons.person),
+                              leading: Icon(
+                                Icons.person,
+                                color: buttonColor,
+                              ),
                               trailing: IconButton(
                                 onPressed: () {
                                   Get.defaultDialog(

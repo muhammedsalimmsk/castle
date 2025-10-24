@@ -37,9 +37,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     Text(
                       "${userDetailModel!.data!.firstName} ${userDetailModel!.data!.lastName}",
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: buttonColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                     Text(
                       userDetailModel!.data!.role!,

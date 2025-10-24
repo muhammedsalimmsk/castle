@@ -1,3 +1,4 @@
+import '../dashboard_model/status_update.dart';
 import 'assigned_worker.dart';
 import 'client.dart';
 import 'equipment.dart';

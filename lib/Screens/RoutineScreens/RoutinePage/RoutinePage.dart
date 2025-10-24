@@ -47,7 +47,7 @@ class RoutinePage extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: buttonColor)),
+                        color: Colors.black)),
                 PopupMenuButton<String>(
                   icon: const Icon(
                     Icons.sort,
@@ -103,9 +103,7 @@ class RoutinePage extends StatelessWidget {
                             child: ListTile(
                               title: Text(
                                 routine.name ?? "Unnamed",
-                                style: TextStyle(
-                                    color: buttonColor,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
                                   routine.assignedWorker?.firstName ??
@@ -121,7 +119,7 @@ class RoutinePage extends StatelessWidget {
                                       },
                                       icon: const Icon(
                                         Icons.delete,
-                                        color: Colors.grey,
+                                        color: buttonColor,
                                       ))
                                   : SizedBox.shrink(),
                             ),

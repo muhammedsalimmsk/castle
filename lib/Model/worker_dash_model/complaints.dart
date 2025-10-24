@@ -11,14 +11,14 @@ class Complaints {
 
   Complaints(
       {this.total,
-        this.open,
-        this.assigned,
-        this.inProgress,
-        this.resolved,
-        this.closed,
-        this.pending,
-        this.completed,
-        this.completionRate});
+      this.open,
+      this.assigned,
+      this.inProgress,
+      this.resolved,
+      this.closed,
+      this.pending,
+      this.completed,
+      this.completionRate});
 
   Complaints.fromJson(Map<String, dynamic> json) {
     total = json['total'];

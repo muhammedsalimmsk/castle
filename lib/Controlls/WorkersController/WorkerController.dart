@@ -1,4 +1,7 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
+import 'package:castle/Model/depart_workers_model/data.dart';
+import 'package:castle/Model/depart_workers_model/depart_workers_model.dart';
+import 'package:castle/Model/depart_workers_model/worker.dart';
 import 'package:castle/Model/workers_model/datum.dart';
 import 'package:castle/Model/workers_model/workers_model.dart';
 import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
@@ -15,6 +18,9 @@ class WorkerController extends GetxController {
   final password = TextEditingController();
   final ApiService _apiService = ApiService();
   late WorkersModel workersModel = WorkersModel();
+  late DepartWorkersModel departWorkersModel = DepartWorkersModel();
+  RxList<WorkerList> workersDataByDep = <WorkerList>[].obs;
+
   RxList<WorkerData> workerList = <WorkerData>[].obs;
   String getWorkerName(String id) {
     try {
@@ -53,6 +59,27 @@ class WorkerController extends GetxController {
     }
   }
 
+  Future getWorkerByDepartment(String departmentId) async {
+    final endpoint = '/api/v1/admin/departments/$departmentId/workers';
+    print(endpoint);
+    try {
+      final response =
+          await _apiService.getRequest(endpoint, bearerToken: token);
+
+      if (response.isOk) {
+        print(response.body);
+        departWorkersModel = DepartWorkersModel.fromJson(response.body);
+        workersDataByDep.value = departWorkersModel.data!.workersList!;
+      } else {
+        print(response.body);
+        Get.snackbar("Error", "Something error please try again later");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //
   Future getWorkers() async {
     try {
       final response = await _apiService.getRequest('/api/v1/admin/workers',

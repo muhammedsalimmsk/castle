@@ -1,17 +1,21 @@
 import 'package:castle/Controlls/WorkersController/WorkerController.dart';
 import 'package:castle/Model/workers_model/datum.dart';
 import 'package:castle/Screens/WorkersPage/CreateWorker.dart';
+import 'package:castle/Screens/WorkersPage/Departments/DepartmentListPage.dart';
 import 'package:castle/Screens/WorkersPage/WorkerDetailsPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:get/get.dart';
 
 import '../../Colors/Colors.dart';
+import '../../Controlls/AuthController/AuthController.dart';
 import '../../Widget/CustomAppBarWidget.dart';
 import '../../Widget/CustomDrawer.dart';
 
 class WorkersPage extends StatelessWidget {
   WorkersPage({super.key});
   final WorkerController controller = Get.put(WorkerController());
+  final _key = GlobalKey<ExpandableFabState>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +73,8 @@ class WorkersPage extends StatelessWidget {
                             },
                             child: ListTile(
                               title: Text(
-                                worker.lastName!,
-                                style: TextStyle(
-                                    color: buttonColor,
-                                    fontWeight: FontWeight.bold),
+                                "${worker.firstName} ${worker.lastName!}",
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(worker.email!),
                               leading: Icon(
@@ -133,7 +135,7 @@ class WorkersPage extends StatelessWidget {
                                 },
                                 icon: Icon(
                                   Icons.delete,
-                                  color: buttonColor,
+                                  color: buttonColor.withOpacity(0.7),
                                 ),
                               ),
                             ),
@@ -146,16 +148,69 @@ class WorkersPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: buttonColor,
-        onPressed: () {
-          Get.to(CreateWorker());
-        },
-        label: Text(
-          "Add New",
-          style: TextStyle(color: backgroundColor),
-        ),
-      ),
+      floatingActionButton: userDetailModel!.data!.role == "ADMIN"
+          ? ExpandableFab(
+              openButtonBuilder: RotateFloatingActionButtonBuilder(
+                child: const Icon(Icons.menu),
+                fabSize: ExpandableFabSize.regular,
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+              ),
+              closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                child: const Icon(Icons.close),
+                fabSize: ExpandableFabSize.small,
+                foregroundColor: Colors.white,
+                backgroundColor: buttonColor,
+                shape: const CircleBorder(),
+              ),
+              key: _key,
+              type: ExpandableFabType.up,
+              childrenAnimation: ExpandableFabAnimation.none,
+              distance: 70,
+              overlayStyle: ExpandableFabOverlayStyle(
+                color: Colors.white.withOpacity(0.9),
+              ),
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Department',
+                      style: TextStyle(
+                          color: buttonColor, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 20),
+                    FloatingActionButton(
+                      foregroundColor: Colors.white,
+                      backgroundColor: buttonColor,
+                      heroTag: ":f15",
+                      onPressed: () {
+                        Get.to(DepartmentPage());
+                      },
+                      child: Icon(Icons.card_travel),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('New Worker',
+                        style: TextStyle(
+                            color: buttonColor, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 20),
+                    FloatingActionButton(
+                      foregroundColor: Colors.white,
+                      backgroundColor: buttonColor,
+                      heroTag: ":f34",
+                      onPressed: () {
+                        Get.to(CreateWorker());
+                      },
+                      child: Icon(Icons.person),
+                    ),
+                  ],
+                ),
+              ],
+            )
+          : SizedBox.shrink(),
+      floatingActionButtonLocation: ExpandableFab.location,
     );
   }
 }

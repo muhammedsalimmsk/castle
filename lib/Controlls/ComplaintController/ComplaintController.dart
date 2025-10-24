@@ -21,7 +21,7 @@ class ComplaintController extends GetxController {
   RequestedPartsDataModel partsDataModel = RequestedPartsDataModel();
   RxList<RequestedPartsData> partsModel = <RequestedPartsData>[].obs;
   late ComplaintDetailModel complaintDetailModel = ComplaintDetailModel();
-
+  RxString selectedDepartment = ''.obs;
   final RxString selectedTeamLead = ''.obs;
   RxList<String> tempSelectedWorkers = <String>[].obs;
   void addRequestedPart(Map<String, dynamic> part) {

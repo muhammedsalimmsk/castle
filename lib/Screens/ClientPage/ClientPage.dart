@@ -55,8 +55,7 @@ class ClientPage extends StatelessWidget {
                       return ListTile(
                         title: Text(
                           client.clientName!,
-                          style: TextStyle(
-                              color: buttonColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle:
                             Text("${client.firstName} ${client.lastName}"),
@@ -69,7 +68,10 @@ class ClientPage extends StatelessWidget {
                           children: [
                             IconButton(
                               onPressed: () {},
-                              icon: Icon(Icons.more_vert),
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: buttonColor,
+                              ),
                             ),
                             IconButton(
                               onPressed: () async {
@@ -123,7 +125,10 @@ class ClientPage extends StatelessWidget {
                                   ],
                                 );
                               },
-                              icon: Icon(Icons.delete),
+                              icon: Icon(
+                                Icons.delete,
+                                color: buttonColor.withOpacity(0.7),
+                              ),
                             )
                           ],
                         ),

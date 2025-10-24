@@ -143,7 +143,8 @@ class AuthController extends GetxController {
         userDetailModel = UserDetailModel.fromJson(response.body);
       } else {
         print(response.body);
-        if (response.body['error'] == "Invalid or inactive user") {
+        if (response.body['error'] == "Invalid or inactive user" ||
+            response.body['error'] == "Invalid or expired token") {
           Get.offAll(LoginPage());
         }
       }

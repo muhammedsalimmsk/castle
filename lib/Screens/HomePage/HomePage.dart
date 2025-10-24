@@ -1,7 +1,5 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
-import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
-import 'package:castle/Model/complaint_detail_model/complaint_detail_model.dart';
 import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
@@ -12,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../Controlls/DashboardController/DashboardController.dart';
-import 'Widgets/ActivityChart.dart'; // Assuming you might use this later
 import 'Widgets/ComplaintWidget.dart';
 import 'Widgets/TopWidget.dart';
 
@@ -34,12 +31,11 @@ class HomePage extends StatelessWidget {
 
       final data = dashboardController.dashboardData.value;
       final clients = data.clientStats;
-      // Assuming your data model has these fields (adjust if needed)
-      final totalWorkers = data.overview?.workers?.total.toString() ?? "N/A";
-      final totalClients = data.overview?.clients?.total.toString() ?? "N/A";
-      final totalEquipments =
-          data.overview?.equipment?.total.toString() ?? "N/A";
+      final totalWorkers = data.users?.workers?.total.toString() ?? "N/A";
+      final totalClients = data.users?.clients?.total.toString() ?? "N/A";
+      final totalEquipments = data.equipment?.total.toString() ?? "N/A";
       print(token);
+      print(data);
       return Scaffold(
         drawer: CustomDrawer(),
         appBar: CustomAppBar(),
@@ -141,13 +137,13 @@ class HomePage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 6.0),
                           child: _buildClientCard(
-                            name: client.clientName ?? "Unknown",
-                            equipment: client.equipment?.total.toString() ??
-                                "No Equipment",
-                            complaints:
-                                client.complaints?.inProgress?.toString() ??
-                                    "0",
-                          ),
+                              name: client.clientName ?? "Unknown",
+                              equipment: client.equipment?.total.toString() ??
+                                  "No Equipment",
+                              complaints:
+                                  client.complaints?.inProgress?.toString() ??
+                                      "0",
+                              clientId: client.id!),
                         );
                       },
                     ),
@@ -161,73 +157,78 @@ class HomePage extends StatelessWidget {
     });
   }
 
-  Widget _buildClientCard({
-    required String name,
-    required String equipment,
-    required String complaints,
-  }) {
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.blue.shade100,
-                child: Icon(Icons.business, color: Colors.blue.shade700),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+  Widget _buildClientCard(
+      {required String name,
+      required String equipment,
+      required String complaints,
+      required String clientId}) {
+    return InkWell(
+      onTap: () {
+        // Get.to();
+      },
+      child: Container(
+        width: 200,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.blue.shade100,
+                  child: Icon(Icons.business, color: Colors.blue.shade700),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.build, size: 14, color: Colors.grey),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  equipment,
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.build, size: 14, color: Colors.grey),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    equipment,
+                    style: const TextStyle(fontSize: 13, color: Colors.black54),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.folder, size: 14, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  "$complaints Complaints",
                   style: const TextStyle(fontSize: 13, color: Colors.black54),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              const Icon(Icons.folder, size: 14, color: Colors.grey),
-              const SizedBox(width: 4),
-              Text(
-                "$complaints Complaints",
-                style: const TextStyle(fontSize: 13, color: Colors.black54),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -246,7 +247,7 @@ class HomePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.blue.shade800, // Blue heading
+            color: buttonColor, // Blue heading
           ),
         ),
         const SizedBox(height: 15),
@@ -313,7 +314,7 @@ class HomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: containerColor,
+                    color: backgroundColor,
                   ),
                   textAlign: TextAlign.center,
                 ),

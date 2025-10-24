@@ -1,8 +1,9 @@
-import 'package:castle/Model/dashboard_model/data.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../../../Colors/Colors.dart';
+
+import '../../../Model/dashboard_model/data.dart';
 import 'ActivityChart.dart';
 
 class TopWidgetOfHomePage extends StatelessWidget {
@@ -11,9 +12,9 @@ class TopWidgetOfHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalTasks = data?.overview?.complaints?.total ?? 0;
-    final completedTask = data?.overview?.complaints?.closed ?? 0;
-    final runningTask = data?.overview?.complaints?.inProgress ?? 0;
+    final totalTasks = data?.complaints?.total ?? 0;
+    final completedTask = data?.complaints?.closed ?? 0;
+    final runningTask = data?.complaints?.inProgress ?? 0;
 
 // Prevent division by zero
     final runningTaskPercent =

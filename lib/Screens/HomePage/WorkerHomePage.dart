@@ -10,7 +10,7 @@ class WorkerHomePage extends StatelessWidget {
   WorkerHomePage({super.key});
 
   final WorkerDashboardController dashboardController =
-  Get.put(WorkerDashboardController());
+      Get.put(WorkerDashboardController());
 
   @override
   Widget build(BuildContext context) {
@@ -40,68 +40,88 @@ class WorkerHomePage extends StatelessWidget {
               const SizedBox(height: 15),
               Row(
                 children: [
-                  _buildGradientCard(Icons.warning, "Total Task", complaints?.total?.toString() ?? "0", Colors.blue),
+                  _buildGradientCard(Icons.warning, "Total Task",
+                      complaints?.total?.toString() ?? "0", Colors.blue),
                   const SizedBox(width: 14),
-                  _buildGradientCard(Icons.assignment_ind, "Assigned Task", complaints?.assigned?.toString() ?? "0", Colors.purple),
+                  _buildGradientCard(Icons.assignment_ind, "Assigned Task",
+                      complaints?.assigned?.toString() ?? "0", Colors.purple),
                   const SizedBox(width: 14),
-                  _buildGradientCard(Icons.pending_actions, "Pending Task", complaints?.pending?.toString() ?? "0", Colors.orange),
+                  _buildGradientCard(Icons.pending_actions, "Pending Task",
+                      complaints?.pending?.toString() ?? "0", Colors.orange),
                   const SizedBox(width: 14),
-                  _buildGradientCard(Icons.check_circle, "Completed Task", complaints?.completed?.toString() ?? "0", Colors.green),
+                  _buildGradientCard(Icons.check_circle, "Completed Task",
+                      complaints?.completed?.toString() ?? "0", Colors.green),
                 ],
               ),
               const SizedBox(height: 25),
-
               _sectionTitle("Complaints by Priority"),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _buildPriorityChip("Urgent", complaintsByPriority?.urgent?.toString() ?? "0", Colors.red),
+                  _buildPriorityChip(
+                      "Urgent",
+                      complaintsByPriority?.urgent?.toString() ?? "0",
+                      Colors.red),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("High", complaintsByPriority?.high?.toString() ?? "0", Colors.orange),
+                  _buildPriorityChip(
+                      "High",
+                      complaintsByPriority?.high?.toString() ?? "0",
+                      Colors.orange),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Medium", complaintsByPriority?.medium?.toString() ?? "0", Colors.blue),
+                  _buildPriorityChip(
+                      "Medium",
+                      complaintsByPriority?.medium?.toString() ?? "0",
+                      Colors.blue),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Low", complaintsByPriority?.low?.toString() ?? "0", Colors.green),
+                  _buildPriorityChip(
+                      "Low",
+                      complaintsByPriority?.low?.toString() ?? "0",
+                      Colors.green),
                 ],
               ),
               const SizedBox(height: 25),
-
               _sectionTitle("Part Requests"),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _buildPriorityChip("Pending", partRequests?.pending?.toString() ?? "0", Colors.orange),
+                  _buildPriorityChip("Pending",
+                      partRequests?.pending?.toString() ?? "0", Colors.orange),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Approved", partRequests?.approved?.toString() ?? "0", Colors.green),
+                  _buildPriorityChip("Approved",
+                      partRequests?.approved?.toString() ?? "0", Colors.green),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Collected", partRequests?.collected?.toString() ?? "0", Colors.blue),
+                  _buildPriorityChip("Collected",
+                      partRequests?.collected?.toString() ?? "0", Colors.blue),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Rejected", partRequests?.rejected?.toString() ?? "0", Colors.red),
+                  _buildPriorityChip("Rejected",
+                      partRequests?.rejected?.toString() ?? "0", Colors.red),
                 ],
               ),
               const SizedBox(height: 25),
-
               _sectionTitle("Routine Tasks"),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _buildPriorityChip("Pending", routineTasks?.pending?.toString() ?? "0", Colors.orange),
+                  _buildPriorityChip("Pending",
+                      routineTasks?.pending?.toString() ?? "0", Colors.orange),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("In Progress", routineTasks?.inProgress?.toString() ?? "0", Colors.blue),
+                  _buildPriorityChip("In Progress",
+                      routineTasks?.inProgress?.toString() ?? "0", Colors.blue),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Completed", routineTasks?.completed?.toString() ?? "0", Colors.green),
+                  _buildPriorityChip("Completed",
+                      routineTasks?.completed?.toString() ?? "0", Colors.green),
                   const SizedBox(width: 8),
-                  _buildPriorityChip("Skipped", routineTasks?.skipped?.toString() ?? "0", Colors.grey),
+                  _buildPriorityChip("Skipped",
+                      routineTasks?.skipped?.toString() ?? "0", Colors.grey),
                 ],
               ),
               const SizedBox(height: 25),
-
               _sectionTitle("Recent Complaints"),
               const SizedBox(height: 10),
               Column(
                 children: List.generate(
                   data.recentComplaints?.length ?? 0,
-                      (index) {
+                  (index) {
                     final c = data.recentComplaints![index];
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -126,23 +146,30 @@ class WorkerHomePage extends StatelessWidget {
                         contentPadding: const EdgeInsets.all(12),
                         title: Text(
                           c.title ?? "N/A",
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 16),
                         ),
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Client: ${c.client?.clientName ?? "N/A"}", style: TextStyle(color: Colors.grey[700])),
-                              Text("Equipment: ${c.equipment?.name ?? "N/A"}", style: TextStyle(color: Colors.grey[700])),
-                              Text("Reported: ${DateFormat('MMM dd').format(c.reportedAt!)}", style: TextStyle(color: Colors.grey[700])),
+                              Text("Client: ${c.client?.clientName ?? "N/A"}",
+                                  style: TextStyle(color: Colors.grey[700])),
+                              Text("Equipment: ${c.equipment?.name ?? "N/A"}",
+                                  style: TextStyle(color: Colors.grey[700])),
+                              Text(
+                                  "Reported: ${DateFormat('MMM dd').format(c.reportedAt!)}",
+                                  style: TextStyle(color: Colors.grey[700])),
                             ],
                           ),
                         ),
                         trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: _statusColor(c.status ?? "").withOpacity(0.15),
+                            color:
+                                _statusColor(c.status ?? "").withOpacity(0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -168,28 +195,39 @@ class WorkerHomePage extends StatelessWidget {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+      style: const TextStyle(
+          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
     );
   }
 
-  Widget _buildGradientCard(IconData icon, String label, String value, Color color) {
+  Widget _buildGradientCard(
+      IconData icon, String label, String value, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-         color: buttonColor
-        ),
+            borderRadius: BorderRadius.circular(16), color: buttonColor),
         child: Column(
           children: [
             Icon(icon, size: 28, color: Colors.white),
             const SizedBox(height: 6),
             Text(
               value,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 2),
-            Center(child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.white,),textAlign: TextAlign.center,)),
+            Center(
+                child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            )),
           ],
         ),
       ),
@@ -207,7 +245,9 @@ class WorkerHomePage extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+            Text(value,
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold, color: color)),
             const SizedBox(height: 4),
             Text(label, style: TextStyle(fontSize: 13, color: color)),
           ],

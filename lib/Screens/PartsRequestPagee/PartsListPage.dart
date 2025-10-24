@@ -24,10 +24,7 @@ class PartsListPage extends StatelessWidget {
           children: [
             Text(
               "Parts",
-              style: TextStyle(
-                  color: buttonColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             SizedBox(
               height: 20,

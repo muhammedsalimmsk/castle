@@ -1,5 +1,6 @@
 import 'package:castle/Model/complaint_detail_model/assigned_worker.dart';
 
+import '../complaint_detail_model/status_update.dart';
 import 'equipment.dart';
 import 'status_update.dart';
 

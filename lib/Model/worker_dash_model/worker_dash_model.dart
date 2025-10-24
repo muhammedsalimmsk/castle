@@ -11,7 +11,7 @@ class WorkerDashModel {
       success: json['success']?.toString().contains("true"),
       data: json['data'] == null
           ? null
-          :WorkerDashData.fromJson(Map<String, dynamic>.from(json['data'])),
+          : WorkerDashData.fromJson(Map<String, dynamic>.from(json['data'])),
     );
   }
 

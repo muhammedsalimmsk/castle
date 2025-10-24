@@ -20,7 +20,13 @@ class WorkerController extends GetxController {
   late WorkersModel workersModel = WorkersModel();
   late DepartWorkersModel departWorkersModel = DepartWorkersModel();
   RxList<WorkerList> workersDataByDep = <WorkerList>[].obs;
-
+  var primaryDepartment = ''.obs;
+  var selectedDepartments = <String>[].obs;
+  // Example for reference:
+  // var departments = [
+  //   {'id': '1', 'name': 'Cleaning'},
+  //   {'id': '2', 'name': 'Maintenance'},
+  // ];
   RxList<WorkerData> workerList = <WorkerData>[].obs;
   String getWorkerName(String id) {
     try {
@@ -37,8 +43,11 @@ class WorkerController extends GetxController {
       "password": password.text,
       "firstName": firstName.text.trim(),
       "lastName": lastName.text.trim(),
-      "phone": phoneController.text
+      "phone": phoneController.text,
+      "departmentIds": selectedDepartments,
+      "primaryDepartmentId": primaryDepartment.value.toString()
     };
+    print(data);
     isLoading.value = true;
     try {
       final response =

@@ -280,12 +280,14 @@ class ComplaintController extends GetxController {
       required List<String> workerIds,
       required DateTime dueDate}) async {
     isLoading.value = true;
-    final endpoint = "/api/v1/admin/complaints/$complaintId/assign-team";
+    final endpoint = "/api/v1/admin/complaints/$complaintId/assign";
     final data = {
       'teamLeadId': teamLeadId,
       'workerIds': workerIds,
-      'dueDate': dueDate.toIso8601String(),
+      'dueDate': DateFormat('yyyy-MM-dd').format(dueDate),
+      'departmentId': selectedDepartment.value
     };
+    print(data);
     try {
       final response = await _apiService.patchRequest(endpoint,
           data: data, bearerToken: token);

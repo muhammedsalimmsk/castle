@@ -19,6 +19,7 @@ class AssignWorkPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: backgroundColor,
         title: const Text('Assign Work'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -225,6 +226,7 @@ class AssignWorkPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: backgroundColor,
           title: const Text("Select Workers"),
           content: SizedBox(
               width: double.maxFinite,
@@ -260,15 +262,22 @@ class AssignWorkPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: buttonColor),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: buttonColor),
               onPressed: () {
                 assignController.selectedWorkers.value =
                     List.from(assignController.tempSelectedWorkers);
                 Navigator.of(context).pop();
               },
-              child: const Text("Done"),
+              child: const Text(
+                "Done",
+                style: TextStyle(color: backgroundColor),
+              ),
             ),
           ],
         );

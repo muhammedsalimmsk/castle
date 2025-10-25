@@ -1,11 +1,24 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Model/requested_parts_model/datum.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../Controlls/PartsController/PartsController.dart';
 
 class RequestedPartDetailPage extends StatelessWidget {
   final RequestedParts partData;
-  const RequestedPartDetailPage({super.key, required this.partData});
+  RequestedPartDetailPage({super.key, required this.partData});
+  final PartsController controller = Get.find();
+  final List<String> statusOptions = [
+    "APPROVED",
+    "REJECTED",
+    "COLLECTED",
+    "DELIVERED"
+  ];
+  final List<String> statusOptionsClient = [
+    "APPROVED",
+    "REJECTED",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +31,7 @@ class RequestedPartDetailPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           "Requested Part Details",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontSize: 18),
         ),
       ),
       body: Padding(
@@ -35,45 +48,20 @@ class RequestedPartDetailPage extends StatelessWidget {
                 valueColor: _statusColor(partData.status)),
             const Spacer(),
             if (partData.status == "PENDING") ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: buttonColor),
-                        foregroundColor: buttonColor,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: () =>
-                          _showNoteDialog(partData.id!, "REJECTED"),
-                      child: const Text("Reject"),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: () =>
-                          _showNoteDialog(partData.id!, "APPROVED"),
-                      child: const Text("Accept"),
-                    ),
-                  ),
-                ],
-              ),
-            ] else
               Center(
-                child: Text(
-                  "This request is already ${partData.status}",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: _statusColor(partData.status),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14, horizontal: 40),
                   ),
+                  onPressed: () => _showStatusUpdateSheet(partData.id!),
+                  child: const Text("Update Status",
+                      style: TextStyle(fontSize: 18)),
                 ),
               ),
+            ]
           ],
         ),
       ),
@@ -82,17 +70,17 @@ class RequestedPartDetailPage extends StatelessWidget {
 
   Widget _detailTile(String label, String value, {Color? valueColor}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: Colors.grey)),
-          const SizedBox(height: 3),
+          Text(label, style: const TextStyle(fontSize: 16, color: Colors.grey)),
+          const SizedBox(height: 4),
           Text(
             value,
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: valueColor ?? Colors.black,
             ),
           ),
@@ -107,6 +95,10 @@ class RequestedPartDetailPage extends StatelessWidget {
         return Colors.green;
       case "REJECTED":
         return Colors.red;
+      case "COLLECTED":
+        return Colors.blue;
+      case "DELIVERED":
+        return Colors.purple;
       case "PENDING":
         return Colors.orange;
       default:
@@ -114,57 +106,120 @@ class RequestedPartDetailPage extends StatelessWidget {
     }
   }
 
-  void _showNoteDialog(String partId, String status) {
+  void _showStatusUpdateSheet(String partId) {
+    String selectedStatus = "APPROVED";
     final TextEditingController noteController = TextEditingController();
 
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: backgroundColor,
-        title: const Text("Add Note"),
-        content: TextField(
-          controller: noteController,
-          maxLines: 4,
-          decoration: const InputDecoration(
-            hintText: "Enter note...",
-            border: OutlineInputBorder(),
-          ),
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Get.back(),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: status == "APPROVED" ? buttonColor : Colors.red,
-              foregroundColor: Colors.white,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Update Part Status",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+
+            /// Status Dropdown
+            DropdownButtonFormField<String>(
+              dropdownColor: backgroundColor,
+              value: "APPROVED",
+              decoration: const InputDecoration(
+                labelText: "Select Status",
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor, width: 2),
+                ),
+              ),
+              items: userDetailModel!.data!.role == "ADMIN"
+                  ? statusOptions
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ))
+                      .toList()
+                  : statusOptionsClient
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ))
+                      .toList(),
+              onChanged: (value) {
+                selectedStatus = value!;
+              },
             ),
-            child: Text(status == "APPROVED" ? "Accept" : "Reject"),
-            onPressed: () async {
-              final note = noteController.text.trim();
-              if (note.isEmpty) {
-                Get.snackbar("Note Required", "Please enter a note.");
-                return;
-              }
-              Get.back();
 
-              // await controller.updateParts(
-              //   partId,
-              //   status,
-              //   note,
-              //   userDetailModel!.data!.role!.toLowerCase(),
-              // );
+            const SizedBox(height: 14),
 
-              Get.snackbar(
-                "Success",
-                "Part $status Successfully!",
-                backgroundColor: Colors.green,
-                colorText: Colors.white,
-              );
-            },
-          ),
-        ],
+            TextField(
+              controller: noteController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: "Add Note",
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: buttonColor, width: 2),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Obx(
+              () => controller.isLoading.value
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: buttonColor,
+                      ),
+                    )
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () async {
+                          final note = noteController.text.trim();
+                          if (note.isEmpty) {
+                            Get.snackbar(
+                                "Note Required", "Please enter a note.");
+                            return;
+                          }
+                          // CALL API HERE
+                          if (userDetailModel!.data!.role == "ADMIN") {
+                            await controller.updatePartStatusByAdmin(
+                                id: partId, status: selectedStatus, note: note);
+                          } else {
+                            await controller.updatePartStatusByClient(
+                                id: partId, status: selectedStatus, note: note);
+                          }
+                        },
+                        child: const Text("Update Status",
+                            style: TextStyle(fontSize: 17)),
+                      ),
+                    ),
+            ),
+          ],
+        ),
       ),
+      isScrollControlled: true,
     );
   }
 }

@@ -40,6 +40,7 @@ class PartRequestDialog extends StatelessWidget {
 
                 // Part Dropdown
                 Obx(() => DropdownButtonFormField<String>(
+                      dropdownColor: backgroundColor,
                       value: selectedPartId.value.isNotEmpty
                           ? selectedPartId.value
                           : null,
@@ -186,7 +187,10 @@ class PartRequestDialog extends StatelessWidget {
 
                 // Submit Button
                 Obx(() => controller.isLoading3.value
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                        color: buttonColor,
+                      ))
                     : SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -198,7 +202,6 @@ class PartRequestDialog extends StatelessWidget {
                             }
                             await controller.requestMultipleParts(
                                 complaintId, type);
-                            Get.back();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,

@@ -72,10 +72,10 @@ class PartsController extends GetxController {
     }
   }
 
-  Future getRequestedList() async {
+  Future getRequestedList(String role) async {
     print("requested list api working");
     final endpoint =
-        "/api/v1/admin/part-requests?page=$currentPage&limit=$limit";
+        "/api/v1/$role/part-requests?page=$currentPage&limit=$limit";
     if (isRefresh) {
       currentPage = 1;
       hasMore2 = true;
@@ -106,13 +106,65 @@ class PartsController extends GetxController {
     }
   }
 
-  Future acceptPartsByAdmin() async {}
+  Future updatePartStatusByAdmin(
+      {required String id,
+      required String status,
+      required String note}) async {
+    final endpoint = "/api/v1/admin/part-requests/$id";
+    final data = {
+      "status": status,
+      "adminNotes": note,
+    };
+    print(data);
+    isLoading.value = true;
+    try {
+      final response = await _apiService.patchRequest(endpoint,
+          data: data, bearerToken: token);
+      if (response.isOk) {
+        await getRequestedList("admin");
+        Get.back();
+        Get.snackbar("Updated", "Request updated");
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future updatePartStatusByClient(
+      {required String id,
+      required String status,
+      required String note}) async {
+    final endpoint = "/api/v1/client/part-requests/$id";
+    final data = {
+      "status": status,
+      "clientNotes": note,
+    };
+    print(data);
+    isLoading.value = true;
+    try {
+      final response = await _apiService.patchRequest(endpoint,
+          data: data, bearerToken: token);
+      if (response.isOk) {
+        await getRequestedList("clint");
+        Get.back();
+        Get.snackbar("Updated", "Request updated");
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   @override
   void onInit() async {
-    // TODO: implement onInit
     super.onInit();
     await getPartsList();
-    await getRequestedList();
   }
 }

@@ -213,7 +213,7 @@ class CustomDrawer extends StatelessWidget {
                             },
                           ))
                       : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'CLIENT'
+                  userDetailModel!.data!.role != 'WORKER'
                       ? Obx(() => DrawerListTile(
                             iSSelected: accountsSelected.value,
                             title: "Requested Parts",
@@ -223,22 +223,7 @@ class CustomDrawer extends StatelessWidget {
                               requestedPartsSelected.value = true;
                               if (Scaffold.of(context).isDrawerOpen) {
                                 Navigator.pop(context);
-                                Get.to(RequestedPartsListPage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'ADMIN'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: accountsSelected.value,
-                            title: "Requested Parts",
-                            icon: Icons.settings_applications,
-                            onTap: () {
-                              resetSelection();
-                              requestedPartsSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(RequestedPartsPageAdmin());
+                                Get.to(RequestedPartsPage());
                               }
                             },
                           ))

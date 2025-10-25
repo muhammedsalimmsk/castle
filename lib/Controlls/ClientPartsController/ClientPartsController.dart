@@ -56,18 +56,19 @@ class ClientPartsController extends GetxController {
     isLoading.value = true;
     update();
     final endpoint =
-        "/api/v1/admin/part-requests?page=$currentPage&limit=$limit&status=$selectedStatus";
+        "/api/v1/$role/part-requests?page=$currentPage&limit=$limit&status=$selectedStatus";
 
     try {
+      print(endpoint);
       final response =
           await _apiService.getRequest(endpoint, bearerToken: token);
       if (response.isOk) {
         print(response.body);
         final model = ClientRequestedPartsModel.fromJson(response.body);
-
         if (model.data != null && model.data!.isNotEmpty) {
           partsList.addAll(model.data!);
           currentPage++;
+          print(partsList.toList());
           if (model.data!.length < limit) isMoreDataAvailable = false;
         } else {
           isMoreDataAvailable = false;

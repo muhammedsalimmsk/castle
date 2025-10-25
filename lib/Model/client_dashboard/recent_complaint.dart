@@ -1,8 +1,8 @@
-import 'package:castle/Model/complaint_detail_model/assigned_worker.dart';
-
-import '../complaint_detail_model/status_update.dart';
+import 'assigned_worker.dart';
+import 'department.dart';
 import 'equipment.dart';
 import 'status_update.dart';
+import 'team_lead.dart';
 
 class RecentComplaint {
   String? id;
@@ -11,19 +11,21 @@ class RecentComplaint {
   String? priority;
   String? status;
   DateTime? reportedAt;
-  dynamic dueDate;
-  dynamic assignedAt;
-  dynamic resolvedAt;
-  dynamic notes;
+  DateTime? dueDate;
+  DateTime? assignedAt;
+  DateTime? resolvedAt;
+  String? notes;
   dynamic feedback;
   dynamic rating;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? clientId;
   String? equipmentId;
-  dynamic teamLeadId;
+  String? teamLeadId;
+  String? departmentId;
   Equipment? equipment;
-  dynamic teamLead;
+  Department? department;
+  TeamLead? teamLead;
   List<AssignedWorker>? assignedWorkers;
   List<StatusUpdate>? statusUpdates;
 
@@ -45,7 +47,9 @@ class RecentComplaint {
     this.clientId,
     this.equipmentId,
     this.teamLeadId,
+    this.departmentId,
     this.equipment,
+    this.department,
     this.teamLead,
     this.assignedWorkers,
     this.statusUpdates,
@@ -61,10 +65,16 @@ class RecentComplaint {
       reportedAt: json['reportedAt'] == null
           ? null
           : DateTime.parse(json['reportedAt'] as String),
-      dueDate: json['dueDate'] as dynamic,
-      assignedAt: json['assignedAt'] as dynamic,
-      resolvedAt: json['resolvedAt'] as dynamic,
-      notes: json['notes'] as dynamic,
+      dueDate: json['dueDate'] == null
+          ? null
+          : DateTime.parse(json['dueDate'] as String),
+      assignedAt: json['assignedAt'] == null
+          ? null
+          : DateTime.parse(json['assignedAt'] as String),
+      resolvedAt: json['resolvedAt'] == null
+          ? null
+          : DateTime.parse(json['resolvedAt'] as String),
+      notes: json['notes'] as String?,
       feedback: json['feedback'] as dynamic,
       rating: json['rating'] as dynamic,
       createdAt: json['createdAt'] == null
@@ -75,12 +85,20 @@ class RecentComplaint {
           : DateTime.parse(json['updatedAt'] as String),
       clientId: json['clientId'] as String?,
       equipmentId: json['equipmentId'] as String?,
-      teamLeadId: json['teamLeadId'] as dynamic,
+      teamLeadId: json['teamLeadId'] as String?,
+      departmentId: json['departmentId'] as String?,
       equipment: json['equipment'] == null
           ? null
           : Equipment.fromJson(json['equipment'] as Map<String, dynamic>),
-      teamLead: json['teamLead'] as dynamic,
-      assignedWorkers: json['assignedWorkers'] as List<AssignedWorker>?,
+      department: json['department'] == null
+          ? null
+          : Department.fromJson(json['department'] as Map<String, dynamic>),
+      teamLead: json['teamLead'] == null
+          ? null
+          : TeamLead.fromJson(json['teamLead'] as Map<String, dynamic>),
+      assignedWorkers: (json['assignedWorkers'] as List<dynamic>?)
+          ?.map((e) => AssignedWorker.fromJson(e as Map<String, dynamic>))
+          .toList(),
       statusUpdates: (json['statusUpdates'] as List<dynamic>?)
           ?.map((e) => StatusUpdate.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -94,9 +112,9 @@ class RecentComplaint {
         'priority': priority,
         'status': status,
         'reportedAt': reportedAt?.toIso8601String(),
-        'dueDate': dueDate,
-        'assignedAt': assignedAt,
-        'resolvedAt': resolvedAt,
+        'dueDate': dueDate?.toIso8601String(),
+        'assignedAt': assignedAt?.toIso8601String(),
+        'resolvedAt': resolvedAt?.toIso8601String(),
         'notes': notes,
         'feedback': feedback,
         'rating': rating,
@@ -105,9 +123,11 @@ class RecentComplaint {
         'clientId': clientId,
         'equipmentId': equipmentId,
         'teamLeadId': teamLeadId,
+        'departmentId': departmentId,
         'equipment': equipment?.toJson(),
-        'teamLead': teamLead,
-        'assignedWorkers': assignedWorkers,
+        'department': department?.toJson(),
+        'teamLead': teamLead?.toJson(),
+        'assignedWorkers': assignedWorkers?.map((e) => e.toJson()).toList(),
         'statusUpdates': statusUpdates?.map((e) => e.toJson()).toList(),
       };
 }

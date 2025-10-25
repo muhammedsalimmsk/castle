@@ -106,6 +106,8 @@ class PartsController extends GetxController {
     }
   }
 
+  Future acceptPartsByAdmin() async {}
+
   @override
   void onInit() async {
     // TODO: implement onInit

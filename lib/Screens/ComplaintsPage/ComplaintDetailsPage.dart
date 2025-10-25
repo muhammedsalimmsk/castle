@@ -130,6 +130,7 @@ class ComplaintDetailsPage extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
+                      backgroundColor: backgroundColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -431,7 +432,7 @@ class ComplaintDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (userDetailModel!.data!.role != "WORKER")
+                if (userDetailModel!.data!.role != "WORKER") ...[
                   ElevatedButton.icon(
                     onPressed: () {
                       Get.dialog(AddCommentDialog(complaintId: complaint.id!));
@@ -443,34 +444,65 @@ class ComplaintDetailsPage extends StatelessWidget {
                       foregroundColor: Colors.white,
                     ),
                   ),
+                ],
                 SizedBox(
                   height: 10,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Get.dialog(StatusUpdateDialog(
-                      complaintId: complaintId,
-                    ));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: buttonColor.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: buttonColor),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Update Status", // 🔥 changes here
-                        style: TextStyle(
-                            color: buttonColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                if (userDetailModel!.data!.role != "CLIENT") ...[
+                  GestureDetector(
+                    onTap: () {
+                      Get.dialog(StatusUpdateDialog(
+                        complaintId: complaintId,
+                      ));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: buttonColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: buttonColor),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Update Status", // 🔥 changes here
+                          style: TextStyle(
+                              color: buttonColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
+                if (userDetailModel!.data!.role == "CLIENT" &&
+                    complaint.status == "Closed") ...[
+                  GestureDetector(
+                    onTap: () {
+                      // Get.dialog(StatusUpdateDialog(
+                      //   complaintId: complaintId,
+                      // ));
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: buttonColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: buttonColor),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Feedback", // 🔥 changes here
+                          style: TextStyle(
+                              color: buttonColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
                 if (combinedTimeline.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

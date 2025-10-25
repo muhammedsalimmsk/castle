@@ -17,7 +17,7 @@ class DashboardController extends GetxController {
     fetchDashboardData();
   }
 
-  void fetchDashboardData() async {
+  Future fetchDashboardData() async {
     final endpoint = "/api/v1/admin/dashboard";
     try {
       isLoading.value = true;
@@ -27,11 +27,11 @@ class DashboardController extends GetxController {
         print(response.body);
         final data = DashboardModel.fromJson(response.body);
         dashboardData.value = data.data!;
-        print(data.data?.clientStats?[0].firstName);
-        print(data.data?.users?.workers?.total);
       } else {
         print("fghjklsskskkkk");
-        print(response.body);
+        print("Raw Response: ${response.bodyString}");
+
+        print(response.statusCode);
       }
     } catch (e) {
       print(e);

@@ -1,3 +1,4 @@
+import 'package:castle/Screens/PartsRequestPagee/RequestedPartsDetailPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Controlls/ClientPartsController/ClientPartsController.dart';
@@ -14,9 +15,6 @@ class RequestedPartsListPage extends StatefulWidget {
 }
 
 class _RequestedPartsPageState extends State<RequestedPartsListPage> {
-  // Get.put is often better placed outside the build method,
-  // e.g., in a bindings file or before the MaterialApp.
-  // But putting it here is fine for this example.
   final ClientPartsController controller = Get.put(ClientPartsController());
 
   @override
@@ -133,6 +131,7 @@ class _RequestedPartsPageState extends State<RequestedPartsListPage> {
 
     Get.dialog(
       AlertDialog(
+        backgroundColor: backgroundColor,
         // ... dialog styling
         title: Text("Note"),
         content: TextField(

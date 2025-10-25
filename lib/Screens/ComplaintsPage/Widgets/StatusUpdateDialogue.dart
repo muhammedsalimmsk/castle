@@ -37,6 +37,7 @@ class StatusUpdateDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Obx(() => DropdownButtonFormField<String>(
+                      dropdownColor: backgroundColor,
                       value: selectedStatus.value,
                       items: statusOptions.entries
                           .map((entry) => DropdownMenuItem(
@@ -58,17 +59,20 @@ class StatusUpdateDialog extends StatelessWidget {
                   maxLines: 4,
                   decoration: const InputDecoration(
                     labelText: "Comment",
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: buttonColor)),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Obx(() => controller.isLoading2.value
-                    ? const CircularProgressIndicator()
+                    ? const CircularProgressIndicator(
+                        color: buttonColor,
+                      )
                     : SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: containerColor,
+                            backgroundColor: buttonColor,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -79,7 +83,6 @@ class StatusUpdateDialog extends StatelessWidget {
                               Get.snackbar("Error", "Please add a comment");
                               return;
                             }
-                            Get.back();
                             await controller.updateComplaint(
                               complaintId,
                               selectedStatus.value,

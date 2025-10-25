@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Screens/HomePage/ClientHomePage.dart';
+import '../../Screens/HomePage/WorkerHomePage.dart';
+
 String? token;
 
 UserDetailModel? userDetailModel;
@@ -49,7 +52,13 @@ class AuthController extends GetxController {
         await prefs.setString(
             'expiresAt', model.data?.expiresAt?.toIso8601String() ?? '');
         await getProfile();
-        Get.offAll(HomePage());
+        if (userDetailModel!.data!.role == "ADMIN") {
+          Get.offAll(HomePage());
+        } else if (userDetailModel!.data!.role == "WORKER") {
+          Get.offAll(WorkerHomePage());
+        } else {
+          Get.offAll(ClientHomePage());
+        }
       } else {
         print(response.statusCode);
         print(response.body);

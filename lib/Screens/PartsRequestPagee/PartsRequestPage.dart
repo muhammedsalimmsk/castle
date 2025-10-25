@@ -1,16 +1,15 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/PartsController/PartsController.dart';
-import 'package:castle/Screens/PartsRequestPagee/NewPartsPage.dart';
-import 'package:castle/Screens/PartsRequestPagee/PartsListPage.dart';
+import 'package:castle/Screens/PartsRequestPagee/RequestedPartsDetailPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class RequestedPartsPage extends StatelessWidget {
-  RequestedPartsPage({super.key});
-  PartsController controller = Get.put(PartsController());
+class RequestedPartsPageAdmin extends StatelessWidget {
+  RequestedPartsPageAdmin({super.key});
+
+  final PartsController controller = Get.put(PartsController());
 
   @override
   Widget build(BuildContext context) {
@@ -22,88 +21,116 @@ class RequestedPartsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 10,
           children: [
             Text(
-              "Parts List",
+              "Requested Parts",
               style: TextStyle(
                   color: containerColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
-            Obx(
-              () => SizedBox(
-                height: 700,
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    controller.hasMore2 = true;
-                    controller.isRefresh = true;
-                    await controller.getRequestedList();
-                    controller.isRefresh = false;
-                  },
-                  child: ListView.builder(
-                      itemCount: controller.requestedParts.length,
-                      itemBuilder: (context, index) {
-                        final data = controller.requestedParts[index];
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: shadeColor),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: containerColor
-                                    .withOpacity(0.1), // soft shadow
-                                offset: Offset(0, 4), // X and Y offset
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              data.worker!.firstName!,
-                            ),
-                            subtitle: Text(data.part!.partName!),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  data.status!,
+            const SizedBox(height: 12),
+            Expanded(
+              child: FutureBuilder(
+                future: controller.getRequestedList(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      controller.currentPage = 1;
+                      controller.hasMore2 = true;
+                      controller.isRefresh = true;
+                      await controller.getRequestedList();
+                      controller.isRefresh = false;
+
+                      await controller.getRequestedList();
+                    },
+                    child: controller.requestedParts.isEmpty
+                        ? SingleChildScrollView(
+                            physics:
+                                const AlwaysScrollableScrollPhysics(), // Important!
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              child: Center(
+                                child: Text(
+                                  "No requested parts found.\nPull to refresh.",
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      color: Colors.green, fontSize: 12),
+                                      color: containerColor, fontSize: 14),
                                 ),
-                              ],
+                              ),
                             ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: controller.requestedParts.length,
+                            itemBuilder: (context, index) {
+                              final data = controller.requestedParts[index];
+                              print(controller.requestedParts.length);
+                              return Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(color: shadeColor),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: containerColor.withOpacity(0.1),
+                                      offset: Offset(0, 4),
+                                      blurRadius: 6,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    data.worker?.firstName ?? "-",
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                  subtitle: Text(
+                                    data.part?.partName ?? "-",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  trailing: Text(
+                                    data.status ?? "-",
+                                    style: TextStyle(
+                                      color: _statusColor(data.status),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    // Navigate to details here
+                                    Get.to(() => RequestedPartDetailPage(
+                                        partData: data));
+                                  },
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      }),
-                ),
+                  );
+                },
               ),
             ),
-            InkWell(
-              onTap: () {
-                Get.to(PartsListPage());
-              },
-              child: Container(
-                padding: EdgeInsets.all(12),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: buttonColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                    child: Text(
-                  "Parts List",
-                  style: TextStyle(
-                      color: backgroundColor, fontWeight: FontWeight.bold),
-                )),
-              ),
-            )
           ],
         ),
       ),
     );
+  }
+
+  Color _statusColor(String? status) {
+    switch (status) {
+      case "APPROVED":
+        return Colors.green;
+      case "PENDING":
+        return Colors.orange;
+      case "REJECTED":
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
   }
 }

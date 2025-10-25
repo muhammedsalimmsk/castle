@@ -1,8 +1,7 @@
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
+import 'package:castle/Model/equipment_type_list_model/datum.dart';
 
-import '../../Model/client_dashboard/equipment_type.dart';
-import '../../Model/equipment_type_list_model/datum.dart';
 import '../../Model/equipment_type_list_model/equipment_type_list_model.dart';
 import '../AuthController/AuthController.dart';
 

@@ -2,7 +2,9 @@ import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Screens/ComplaintsPage/ComplaintPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
+import 'package:castle/Screens/HomePage/ClientHomePage.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
+import 'package:castle/Screens/HomePage/WorkerHomePage.dart';
 import 'package:castle/Screens/PartsRequestPagee/PartsRequestPage.dart';
 import 'package:castle/Screens/RoutineScreens/WorkerRoutinePage.dart';
 import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
@@ -86,25 +88,33 @@ class CustomDrawer extends StatelessWidget {
                         onTap: () {
                           resetSelection();
                           overviewSelected.value = true;
-                          Get.offAll(HomePage());
+                          if (userDetailModel!.data!.role == "ADMIN") {
+                            Get.offAll(HomePage());
+                          } else if (userDetailModel!.data!.role == "WORKER") {
+                            Get.offAll(WorkerHomePage());
+                          } else {
+                            Get.offAll(ClientHomePage());
+                          }
                         },
                       )),
-                  Obx(() => DrawerListTile(
-                        iSSelected: equipmentSelected.value,
-                        title: "Equipment",
-                        iconWidget: Image.asset(
-                          'assets/icons/equipment.png',
-                          width: 24,
-                          height: 24,
-                          color: Colors.black,
-                          // optional
-                        ),
-                        onTap: () {
-                          resetSelection();
-                          equipmentSelected.value = true;
-                          Get.to(EquipmentPage());
-                        },
-                      )),
+                  if (userDetailModel!.data!.role != "WORKER") ...[
+                    Obx(() => DrawerListTile(
+                          iSSelected: equipmentSelected.value,
+                          title: "Equipment",
+                          iconWidget: Image.asset(
+                            'assets/icons/equipment.png',
+                            width: 24,
+                            height: 24,
+                            color: Colors.black,
+                            // optional
+                          ),
+                          onTap: () {
+                            resetSelection();
+                            equipmentSelected.value = true;
+                            Get.to(EquipmentPage());
+                          },
+                        )),
+                  ],
                   Obx(() => DrawerListTile(
                         iSSelected: complaintsSelected.value,
                         title: "Complaints",
@@ -117,7 +127,6 @@ class CustomDrawer extends StatelessWidget {
                         onTap: () {
                           resetSelection();
                           complaintsSelected.value = true;
-
                           if (Scaffold.of(context).isDrawerOpen) {
                             Navigator.pop(context);
                             Get.to(ComplaintPage());
@@ -204,8 +213,7 @@ class CustomDrawer extends StatelessWidget {
                             },
                           ))
                       : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'CLIENT' ||
-                          userDetailModel!.data!.role == 'ADMIN'
+                  userDetailModel!.data!.role == 'CLIENT'
                       ? Obx(() => DrawerListTile(
                             iSSelected: accountsSelected.value,
                             title: "Requested Parts",
@@ -216,6 +224,21 @@ class CustomDrawer extends StatelessWidget {
                               if (Scaffold.of(context).isDrawerOpen) {
                                 Navigator.pop(context);
                                 Get.to(RequestedPartsListPage());
+                              }
+                            },
+                          ))
+                      : SizedBox.shrink(),
+                  userDetailModel!.data!.role == 'ADMIN'
+                      ? Obx(() => DrawerListTile(
+                            iSSelected: accountsSelected.value,
+                            title: "Requested Parts",
+                            icon: Icons.settings_applications,
+                            onTap: () {
+                              resetSelection();
+                              requestedPartsSelected.value = true;
+                              if (Scaffold.of(context).isDrawerOpen) {
+                                Navigator.pop(context);
+                                Get.to(RequestedPartsPageAdmin());
                               }
                             },
                           ))

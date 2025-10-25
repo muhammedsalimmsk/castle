@@ -1,4 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Controlls/AuthController/AuthController.dart';
+import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
@@ -30,7 +32,8 @@ class ClientHomePage extends StatelessWidget {
       final mediumPriority =
           data.complaintsByPriority?.medium?.toString() ?? "0";
       final lowPriority = data.complaintsByPriority?.low?.toString() ?? "0";
-
+      print(token);
+      print(data.equipment!.total);
       return Scaffold(
         drawer: CustomDrawer(),
         appBar: CustomAppBar(),
@@ -100,6 +103,11 @@ class ClientHomePage extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
+                        onTap: () {
+                          Get.to(() => ComplaintDetailsPage(
+                                complaintId: complaint.id!,
+                              ));
+                        },
                         leading: Icon(Icons.report_problem,
                             color: Colors.red.shade400),
                         title: Text(complaint.title ?? "N/A"),

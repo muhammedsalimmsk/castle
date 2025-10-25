@@ -114,6 +114,7 @@ class RequestedPartsWorkerPage extends StatelessWidget {
     Get.dialog(
       Obx(
         () => Dialog(
+          backgroundColor: backgroundColor,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Container(

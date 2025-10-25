@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("app role is ${userDetailModel?.data?.role}");
     return Obx(() {
       if (dashboardController.isLoading.value) {
         return Scaffold(

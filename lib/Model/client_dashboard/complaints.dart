@@ -1,3 +1,5 @@
+import 'by_department.dart';
+
 class Complaints {
   int? total;
   int? open;
@@ -8,6 +10,7 @@ class Complaints {
   int? pending;
   int? completed;
   int? completionRate;
+  List<ByDepartment>? byDepartment;
 
   Complaints({
     this.total,
@@ -19,6 +22,7 @@ class Complaints {
     this.pending,
     this.completed,
     this.completionRate,
+    this.byDepartment,
   });
 
   factory Complaints.fromJson(Map<String, dynamic> json) => Complaints(
@@ -31,6 +35,9 @@ class Complaints {
         pending: json['pending'] as int?,
         completed: json['completed'] as int?,
         completionRate: json['completionRate'] as int?,
+        byDepartment: (json['byDepartment'] as List<dynamic>?)
+            ?.map((e) => ByDepartment.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,5 +50,6 @@ class Complaints {
         'pending': pending,
         'completed': completed,
         'completionRate': completionRate,
+        'byDepartment': byDepartment?.map((e) => e.toJson()).toList(),
       };
 }

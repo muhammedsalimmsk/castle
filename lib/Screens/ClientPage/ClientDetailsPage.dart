@@ -1,3 +1,4 @@
+import 'package:castle/Colors/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
@@ -13,6 +14,8 @@ class ClientDetailPage extends StatelessWidget {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: backgroundColor,
+            surfaceTintColor: backgroundColor,
             title: const Text("Client Details"),
             centerTitle: true,
           ),

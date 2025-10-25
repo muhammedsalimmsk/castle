@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: backgroundColor,
         fontFamily: GoogleFonts.ptSans().fontFamily, // 👈 Add this line

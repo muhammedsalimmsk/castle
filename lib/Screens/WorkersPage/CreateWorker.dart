@@ -171,6 +171,7 @@ class CreateWorker extends StatelessWidget {
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500)),
                         DropdownButtonFormField<String>(
+                          dropdownColor: backgroundColor,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),

@@ -1,6 +1,7 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
 import 'package:castle/Model/client_model/datum.dart';
+import 'package:castle/Screens/ClientPage/ClientDetailsPage.dart';
 import 'package:castle/Screens/ClientPage/ClientRegisterPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,6 +54,9 @@ class ClientPage extends StatelessWidget {
                       final ClientData client = controller.clientData[index];
                       print(client.clientAddress);
                       return ListTile(
+                        onTap: () {
+                          Get.to(() => ClientDetailPage(clientId: client.id!));
+                        },
                         title: Text(
                           client.clientName!,
                           style: TextStyle(fontWeight: FontWeight.bold),

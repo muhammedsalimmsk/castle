@@ -55,9 +55,8 @@ class ClientPartsController extends GetxController {
 
     isLoading.value = true;
     update();
-    print("sjknvnnvndjvsdvekjsnfe dkmmnf");
     final endpoint =
-        "/api/v1/client/part-requests?page=$currentPage&limit=$limit&status=$selectedStatus";
+        "/api/v1/admin/part-requests?page=$currentPage&limit=$limit&status=$selectedStatus";
 
     try {
       final response =

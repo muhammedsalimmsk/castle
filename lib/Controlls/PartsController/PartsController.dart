@@ -50,6 +50,7 @@ class PartsController extends GetxController {
       final response =
           await _apiService.getRequest(endpoint, bearerToken: token);
       if (response.isOk) {
+        print(response.body);
         partsListModel = PartsListModel.fromJson(response.body);
 
         if (isRefresh || currentPage == 1) {

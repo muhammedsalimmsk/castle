@@ -1,3 +1,4 @@
+import 'worker_department.dart';
 import 'count.dart';
 
 class WorkerData {
@@ -8,18 +9,19 @@ class WorkerData {
   String? phone;
   bool? isActive;
   DateTime? createdAt;
+  List<WorkerDepartment>? workerDepartments;
   Count? count;
 
-  WorkerData({
-    this.id,
-    this.email,
-    this.firstName,
-    this.lastName,
-    this.phone,
-    this.isActive,
-    this.createdAt,
-    this.count,
-  });
+  WorkerData(
+      {this.id,
+      this.email,
+      this.firstName,
+      this.lastName,
+      this.phone,
+      this.isActive,
+      this.createdAt,
+      this.count,
+      this.workerDepartments});
 
   factory WorkerData.fromJson(Map<String, dynamic> json) => WorkerData(
         id: json['id'] as String?,
@@ -34,6 +36,9 @@ class WorkerData {
         count: json['_count'] == null
             ? null
             : Count.fromJson(json['_count'] as Map<String, dynamic>),
+        workerDepartments: (json['workerDepartments'] as List<dynamic>?)
+            ?.map((e) => WorkerDepartment.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -45,5 +50,6 @@ class WorkerData {
         'isActive': isActive,
         'createdAt': createdAt?.toIso8601String(),
         '_count': count?.toJson(),
+        'workerDepartments': workerDepartments?.map((e) => e.toJson()).toList(),
       };
 }

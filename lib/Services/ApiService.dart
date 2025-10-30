@@ -6,6 +6,7 @@ import 'package:get/get_connect/connect.dart';
 class ApiService extends GetConnect {
   ApiService() {
     // Set your base URL
+    GetConnect(timeout: Duration(seconds: 30));
     baseUrl = "https://api-tekcastle-9360.onrender.com";
   }
   Future<Response> getRequest(String endpoint, {String? bearerToken}) async {
@@ -19,6 +20,11 @@ class ApiService extends GetConnect {
         endpoint,
         headers: headers,
       );
+      if (!response.isOk || response.body == null) {
+        print(
+            '⚠️ Request failed: ${response.statusCode} - ${response.statusText}');
+        return Future.error('Request failed');
+      }
       return response;
     } catch (e) {
       rethrow; // Preserve the original exception.

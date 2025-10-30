@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../Controlls/ClientController/ClientController.dart';
 import '../../Colors/Colors.dart';
@@ -16,7 +15,6 @@ class ClientRegisterOne extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PhoneNumber number = PhoneNumber(isoCode: 'IN');
     RxBool isObscure = true.obs;
     RxBool isObscure2 = true.obs;
 
@@ -26,11 +24,12 @@ class ClientRegisterOne extends StatelessWidget {
       appBar: AppBar(
         iconTheme: IconThemeData(color: buttonColor),
         surfaceTintColor: backgroundColor,
-        title: Text("Client Details", style: TextStyle(color: buttonColor)),
+        title: Text("Client Details",
+            style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,
-        foregroundColor: Colors.black87,
+        foregroundColor: buttonColor,
       ),
       body: Form(
         key: formKeyOne,
@@ -64,22 +63,22 @@ class ClientRegisterOne extends StatelessWidget {
                         ? 'Email is required'
                         : null,
                   ),
-                  InternationalPhoneNumberInput(
-                    inputBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: containerColor)),
-                    onInputChanged: (PhoneNumber number) {},
-                    selectorConfig: SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                    ),
-                    initialValue: number,
-                    // textFieldController: controller,
-                    inputDecoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      labelText: "Phone Number",
-                    ),
-                  ),
+                  // InternationalPhoneNumberInput(
+                  //   inputBorder: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(8),
+                  //       borderSide: BorderSide(color: containerColor)),
+                  //   onInputChanged: (PhoneNumber number) {},
+                  //   selectorConfig: SelectorConfig(
+                  //     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                  //   ),
+                  //   initialValue: controller.number,
+                  //   // textFieldController: controller,
+                  //   inputDecoration: InputDecoration(
+                  //     border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(8)),
+                  //     labelText: "Phone Number",
+                  //   ),
+                  // ),
                   Obx(() => TextFormField(
                         controller: controller.password,
                         validator: (val) {

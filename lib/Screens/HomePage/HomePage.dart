@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
                   CrossAxisAlignment.start, // Align text to start
               children: [
                 TopWidgetOfHomePage(data: data),
-                const SizedBox(height: 20), // Increased spacing
+                const SizedBox(height: 10), // Increased spacing
 
                 // --- New Stats Section ---
                 _buildStatsSection(
@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
                   totalClients: totalClients,
                   totalEquipments: totalEquipments,
                 ),
-                const SizedBox(height: 20), // Increased spacing
+                const SizedBox(height: 10), // Increased spacing
 
                 // --- Recent Complaints Section ---
                 Row(
@@ -95,7 +95,8 @@ class HomePage extends StatelessWidget {
                         final complaint = data.recentComplaints![index];
                         return Padding(
                           // Added padding around complaint widgets
-                          padding: const EdgeInsets.only(right: 12.0),
+                          padding: const EdgeInsets.only(
+                              right: 12.0, top: 0, bottom: 0),
                           child: GestureDetector(
                             onTap: () {
                               Get.to(ComplaintDetailsPage(
@@ -117,7 +118,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 // --- Client Stats Section ---
-                const SizedBox(height: 25),
+                const SizedBox(height: 10),
                 Text(
                   "Clients",
                   style: TextStyle(
@@ -257,7 +258,7 @@ class HomePage extends StatelessWidget {
           children: [
             _buildStatCard(
                 icon: Icons.people_outline,
-                label: "Total Workers",
+                label: "Total\n Workers",
                 value: totalWorkers,
                 onTapFun: () {
                   Get.to(WorkersPage());
@@ -265,7 +266,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(width: 12), // Spacing between cards
             _buildStatCard(
                 icon: Icons.business_center_outlined,
-                label: "Total Clients",
+                label: "Total\n Clients",
                 value: totalClients,
                 onTapFun: () {
                   Get.to(ClientPage());
@@ -275,7 +276,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(width: 12), // Spacing between cards
             _buildStatCard(
                 icon: Icons.build_circle_outlined,
-                label: "Total Equipment",
+                label: "Total\n Equipment",
                 value: totalEquipments,
                 onTapFun: () {
                   Get.to(EquipmentPage());
@@ -291,47 +292,45 @@ class HomePage extends StatelessWidget {
       required String label,
       required String value,
       required GestureTapCallback onTapFun}) {
-    return Expanded(
-      // Ensures cards take available space and wrap if needed on smaller screens
-      child: InkWell(
-        onTap: onTapFun,
-        child: Card(
-          elevation: 4.0, // Adds a subtle shadow
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0), // Rounded corners
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0), color: buttonColor),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(icon, size: 36, color: backgroundColor),
-                const SizedBox(height: 10),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: backgroundColor,
-                  ),
-                  textAlign: TextAlign.center,
+    return InkWell(
+      onTap: onTapFun,
+      child: Card(
+        elevation: 4.0, // Adds a subtle shadow
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0), // Rounded corners
+        ),
+        child: Container(
+          width: 110,
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0), color: buttonColor),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon, size: 36, color: backgroundColor),
+              const SizedBox(height: 10),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: backgroundColor,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
                     fontSize: 14,
                     color: backgroundColor,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2, // Allow label to wrap if long
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+                maxLines: 2, // Allow label to wrap if long
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
       ),

@@ -59,24 +59,15 @@ class WorkersPage extends StatelessWidget {
                           return InkWell(
                             onTap: () async {
                               Get.to(WorkerDetailsPage(
-                                firstName: worker.firstName,
-                                lastName: worker.lastName,
-                                phone: worker.phone,
-                                workerId: worker.id!,
-                                email: worker.email,
-                                isActive: worker.isActive,
-                                createdAt: worker.createdAt,
-                                assignedComplaints:
-                                    worker.count?.assignedComplaints,
-                                routines: worker.count?.routines,
+                                worker: worker,
                               ));
                             },
                             child: ListTile(
                               title: Text(
-                                "${worker.firstName} ${worker.lastName!}",
+                                "${worker.firstName} ${worker.lastName ?? ""}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(worker.email!),
+                              subtitle: Text(worker.email ?? ""),
                               leading: Icon(
                                 Icons.person,
                                 color: buttonColor,
@@ -106,9 +97,9 @@ class WorkersPage extends StatelessWidget {
                                       ),
                                       Obx(
                                         () => controller.isLoading.value
-                                            ? Center(
-                                                child:
-                                                    CircularProgressIndicator())
+                                            ? CircularProgressIndicator(
+                                                color: buttonColor,
+                                              )
                                             : ElevatedButton(
                                                 onPressed: () async {
                                                   await controller

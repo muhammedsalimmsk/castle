@@ -71,13 +71,6 @@ class ClientPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.more_vert,
-                                color: buttonColor,
-                              ),
-                            ),
-                            IconButton(
                               onPressed: () async {
                                 Get.defaultDialog(
                                   backgroundColor: backgroundColor,
@@ -148,6 +141,7 @@ class ClientPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: buttonColor,
         onPressed: () {
+          controller.clearAllControllers();
           Get.to(ClientRegisterOne());
         },
         label: Text(

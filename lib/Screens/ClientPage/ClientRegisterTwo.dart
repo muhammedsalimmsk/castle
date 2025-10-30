@@ -28,31 +28,31 @@ class ClientRegisterPageTwo extends StatelessWidget {
         Icons.location_on,
         (String? val) => val == null || val.isEmpty ? "Address required" : null
       ],
-      [
-        "client City",
-        controller.clientCity,
-        Icons.location_city,
-        (String? val) => val == null || val.isEmpty ? "City required" : null
-      ],
-      [
-        "client State",
-        controller.clientState,
-        Icons.map,
-        (String? val) => val == null || val.isEmpty ? "State required" : null
-      ],
-      [
-        "client Country",
-        controller.clientCountry,
-        Icons.flag,
-        (String? val) => val == null || val.isEmpty ? "Country required" : null
-      ],
-      [
-        "client Postal Code",
-        controller.clientPostalCode,
-        Icons.mail,
-        (String? val) =>
-            val == null || val.isEmpty ? "Postal code required" : null
-      ],
+      // [
+      //   "client City",
+      //   controller.clientCity,
+      //   Icons.location_city,
+      //   (String? val) => val == null || val.isEmpty ? "City required" : null
+      // ],
+      // [
+      //   "client State",
+      //   controller.clientState,
+      //   Icons.map,
+      //   (String? val) => val == null || val.isEmpty ? "State required" : null
+      // ],
+      // [
+      //   "client Country",
+      //   controller.clientCountry,
+      //   Icons.flag,
+      //   (String? val) => val == null || val.isEmpty ? "Country required" : null
+      // ],
+      // [
+      //   "client Postal Code",
+      //   controller.clientPostalCode,
+      //   Icons.mail,
+      //   (String? val) =>
+      //       val == null || val.isEmpty ? "Postal code required" : null
+      // ],
       [
         "client Phone",
         controller.clientPhone,
@@ -117,7 +117,13 @@ class ClientRegisterPageTwo extends StatelessWidget {
                         onTap: () async {
                           if (formKeyTwo.currentState!.validate()) {
                             // Add submit API logic here
-                            await controller.createClient();
+                            if (controller.isUpdate) {
+                              await controller
+                                  .updateClient(controller.clientDetails.id!);
+                            } else {
+                              await controller.createClient();
+                            }
+
                             Get.off(ClientPage());
                           }
                         },

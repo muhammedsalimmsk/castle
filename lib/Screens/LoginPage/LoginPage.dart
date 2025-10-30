@@ -49,7 +49,7 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Let AI handle your bills — securely and instantly.",
+                      "Simplify your service flow — from request to completion",
                       style: GoogleFonts.poppins(
                         color: AppColors.containerColor.withOpacity(0.7),
                         fontSize: 14,

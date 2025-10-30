@@ -12,6 +12,7 @@ class NewComplaintController extends GetxController {
   final TextEditingController email = TextEditingController();
   final contactPerson = TextEditingController();
   EquipmentController controller = Get.find();
+  var isDeleting = false.obs;
 
   void nextPage() {
     if (currentPage.value == 0) {
@@ -38,7 +39,6 @@ class NewComplaintController extends GetxController {
           await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
-
         await controller.getEquipmentDetail(role);
         Get.back();
 
@@ -52,6 +52,32 @@ class NewComplaintController extends GetxController {
       rethrow;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future deleteEquip(String id) async {
+    final endpoint = "/api/v1/admin/equipment/$id";
+    isDeleting.value = true;
+    try {
+      final response =
+          await _apiService.deleteRequest(endpoint, bearerToken: token);
+      if (response.isOk) {
+        print(response.body);
+        print(endpoint);
+        await controller.getEquipment();
+        Get.back();
+        Get.back();
+        Get.snackbar("Deleted", "Deleted successfully");
+      } else {
+        print(endpoint);
+        print(response.body);
+        Get.snackbar("Error", "Something error please try later");
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    } finally {
+      isDeleting.value = false;
     }
   }
 }

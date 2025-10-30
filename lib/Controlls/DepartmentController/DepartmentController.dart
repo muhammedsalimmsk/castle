@@ -72,6 +72,7 @@ class DepartmentController extends GetxController {
         Get.snackbar("Error", "Something wrong please try later");
       }
     } catch (e) {
+      print(e);
       rethrow;
     } finally {
       isLoading.value = false;

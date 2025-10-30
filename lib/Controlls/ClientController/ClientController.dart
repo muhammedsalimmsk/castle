@@ -6,11 +6,14 @@ import 'package:castle/Model/client_model/datum.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class ClientRegisterController extends GetxController {
   late ClientDetailModel clientDetailModel = ClientDetailModel();
   ClientDetailsData clientDetails = ClientDetailsData();
+  PhoneNumber number = PhoneNumber(isoCode: 'IN');
   // Text controllers
+  bool isUpdate = false;
   final email = TextEditingController();
   final password = TextEditingController();
   final conformPass = TextEditingController();
@@ -19,10 +22,10 @@ class ClientRegisterController extends GetxController {
   final phone = TextEditingController();
   final clientName = TextEditingController();
   final clientAddress = TextEditingController();
-  final clientCity = TextEditingController();
-  final clientState = TextEditingController();
-  final clientCountry = TextEditingController();
-  final clientPostalCode = TextEditingController();
+  // final clientCity = TextEditingController();
+  // final clientState = TextEditingController();
+  // final clientCountry = TextEditingController();
+  // final clientPostalCode = TextEditingController();
   final clientPhone = TextEditingController();
   final clientEmail = TextEditingController();
   final contactPerson = TextEditingController();
@@ -69,6 +72,26 @@ class ClientRegisterController extends GetxController {
     }
   }
 
+  void fillClientData(ClientDetailsData client) {
+    isUpdate = true;
+    email.text = client.email ?? '';
+    password.clear(); // usually not shown during edit
+    conformPass.clear();
+    // number.pho = client.phone;
+    firstName.text = client.firstName ?? '';
+    lastName.text = client.lastName ?? '';
+    phone.text = client.phone?.toString() ?? '';
+    clientName.text = client.clientName ?? '';
+    clientAddress.text = client.clientAddress ?? '';
+    // clientCity.text = client.clientCity ?? '';
+    // clientState.text = client.clientState ?? '';
+    // clientCountry.text = client.clientCountry ?? '';
+    // clientPostalCode.text = client.clientPostalCode ?? '';
+    clientPhone.text = client.phone?.toString() ?? '';
+    clientEmail.text = client.clientEmail ?? '';
+    contactPerson.text = client.contactPerson ?? '';
+  }
+
   Future<ClientDetailsData?> getClientById(String clientId) async {
     final endpoint = "/api/v1/admin/clients/$clientId";
     // isLoading.value = true;
@@ -89,6 +112,40 @@ class ClientRegisterController extends GetxController {
       // isLoading.value = false;
     }
     return null;
+  }
+
+  Future updateClient(String clientId) async {
+    final endpoint = "/api/v1/admin/clients/$clientId";
+    isLoading.value = true;
+    final data = {
+      "email": email.text.trim(),
+      "password": password.text,
+      "firstName": firstName.text.trim(),
+      "lastName": lastName.text.trim(),
+      "clientName": clientName.text.trim(),
+      "clientAddress": clientAddress.text.trim(),
+      "clientPhone": phone.text.trim(),
+      "clientEmail": clientEmail.text.trim(),
+      "contactPerson": contactPerson.text.trim()
+    };
+    try {
+      final response = await _apiService.patchRequest(endpoint,
+          data: data, bearerToken: token);
+      if (response.isOk) {
+        Get.snackbar("Success", 'Successfully updated');
+        final updatedClient = ClientDetailsData.fromJson(response.body);
+        clientDetails = updatedClient;
+        update();
+      } else {
+        print(response.body);
+        Get.snackbar("Error", "Something error please try later");
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future getClientList() async {
@@ -137,21 +194,23 @@ class ClientRegisterController extends GetxController {
 
   void clearAllControllers() {
     print("cleaaaaaaaaaaaaaaaaaaaaaaaaaardddddddddddd");
-    email.dispose();
-    password.dispose();
-    conformPass.dispose();
-    firstName.dispose();
-    lastName.dispose();
-    phone.dispose();
-    clientName.dispose();
-    clientAddress.dispose();
-    clientCity.dispose();
-    clientState.dispose();
-    clientCountry.dispose();
-    clientPostalCode.dispose();
-    clientPhone.dispose();
-    clientEmail.dispose();
-    contactPerson.dispose();
+    TextEditingController().clear();
+    isUpdate = false;
+    email.clear();
+    password.clear();
+    conformPass.clear();
+    firstName.clear();
+    lastName.clear();
+    phone.clear();
+    clientName.clear();
+    clientAddress.clear();
+    // clientCity.dispose();
+    // clientState.dispose();
+    // clientCountry.dispose();
+    // clientPostalCode.dispose();
+    clientPhone.clear();
+    clientEmail.clear();
+    contactPerson.clear();
   }
 
   void searchClients(String query) {

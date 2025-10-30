@@ -35,18 +35,67 @@ class EquipmentDetailsPage extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         actions: [
-          userDetailModel!.data!.role == "ADMIN"
-              ? IconButton(
-                  icon: Icon(Icons.edit, color: Colors.blueAccent),
-                  onPressed: () {
-                    // Navigate to edit page
-                    addToController();
-                    Get.to(UpdateEquipmentPage(
-                      equipmentId: equipment.id!,
-                    ));
-                  },
-                )
-              : SizedBox.shrink(),
+          if (userDetailModel!.data!.role == "ADMIN") ...[
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.blueAccent),
+              onPressed: () {
+                // Navigate to edit page
+                addToController();
+                Get.to(UpdateEquipmentPage(
+                  equipmentId: equipment.id!,
+                ));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.redAccent),
+              onPressed: () {
+                Get.dialog(
+                  AlertDialog(
+                    backgroundColor: backgroundColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    title: const Text(
+                      "Delete",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: buttonColor),
+                    ),
+                    content: const Text(
+                        "Are you sure you want to delete this item?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: const Text("Cancel"),
+                      ),
+                      Obx(
+                        () => controller.isDeleting.value
+                            ? CircularProgressIndicator(
+                                color: buttonColor,
+                              )
+                            : ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: buttonColor,
+                                  foregroundColor: backgroundColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  // Your delete action here
+                                  await controller.deleteEquip(equipment.id!);
+                                },
+                                child: const Text(
+                                  "Delete",
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                );
+                // Navigate to edit page
+              },
+            )
+          ]
         ],
       ),
       body: SingleChildScrollView(

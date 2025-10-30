@@ -7,9 +7,62 @@ import '../../Model/dashboard_model/data.dart';
 import '../../Services/ApiService.dart'; // Replace with your API service file
 
 class DashboardController extends GetxController {
-  var isLoading = true.obs;
+  var isLoading = false.obs;
   final ApiService _apiService = ApiService();
   Rx<DashboardData> dashboardData = DashboardData().obs;
+
+  final statsData = Rxn<StatsModel>();
+  final recentComplaints = <Complaint>[].obs;
+  final clientStats = <ClientStat>[].obs;
+  final workerByDept = [].obs;
+  final complaintByPriority = [].obs;
+
+  Future<void> fetchAllDashboardData() async {
+    isLoading.value = true;
+    await Future.wait([
+      fetchStats(),
+      fetchRecentComplaints(),
+      fetchClientStats(),
+      fetchWorkersByDepartment(),
+      fetchComplaintByPriority(),
+    ]);
+    isLoading.value = false;
+  }
+
+  Future<void> fetchStats() async {
+    final res = await _apiService.getRequest('/api/v1/admin/dashboard/stats');
+    if (res.isOk) statsData.value = StatsModel.fromJson(res.body);
+  }
+
+  Future<void> fetchRecentComplaints() async {
+    final res = await _apiService
+        .getRequest('/api/v1/admin/dashboard/recent-complaints');
+    if (res.isOk)
+      recentComplaints.assignAll((res.body['data'] as List)
+          .map((e) => Complaint.fromJson(e))
+          .toList());
+  }
+
+  Future<void> fetchClientStats() async {
+    final res =
+        await _apiService.getRequest('/api/v1/admin/dashboard/client-stats');
+    if (res.isOk)
+      clientStats.assignAll((res.body['data'] as List)
+          .map((e) => ClientStat.fromJson(e))
+          .toList());
+  }
+
+  Future<void> fetchWorkersByDepartment() async {
+    final res = await _apiService
+        .getRequest('/api/v1/admin/dashboard/workers-by-department');
+    if (res.isOk) workerByDept.assignAll(res.body['data']);
+  }
+
+  Future<void> fetchComplaintByPriority() async {
+    final res = await _apiService
+        .getRequest('/api/v1/admin/dashboard/complaints-by-priority');
+    if (res.isOk) complaintByPriority.assignAll(res.body['data']);
+  }
 
   @override
   void onInit() {

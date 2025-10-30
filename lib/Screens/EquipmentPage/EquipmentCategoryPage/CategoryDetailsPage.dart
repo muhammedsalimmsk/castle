@@ -12,13 +12,26 @@ class CategoryDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     EquipmentCategoryController controller = Get.find();
+    TextEditingController nameController =
+        TextEditingController(text: category.name);
+    TextEditingController descriptionController =
+        TextEditingController(text: category.description);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(category.name ?? ""),
+        title: Text(
+          category.name ?? "",
+          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: backgroundColor,
         iconTheme: IconThemeData(color: buttonColor),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+          IconButton(
+              onPressed: () {
+                showUpdateCategoryDialog(
+                    nameController, descriptionController, context, controller);
+              },
+              icon: Icon(Icons.edit)),
           IconButton(
               onPressed: () {
                 Get.defaultDialog(
@@ -180,6 +193,10 @@ class CategoryDetailsPage extends StatelessWidget {
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (context, index) {
                           final sub = subCategories[index];
+                          TextEditingController subCatName =
+                              TextEditingController(text: sub.name);
+                          TextEditingController subCatDescr =
+                              TextEditingController(text: sub.description);
                           return Container(
                             decoration: BoxDecoration(
                               color: backgroundColor,
@@ -203,6 +220,127 @@ class CategoryDetailsPage extends StatelessWidget {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600),
                               ),
+                              subtitle: Text(sub.description ?? ""),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        showUpdateSubcategoryDialog(
+                                            context,
+                                            controller,
+                                            subCatName,
+                                            subCatDescr,
+                                            sub.id!);
+                                      },
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: buttonColor,
+                                      )),
+                                  IconButton(
+                                      onPressed: () async {
+                                        Get.dialog(
+                                          AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            backgroundColor: Colors
+                                                .white, // or your custom backgroundColor
+                                            title: const Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                            content: const Text(
+                                              "Are you sure you want to delete this item?",
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            actionsPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 10),
+                                            actions: [
+                                              // Cancel button
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Get.back();
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.grey.shade300,
+                                                  elevation: 0,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  "Cancel",
+                                                  style: TextStyle(
+                                                      color: Colors.black87),
+                                                ),
+                                              ),
+
+                                              // Delete button
+                                              Obx(
+                                                () => controller
+                                                        .isDeleting.value
+                                                    ? CircularProgressIndicator(
+                                                        color: buttonColor,
+                                                      )
+                                                    : ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Call your delete function here
+                                                          // controller.deleteItem(id);
+                                                          await controller
+                                                              .deleteSubCat(
+                                                                  sub.id!,
+                                                                  category.id!);
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              buttonColor,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      20,
+                                                                  vertical: 10),
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                        ),
+                                                        child: const Text(
+                                                          "Delete",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      ),
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: buttonColor,
+                                      ))
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -223,6 +361,155 @@ class CategoryDetailsPage extends StatelessWidget {
           showCreateCategoryDialog(context, controller);
         },
       ),
+    );
+  }
+
+  void showUpdateCategoryDialog(
+      final TextEditingController nameController,
+      final TextEditingController descriptionController,
+      BuildContext context,
+      EquipmentCategoryController controller) {
+    final _formKey = GlobalKey<FormState>();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Obx(
+              () => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Title
+                  Text(
+                    "Update Category",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: buttonColor,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Name field
+                  TextFormField(
+                    controller: nameController,
+                    cursorColor: buttonColor,
+                    decoration: InputDecoration(
+                      labelText: "Category Name",
+                      labelStyle: TextStyle(color: containerColor),
+                      hintText: "Enter category name",
+                      hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter category name";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Description field
+                  TextFormField(
+                    controller: descriptionController,
+                    maxLines: 3,
+                    cursorColor: buttonColor,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      labelStyle: TextStyle(color: containerColor),
+                      hintText: "Enter category description",
+                      hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter description";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: controller.isLoading1.value
+                            ? null
+                            : () => Get.back(),
+                        child: const Text("Cancel"),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: controller.isUpdating.value
+                            ? null
+                            : () async {
+                                if (_formKey.currentState!.validate()) {
+                                  await controller.updateCategory(
+                                      catId: category.id!,
+                                      name: nameController.text,
+                                      description: descriptionController.text);
+                                }
+                              },
+                        child: controller.isUpdating.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Update",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
     );
   }
 
@@ -359,6 +646,157 @@ class CategoryDetailsPage extends StatelessWidget {
                               )
                             : const Text(
                                 "Create",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void showUpdateSubcategoryDialog(
+      BuildContext context,
+      EquipmentCategoryController controller,
+      TextEditingController nameController,
+      TextEditingController descriptionController,
+      String subCatId) {
+    final formKey = GlobalKey<FormState>();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: formKey,
+            child: Obx(
+              () => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Title
+                  Text(
+                    "Update Subcategory",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: buttonColor,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Name field
+                  TextFormField(
+                    controller: nameController,
+                    cursorColor: buttonColor,
+                    decoration: InputDecoration(
+                      labelText: "Subcategory Name",
+                      labelStyle: TextStyle(color: containerColor),
+                      hintText: "Enter subcategory name",
+                      hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter subcategory name";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Description field
+                  TextFormField(
+                    controller: descriptionController,
+                    maxLines: 3,
+                    cursorColor: buttonColor,
+                    decoration: InputDecoration(
+                      labelText: "Description",
+                      labelStyle: TextStyle(color: containerColor),
+                      hintText: "Enter subcategory description",
+                      hintStyle: TextStyle(color: buttonColor.withOpacity(0.6)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter description";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: controller.isLoading1.value
+                            ? null
+                            : () => Get.back(),
+                        child: const Text("Cancel"),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: buttonColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: controller.isUpdating.value
+                            ? null
+                            : () {
+                                if (formKey.currentState!.validate()) {
+                                  controller.updateSubCat(
+                                      subCatId: subCatId,
+                                      name: nameController.text,
+                                      description: descriptionController.text,
+                                      catId: category.id!);
+                                }
+                              },
+                        child: controller.isUpdating.value
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Update",
                                 style: TextStyle(color: Colors.white),
                               ),
                       ),

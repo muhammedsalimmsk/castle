@@ -12,7 +12,8 @@ import '../../Controlls/DepartmentController/DepartmentController.dart';
 import '../../Widget/CustomTextField.dart';
 
 class CreateWorker extends StatelessWidget {
-  CreateWorker({super.key});
+  String? workerId;
+  CreateWorker({super.key, this.workerId});
   final WorkerController controller = Get.find();
   final DepartmentController deptController = Get.put(DepartmentController());
   final formKey = GlobalKey<FormState>();
@@ -24,16 +25,18 @@ class CreateWorker extends StatelessWidget {
     RxBool isObscure = true.obs;
     RxBool isObscure2 = true.obs;
 
-    // Fetch departments once the widget is built
     deptController.getDepartment();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Worker Details", style: GoogleFonts.poppins()),
+        iconTheme: IconThemeData(color: buttonColor),
+        title: Text("Worker Details",
+            style: TextStyle(fontWeight: FontWeight.bold, color: buttonColor)),
         centerTitle: true,
         backgroundColor: Colors.white,
+        surfaceTintColor: backgroundColor,
         elevation: 0.5,
         foregroundColor: Colors.black87,
       ),
@@ -242,7 +245,11 @@ class CreateWorker extends StatelessWidget {
                       : InkWell(
                           onTap: () async {
                             if (formKey.currentState!.validate()) {
-                              await controller.createWorker();
+                              if (controller.isUpdateWorker) {
+                                await controller.updateWorker(workerId!);
+                              } else {
+                                await controller.createWorker();
+                              }
                             }
                           },
                           child: Container(
@@ -254,7 +261,7 @@ class CreateWorker extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                "Next",
+                                controller.isUpdateWorker ? "Update" : "Create",
                                 style: TextStyle(
                                     color: backgroundColor, fontSize: 16),
                               ),

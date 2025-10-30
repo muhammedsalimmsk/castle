@@ -7,7 +7,9 @@ import 'package:castle/Model/workers_model/workers_model.dart';
 import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class WorkerController extends GetxController {
   RxBool isLoading = false.obs;
@@ -20,13 +22,10 @@ class WorkerController extends GetxController {
   late WorkersModel workersModel = WorkersModel();
   late DepartWorkersModel departWorkersModel = DepartWorkersModel();
   RxList<WorkerList> workersDataByDep = <WorkerList>[].obs;
+  bool isUpdateWorker = false;
   var primaryDepartment = ''.obs;
   var selectedDepartments = <String>[].obs;
-  // Example for reference:
-  // var departments = [
-  //   {'id': '1', 'name': 'Cleaning'},
-  //   {'id': '2', 'name': 'Maintenance'},
-  // ];
+  PhoneNumber number = PhoneNumber(isoCode: 'IN');
   RxList<WorkerData> workerList = <WorkerData>[].obs;
   String getWorkerName(String id) {
     try {
@@ -34,6 +33,23 @@ class WorkerController extends GetxController {
     } catch (e) {
       return 'Unknown Worker';
     }
+  }
+
+  void addWorkerData(WorkerData worker) {
+    isUpdateWorker = true;
+    firstName.text = worker.firstName ?? "";
+    lastName.text = worker.lastName ?? "";
+    emailController.text = worker.email ?? "";
+    phoneController.text = worker.phone ?? "";
+    password.clear();
+  }
+
+  void clearField() {
+    isUpdateWorker = false;
+    firstName.clear();
+    lastName.clear();
+    emailController.clear();
+    phoneController.clear();
   }
 
   Future createWorker() async {
@@ -62,6 +78,47 @@ class WorkerController extends GetxController {
         print(response.body);
       }
     } catch (e) {
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future updateWorker(String workerId) async {
+    final endpoint = "/api/v1/admin/workers/$workerId";
+    isLoading.value = true;
+    final data = {
+      "email": emailController.text.trim(),
+      "password": password.text,
+      "firstName": firstName.text.trim(),
+      "lastName": lastName.text.trim(),
+      "phone": phoneController.text,
+      "departmentIds": selectedDepartments,
+      "primaryDepartmentId": primaryDepartment.value.toString()
+    };
+    try {
+      final response = await _apiService.patchRequest(endpoint,
+          data: data, bearerToken: token);
+      if (response.isOk) {
+        print(response.body);
+        final updatedWorkerData = WorkerData.fromJson(response.body['data']);
+        final index = workerList.indexWhere((ab) => ab.id == workerId);
+
+        if (index != -1) {
+          // Replace the old data with the updated data
+          workerList[index] = updatedWorkerData;
+          workerList.refresh(); // If workerList is an RxList (GetX)
+        }
+        Get.back();
+        Get.back();
+        Get.snackbar("Success", "Successfully updated",
+            snackPosition: SnackPosition.BOTTOM, colorText: Colors.green);
+      } else {
+        print(response.body);
+        Get.snackbar("Error", response.body['error']);
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Something error please try later");
       rethrow;
     } finally {
       isLoading.value = false;
@@ -108,17 +165,20 @@ class WorkerController extends GetxController {
     }
   }
 
-  Future deleteWorker(String userId) async {
+  Future deleteWorker(String workerId) async {
     isLoading.value = true;
     try {
       final response = await _apiService
-          .deleteRequest('/api/v1/admin/workers/$userId', bearerToken: token);
+          .deleteRequest('/api/v1/admin/workers/$workerId', bearerToken: token);
       if (response.isOk) {
+        print(response.body);
         resetController();
-        await getWorkers();
-        update();
+        workerList.removeWhere((worker) => worker.id == workerId);
+        workerList.refresh();
         Get.back();
         Get.snackbar("Deleted", "Successfully deleted");
+      } else {
+        print(response.body);
       }
     } catch (e) {
       print(e);

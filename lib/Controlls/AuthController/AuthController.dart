@@ -8,7 +8,7 @@ import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:castle/Screens/HomePage/AdminHomePage.dart';
 import '../../Screens/HomePage/ClientHomePage.dart';
 import '../../Screens/HomePage/WorkerHomePage.dart';
 
@@ -53,7 +53,7 @@ class AuthController extends GetxController {
             'expiresAt', model.data?.expiresAt?.toIso8601String() ?? '');
         await getProfile();
         if (userDetailModel!.data!.role == "ADMIN") {
-          Get.offAll(HomePage());
+          Get.offAll(DashboardPage());
         } else if (userDetailModel!.data!.role == "WORKER") {
           Get.offAll(WorkerHomePage());
         } else {
@@ -103,9 +103,7 @@ class AuthController extends GetxController {
     DateTime expiresAt = DateTime.parse(expiresAtStr);
     DateTime now = DateTime.now();
 
-    if (expiresAt.day == now.day &&
-        expiresAt.month == now.month &&
-        expiresAt.year == now.year) {
+    if (now.isBefore(expiresAt)) {
       print('Token is valid for today');
       // You can directly go to homepage or use the token
     } else {

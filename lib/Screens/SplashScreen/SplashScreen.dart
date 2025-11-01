@@ -1,4 +1,5 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Screens/HomePage/AdminHomePage.dart';
 import 'package:castle/Screens/HomePage/ClientHomePage.dart';
 import 'package:castle/Screens/HomePage/WorkerHomePage.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class SplashScreen extends StatelessWidget {
       } else if (userDetailModel?.data?.role == "WORKER") {
         return WorkerHomePage();
       } else {
-        return HomePage();
+        return DashboardPage();
       }
     } else {
       return LoginPage();

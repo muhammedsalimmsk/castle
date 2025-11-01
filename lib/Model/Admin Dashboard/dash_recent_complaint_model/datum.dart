@@ -1,7 +1,8 @@
+import '../../client_dashboard/status_update.dart';
 import 'client.dart';
 import 'department.dart';
 import 'equipment.dart';
-import 'status_update.dart';
+
 import 'team_lead.dart';
 
 class Datum {

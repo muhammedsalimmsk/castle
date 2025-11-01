@@ -4,9 +4,12 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/connect.dart';
 
 class ApiService extends GetConnect {
-  ApiService() {
+  ApiService()
+      : super(
+          // Pass the desired timeout to the super constructor
+          timeout: const Duration(seconds: 30),
+        ) {
     // Set your base URL
-    GetConnect(timeout: Duration(seconds: 30));
     baseUrl = "https://api-tekcastle-9360.onrender.com";
   }
   Future<Response> getRequest(String endpoint, {String? bearerToken}) async {

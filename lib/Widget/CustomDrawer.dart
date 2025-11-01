@@ -2,6 +2,7 @@ import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Screens/ComplaintsPage/ComplaintPage.dart';
 import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
+import 'package:castle/Screens/HomePage/AdminHomePage.dart';
 import 'package:castle/Screens/HomePage/ClientHomePage.dart';
 import 'package:castle/Screens/HomePage/HomePage.dart';
 import 'package:castle/Screens/HomePage/WorkerHomePage.dart';
@@ -89,7 +90,7 @@ class CustomDrawer extends StatelessWidget {
                           resetSelection();
                           overviewSelected.value = true;
                           if (userDetailModel!.data!.role == "ADMIN") {
-                            Get.offAll(HomePage());
+                            Get.offAll(DashboardPage());
                           } else if (userDetailModel!.data!.role == "WORKER") {
                             Get.offAll(WorkerHomePage());
                           } else {

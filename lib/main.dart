@@ -34,32 +34,33 @@ Future<bool> checkTokenStatus() async {
 
   final now = DateTime.now();
 
-  // If expiry date is not today, refresh token
-  if (expiresAt.day != now.day ||
-      expiresAt.month != now.month ||
-      expiresAt.year != now.year) {
+  // ✅ Check if token is expired
+  if (now.isAfter(expiresAt)) {
     try {
       final apiService = ApiService();
-      final response = await apiService.postRequest('/api/v1/auth/refresh', {
-        'refreshToken': refreshToken,
-      });
+      final response = await apiService.postRequest(
+        '/api/v1/auth/refresh',
+        {'refreshToken': refreshToken},
+      );
 
       if (response.isOk) {
         final model = AuthModel.fromJson(response.body);
         await prefs.setString('token', model.data?.token ?? '');
         await prefs.setString('refreshToken', model.data?.refreshToken ?? '');
         await prefs.setString(
-            'expiresAt', model.data?.expiresAt?.toIso8601String() ?? '');
+          'expiresAt',
+          model.data?.expiresAt?.toIso8601String() ?? '',
+        );
         return true;
       } else {
-        return false; // Refresh token failed
+        return false; // Refresh failed
       }
     } catch (e) {
       print("Error refreshing token: $e");
       return false;
     }
   } else {
-    return true; // Token is still valid for today
+    return true; // Token still valid
   }
 }
 

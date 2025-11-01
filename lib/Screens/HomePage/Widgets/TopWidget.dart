@@ -106,13 +106,6 @@ class TopWidgetOfHomePage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        // const SizedBox(
-        //   height: 180,
-        //   child: Padding(
-        //     padding: EdgeInsets.all(8.0),
-        //     child: ActivityChart(),
-        //   ),
-        // ),
       ],
     );
   }

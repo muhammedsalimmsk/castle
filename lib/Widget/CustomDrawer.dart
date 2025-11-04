@@ -1,22 +1,8 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
-import 'package:castle/Screens/ClientPage/ClientPage.dart';
-import 'package:castle/Screens/ComplaintsPage/ComplaintPage.dart';
-import 'package:castle/Screens/EquipmentPage/EquipmentPage.dart';
-import 'package:castle/Screens/HomePage/AdminHomePage.dart';
-import 'package:castle/Screens/HomePage/ClientHomePage.dart';
-import 'package:castle/Screens/HomePage/HomePage.dart';
-import 'package:castle/Screens/HomePage/WorkerHomePage.dart';
-import 'package:castle/Screens/PartsRequestPagee/PartsRequestPage.dart';
-import 'package:castle/Screens/RoutineScreens/WorkerRoutinePage.dart';
-import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../Colors/Colors.dart';
-import '../Screens/ClientPartPage/ClientPartsPage.dart';
-import '../Screens/PartsRequestPagee/PartsListPage.dart';
-import '../Screens/RoutineScreens/RoutinePage/RoutinePage.dart';
 
 class CustomDrawer extends StatelessWidget {
   CustomDrawer({super.key});
@@ -26,11 +12,9 @@ class CustomDrawer extends StatelessWidget {
   final RxBool equipmentSelected = false.obs;
   final RxBool complaintsSelected = false.obs;
   final RxBool routineSelected = false.obs;
-  final RxBool inventorySelected = false.obs;
-  final RxBool accountsSelected = false.obs;
-  final RxBool settingsSelected = false.obs;
-  final RxBool partsRequestSelected = false.obs;
-  final RxBool workersRequestSelected = false.obs;
+  final RxBool clientsSelected = false.obs;
+  final RxBool workersSelected = false.obs;
+  final RxBool partsListSelected = false.obs;
   final RxBool requestedPartsSelected = false.obs;
 
   void resetSelection() {
@@ -38,10 +22,9 @@ class CustomDrawer extends StatelessWidget {
     equipmentSelected.value = false;
     complaintsSelected.value = false;
     routineSelected.value = false;
-    inventorySelected.value = false;
-    accountsSelected.value = false;
-    settingsSelected.value = false;
-    partsRequestSelected.value = false;
+    clientsSelected.value = false;
+    workersSelected.value = false;
+    partsListSelected.value = false;
     requestedPartsSelected.value = false;
   }
 
@@ -54,7 +37,7 @@ class CustomDrawer extends StatelessWidget {
           children: [
             // Drawer Header
             Container(
-              padding: EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -63,175 +46,167 @@ class CustomDrawer extends StatelessWidget {
                     'assets/images/book-square.png',
                     width: 35,
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   const Text(
                     "Nuegas",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  )
+                  ),
                 ],
               ),
             ),
+
             // Drawer Menu Items
             Expanded(
               child: ListView(
                 children: [
+                  // Overview
                   Obx(() => DrawerListTile(
-                        iSSelected: overviewSelected.value,
                         title: "Overview",
                         iconWidget: Image.asset(
                           'assets/icons/category-2.png',
                           width: 24,
                           height: 24,
-                          // optional
                         ),
+                        iSSelected: overviewSelected.value,
                         onTap: () {
                           resetSelection();
                           overviewSelected.value = true;
+
                           if (userDetailModel!.data!.role == "ADMIN") {
-                            Get.offAll(DashboardPage());
+                            Get.offAllNamed('/home');
                           } else if (userDetailModel!.data!.role == "WORKER") {
-                            Get.offAll(WorkerHomePage());
+                            Get.offAllNamed('/workerHome');
                           } else {
-                            Get.offAll(ClientHomePage());
+                            Get.offAllNamed('/clientHome');
                           }
                         },
                       )),
-                  if (userDetailModel!.data!.role != "WORKER") ...[
+
+                  // Equipment
+                  if (userDetailModel!.data!.role != "WORKER")
                     Obx(() => DrawerListTile(
-                          iSSelected: equipmentSelected.value,
                           title: "Equipment",
                           iconWidget: Image.asset(
                             'assets/icons/equipment.png',
                             width: 24,
                             height: 24,
-                            color: Colors.black,
-                            // optional
                           ),
+                          iSSelected: equipmentSelected.value,
                           onTap: () {
                             resetSelection();
                             equipmentSelected.value = true;
-                            Get.to(EquipmentPage());
+                            Get.toNamed('/equipment');
                           },
                         )),
-                  ],
+
+                  // Complaints
                   Obx(() => DrawerListTile(
-                        iSSelected: complaintsSelected.value,
                         title: "Complaints",
                         iconWidget: Image.asset(
                           'assets/icons/book.png',
                           width: 24,
                           height: 24,
-                          // optional
                         ),
+                        iSSelected: complaintsSelected.value,
                         onTap: () {
                           resetSelection();
                           complaintsSelected.value = true;
-                          if (Scaffold.of(context).isDrawerOpen) {
-                            Navigator.pop(context);
-                            Get.to(ComplaintPage());
-                          }
+                          Navigator.pop(context);
+                          Get.toNamed('/complaints');
                         },
                       )),
-                  userDetailModel!.data!.role == 'ADMIN'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: routineSelected.value,
-                            title: "Routine",
-                            iconWidget: Image.asset(
-                              'assets/icons/routing.png',
-                              width: 24,
-                              height: 24,
-                              // optional
-                            ),
-                            onTap: () {
-                              resetSelection();
-                              routineSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(RoutinePage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'WORKER'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: routineSelected.value,
-                            title: "Routine Task",
-                            icon: Icons.repeat,
-                            onTap: () {
-                              resetSelection();
-                              routineSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.off(WorkerRoutinePage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'ADMIN'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: routineSelected.value,
-                            title: "Parts List",
-                            icon: Icons.add_circle_outline,
-                            onTap: () {
-                              resetSelection();
-                              partsRequestSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(PartsListPage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'ADMIN'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: inventorySelected.value,
-                            title: 'Clients',
-                            icon: Icons.person,
-                            onTap: () {
-                              resetSelection();
-                              inventorySelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(ClientPage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role == 'ADMIN'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: inventorySelected.value,
-                            title: 'Workers',
-                            icon: Icons.group,
-                            onTap: () {
-                              resetSelection();
-                              workersRequestSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(WorkersPage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
-                  userDetailModel!.data!.role != 'WORKER'
-                      ? Obx(() => DrawerListTile(
-                            iSSelected: accountsSelected.value,
-                            title: "Requested Parts",
-                            icon: Icons.settings_applications,
-                            onTap: () {
-                              resetSelection();
-                              requestedPartsSelected.value = true;
-                              if (Scaffold.of(context).isDrawerOpen) {
-                                Navigator.pop(context);
-                                Get.to(RequestedPartsPage());
-                              }
-                            },
-                          ))
-                      : SizedBox.shrink(),
+
+                  // Routine
+                  if (userDetailModel!.data!.role == "ADMIN")
+                    Obx(() => DrawerListTile(
+                          title: "Routine",
+                          iconWidget: Image.asset(
+                            'assets/icons/routing.png',
+                            width: 24,
+                            height: 24,
+                          ),
+                          iSSelected: routineSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            routineSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/routine');
+                          },
+                        )),
+
+                  if (userDetailModel!.data!.role == "WORKER")
+                    Obx(() => DrawerListTile(
+                          title: "Routine Task",
+                          icon: Icons.repeat,
+                          iSSelected: routineSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            routineSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/workerRoutine');
+                          },
+                        )),
+
+                  // Parts List
+                  if (userDetailModel!.data!.role == "ADMIN")
+                    Obx(() => DrawerListTile(
+                          title: "Parts List",
+                          icon: Icons.add_circle_outline,
+                          iSSelected: partsListSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            partsListSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/partsList');
+                          },
+                        )),
+
+                  // Clients
+                  if (userDetailModel!.data!.role == "ADMIN")
+                    Obx(() => DrawerListTile(
+                          title: 'Clients',
+                          icon: Icons.person,
+                          iSSelected: clientsSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            clientsSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/clients');
+                          },
+                        )),
+
+                  // Workers
+                  if (userDetailModel!.data!.role == "ADMIN")
+                    Obx(() => DrawerListTile(
+                          title: 'Workers',
+                          icon: Icons.group,
+                          iSSelected: workersSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            workersSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/workers');
+                          },
+                        )),
+
+                  // Requested Parts
+                  if (userDetailModel!.data!.role != "WORKER")
+                    Obx(() => DrawerListTile(
+                          title: "Requested Parts",
+                          icon: Icons.settings_applications,
+                          iSSelected: requestedPartsSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            requestedPartsSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/requestedParts');
+                          },
+                        )),
                 ],
               ),
             ),
+
+            // Help Center Footer
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Stack(
@@ -255,34 +230,36 @@ class CustomDrawer extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           const Text(
-                            "Having Trouble in Learning. Please contact us for more questions.",
+                            "Having Trouble? Please contact us for help.",
                             style: TextStyle(color: Colors.white, fontSize: 10),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: backgroundColor),
+                              borderRadius: BorderRadius.circular(8),
+                              color: backgroundColor,
+                            ),
                             child: const Text(
                               "Go To Help Center",
                               maxLines: 1,
                               style: TextStyle(
-                                  fontSize: 12,
-                                  color: containerColor,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 12,
+                                color: containerColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
                   Positioned(
-                    top: -100, // Move it upwards
-                    left: -94, // Move it to the left
+                    top: -100,
+                    left: -94,
                     child: Container(
                       width: 160,
                       height: 160,
@@ -293,8 +270,8 @@ class CustomDrawer extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    bottom: -70, // Move it upwards
-                    right: -94, // Move it to the left
+                    bottom: -70,
+                    right: -94,
                     child: Container(
                       width: 130,
                       height: 130,
@@ -317,36 +294,37 @@ class CustomDrawer extends StatelessWidget {
 class DrawerListTile extends StatelessWidget {
   final String title;
   final IconData? icon;
-  final Widget? iconWidget; // optional
-
+  final Widget? iconWidget;
   final VoidCallback onTap;
   final bool iSSelected;
 
-  const DrawerListTile(
-      {super.key,
-      required this.title,
-      this.icon,
-      required this.onTap,
-      required this.iSSelected,
-      this.iconWidget});
+  const DrawerListTile({
+    super.key,
+    required this.title,
+    this.icon,
+    this.iconWidget,
+    required this.onTap,
+    required this.iSSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Divider(),
+        const Divider(),
         ListTile(
           leading: iconWidget ??
               Icon(
                 icon,
-                color: iSSelected ? containerColor : containerColor,
+                color: iSSelected ? containerColor : drawerItemColor,
                 size: 25,
               ),
           title: Text(
             title,
             style: TextStyle(
               color: iSSelected ? containerColor : drawerItemColor,
+              fontWeight: iSSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           onTap: onTap,

@@ -9,10 +9,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Colors/Colors.dart';
 import 'Model/auth_model/auth_model.dart';
+import 'Screens/ClientPage/ClientPage.dart';
+import 'Screens/ComplaintsPage/ComplaintPage.dart';
+import 'Screens/EquipmentPage/EquipmentPage.dart';
+import 'Screens/HomePage/AdminHomePage.dart';
+import 'Screens/HomePage/ClientHomePage.dart';
+import 'Screens/HomePage/WorkerHomePage.dart';
+import 'Screens/PartsRequestPagee/PartsListPage.dart';
+import 'Screens/PartsRequestPagee/PartsRequestPage.dart';
+import 'Screens/RoutineScreens/RoutinePage/RoutinePage.dart';
+import 'Screens/RoutineScreens/WorkerRoutinePage.dart';
+import 'Screens/WorkersPage/WorkersPage.dart';
 import 'Services/ApiService.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
   GoogleFonts.config.allowRuntimeFetching = true;
+  usePathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -80,6 +93,20 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: backgroundColor,
       ),
+      getPages: [
+        GetPage(name: '/home', page: () => DashboardPage()),
+        GetPage(name: '/workerHome', page: () => WorkerHomePage()),
+        GetPage(name: '/clientHome', page: () => ClientHomePage()),
+        GetPage(name: '/equipment', page: () => EquipmentPage()),
+        GetPage(name: '/complaints', page: () => ComplaintPage()),
+        GetPage(name: '/routine', page: () => RoutinePage()),
+        GetPage(name: '/workerRoutine', page: () => WorkerRoutinePage()),
+        GetPage(name: '/partsList', page: () => PartsListPage()),
+        GetPage(name: '/clients', page: () => ClientPage()),
+        GetPage(name: '/workers', page: () => WorkersPage()),
+        GetPage(name: '/requestedParts', page: () => RequestedPartsPage()),
+        // add more as needed
+      ],
       home: SplashScreen(),
     );
   }

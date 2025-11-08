@@ -1,0 +1,106 @@
+name: Build Flutter APK and Web
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prevent recursion / exit if run triggered by this bot
+        if: ${{ github.actor == 'github-actions[bot]' }}
+        run: |
+          echo "Triggered by github-actions[bot] — exiting to avoid recursion."
+          exit 0
+
+      - name: Cache pub & gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle
+            android/.gradle
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}-${{ hashFiles('**/android/gradle.properties') }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Extract app version (from pubspec) and set APK name
+        id: vars
+        run: |
+          # try to parse pubspec version: e.g. 1.2.3+45 -> version=1.2.3 build=45
+          VERSION_LINE=$(grep '^version:' pubspec.yaml || true)
+          VERSION=$(echo "$VERSION_LINE" | sed -E "s/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/" || true)
+          BUILD=$(echo "$VERSION_LINE" | sed -E "s/.*\+([0-9]+).*/\1/" || true)
+          DATE=$(date +'%Y%m%d')
+          RUN_NUM=$(printf "%03d" ${{ github.run_number }})
+          if [ -z "$VERSION" ]; then VERSION="0.0.0"; fi
+          if [ -z "$BUILD" ]; then BUILD="$RUN_NUM"; fi
+          APP_NAME="castle-${VERSION}+${BUILD}-${DATE}-${RUN_NUM}"
+          echo "APP_NAME=${APP_NAME}" >> $GITHUB_ENV
+          echo "APP_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "APP_BUILD=${BUILD}" >> $GITHUB_ENV
+
+      - name: Build Android (single universal APK)
+        run: flutter build apk --release --no-shrink
+        
+      - name: Collect APK into artifacts dir
+        run: |
+          mkdir -p artifacts
+          # Copy the single universal APK
+          if [ -f build/app/outputs/flutter-apk/app-release.apk ]; then
+            cp build/app/outputs/flutter-apk/app-release.apk artifacts/${APP_NAME}.apk
+          fi
+          ls -la artifacts
+        
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}
+          path: artifacts/
+          retention-days: 7
+
+      - name: Build Flutter web
+        run: flutter build web --release
+
+      - name: Prepare web build folder for commit (move build/web to 'web-build' safely)
+        run: |
+          mv build/web web-build
+
+      - name: Configure Git user (for web build commit)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push web build to master (skip ci)
+        run: |
+          # add web-build as a directory so we don't accidentally delete user web/ content; adapt as necessary
+          rm -rf web || true
+          git add web-build
+          git commit -m "Update Flutter web build - ${{ github.sha }} [skip ci]" || echo "No changes to commit"
+          git push origin master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

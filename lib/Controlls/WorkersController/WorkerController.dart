@@ -126,7 +126,7 @@ class WorkerController extends GetxController {
   }
 
   Future getWorkerByDepartment(String departmentId) async {
-    final endpoint = '/api/v1/admin/departments/$departmentId/workers';
+    final endpoint = '/api/v1/common/departments/$departmentId/workers';
     print(endpoint);
     try {
       final response =

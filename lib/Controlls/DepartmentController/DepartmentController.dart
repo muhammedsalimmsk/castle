@@ -58,7 +58,7 @@ class DepartmentController extends GetxController {
   }
 
   Future getDepartment() async {
-    final endpoint = '/api/v1/admin/departments';
+    final endpoint = '/api/v1/common/departments';
     isLoading.value = true;
     update();
     try {

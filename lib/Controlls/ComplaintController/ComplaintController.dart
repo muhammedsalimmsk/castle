@@ -280,7 +280,7 @@ class ComplaintController extends GetxController {
       required List<String> workerIds,
       required DateTime dueDate}) async {
     isLoading.value = true;
-    final endpoint = "/api/v1/admin/complaints/$complaintId/assign";
+    final endpoint = "/api/v1/common/complaints/$complaintId/assign";
     final data = {
       'teamLeadId': teamLeadId,
       'workerIds': workerIds,

@@ -1,4 +1,5 @@
 import 'package:castle/Colors/Colors.dart';
+import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/ComplaintController/ComplaintController.dart';
 import 'package:castle/Controlls/WorkersController/WorkerController.dart';
 import 'package:castle/Controlls/DepartmentController/DepartmentController.dart';
@@ -128,7 +129,9 @@ class AssignWorkPage extends StatelessWidget {
               assignController.selectedWorkers.clear();
               workerController.workersDataByDep.clear();
               // Call API to fetch workers by department
-              await workerController.getWorkerByDepartment(value);
+              await workerController.getWorkerByDepartment(
+                value,
+              );
             },
           ),
         ),

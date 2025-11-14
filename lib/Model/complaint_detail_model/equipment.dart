@@ -1,3 +1,5 @@
+import 'package:castle/Model/complaint_detail_model/supervisor.dart';
+
 import 'category.dart';
 
 class Equipment {
@@ -6,14 +8,15 @@ class Equipment {
   String? location;
   String? serialNumber;
   Category? category;
+  Supervisor? supervisor;
 
-  Equipment({
-    this.name,
-    this.model,
-    this.location,
-    this.serialNumber,
-    this.category,
-  });
+  Equipment(
+      {this.name,
+      this.model,
+      this.location,
+      this.serialNumber,
+      this.category,
+      this.supervisor});
 
   factory Equipment.fromJson(Map<String, dynamic> json) => Equipment(
         name: json['name'] as String?,
@@ -23,6 +26,9 @@ class Equipment {
         category: json['category'] == null
             ? null
             : Category.fromJson(json['category'] as Map<String, dynamic>),
+        supervisor: json['supervisor'] == null
+            ? null
+            : Supervisor.fromJson(json['supervisor']),
       );
 
   Map<String, dynamic> toJson() => {

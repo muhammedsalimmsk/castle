@@ -192,6 +192,13 @@ class CreateWorker extends StatelessWidget {
                               .toList(),
                           onChanged: (value) {
                             controller.primaryDepartment.value = value ?? '';
+
+                            // Add primary to secondary if missing
+                            if (value != null &&
+                                !controller.selectedDepartments
+                                    .contains(value)) {
+                              controller.selectedDepartments.add(value);
+                            }
                           },
                           validator: (val) => val == null || val.isEmpty
                               ? "Select primary department"
@@ -203,10 +210,15 @@ class CreateWorker extends StatelessWidget {
                                 fontWeight: FontWeight.w500)),
                         MultiSelectDialogField(
                           backgroundColor: backgroundColor,
-                          items: departments
-                              .map((dept) =>
-                                  MultiSelectItem(dept.id, dept.name ?? ""))
-                              .toList(),
+                          items: departments.map((dept) {
+                            bool isPrimary =
+                                controller.primaryDepartment.value == dept.id;
+                            return MultiSelectItem(
+                              dept.id,
+                              "${dept.name}${isPrimary ? " (Primary)" : ""}",
+                              // disable tap if primary
+                            );
+                          }).toList(),
                           title: Text("Select Secondary Departments",
                               style: GoogleFonts.poppins()),
                           selectedColor: buttonColor,
@@ -223,14 +235,22 @@ class CreateWorker extends StatelessWidget {
                                 fontSize: 14, color: Colors.black54),
                           ),
                           onConfirm: (values) {
-                            controller.selectedDepartments.value =
-                                values.cast<String>();
+                            List<String> selected = values.cast<String>();
+
+                            // Ensure primary department is ALWAYS in the list
+                            String primary = controller.primaryDepartment.value;
+                            if (primary.isNotEmpty &&
+                                !selected.contains(primary)) {
+                              selected.add(primary);
+                            }
+
+                            controller.selectedDepartments.value = selected;
                           },
                           chipDisplay: MultiSelectChipDisplay(
-                            chipColor: buttonColor.withOpacity(0.2),
-                            textStyle: const TextStyle(color: Colors.black87),
                             onTap: (value) {
-                              controller.selectedDepartments.remove(value);
+                              if (value != controller.primaryDepartment.value) {
+                                controller.selectedDepartments.remove(value);
+                              }
                             },
                           ),
                         ),

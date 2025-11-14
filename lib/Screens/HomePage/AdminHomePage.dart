@@ -5,11 +5,12 @@ import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../Colors/Colors.dart';
 import '../../Controlls/DashboardController/AdminDashboardController.dart';
 import 'package:get/get.dart';
-
 import '../../Model/Admin Dashboard/dash_client_stat_model/datum.dart';
 import 'Widgets/LinkinOverlay.dart';
 
@@ -17,12 +18,75 @@ class DashboardPage extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
 
   DashboardPage({super.key}) {
-    // preview. Replace with controller.loadFromApi(...) to use real API
     controller.fetchDashboard(token!);
+  }
+  Future<void> _initOneSignalAndAskPermission(BuildContext context) async {
+    // Initialize OneSignal
+
+    // Ask for permission if not granted
+    final status = await Permission.notification.status;
+
+    if (!status.isGranted) {
+      final result = await Permission.notification.request();
+
+      if (result.isGranted) {
+        await OneSignal.User.addTags({
+          "role": userDetailModel!.data!.role,
+        });
+        await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+        await OneSignal.User.addSms(userDetailModel!.data!.phone ?? "");
+        await OneSignal.login(userDetailModel!.data!.id!);
+        OneSignal.Notifications.requestPermission(true);
+      } else if (result.isPermanentlyDenied) {
+        _showOpenSettingsDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Notifications denied ❌")),
+        );
+      }
+    } else {
+      // Already granted
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Notifications already enabled ✅")),
+      );
+      await OneSignal.User.addTags({
+        "role": userDetailModel!.data!.role,
+      });
+      await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+      await OneSignal.User.addSms(userDetailModel!.data!.phone ?? "");
+      await OneSignal.login(userDetailModel!.data!.id!);
+      OneSignal.Notifications.requestPermission(true);
+    }
+  }
+
+  void _showOpenSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Enable Notifications'),
+        content: const Text(
+          'Notifications are turned off. Please enable them in system settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await openAppSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    _initOneSignalAndAskPermission(context);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: CustomAppBar(),
@@ -532,55 +596,62 @@ class _InfoCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final double width;
+  final VoidCallbackAction? onTap;
   const _InfoCard(
       {required this.title,
       required this.value,
       required this.subtitle,
       required this.icon,
-      required this.width});
+      required this.width,
+      this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: buttonColor, width: 1),
-            color: buttonColor.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(10)),
+      child: GestureDetector(
+        onTap: () {
+          onTap;
+        },
         child: Container(
-          width: width,
-          padding: EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: buttonColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Icon(icon, color: buttonColor, size: 18),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                      child: Text(title,
-                          style: TextStyle(
-                              color: containerColor.withOpacity(0.9))))
-                ],
-              ),
-              SizedBox(height: 12),
-              Text(value,
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: containerColor)),
-              SizedBox(height: 4),
-              Text(subtitle,
-                  style: TextStyle(
-                      color: containerColor.withOpacity(0.6), fontSize: 12)),
-            ],
+          decoration: BoxDecoration(
+              border: Border.all(color: buttonColor, width: 1),
+              color: buttonColor.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10)),
+          child: Container(
+            width: width,
+            padding: EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: buttonColor.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Icon(icon, color: buttonColor, size: 18),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                        child: Text(title,
+                            style: TextStyle(
+                                color: containerColor.withOpacity(0.9))))
+                  ],
+                ),
+                SizedBox(height: 12),
+                Text(value,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: containerColor)),
+                SizedBox(height: 4),
+                Text(subtitle,
+                    style: TextStyle(
+                        color: containerColor.withOpacity(0.6), fontSize: 12)),
+              ],
+            ),
           ),
         ),
       ),

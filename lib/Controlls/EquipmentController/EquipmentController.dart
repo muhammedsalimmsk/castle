@@ -34,6 +34,7 @@ class EquipmentController extends GetxController {
   final clientData = <ClientData>[].obs;
   final searchQuery = ''.obs;
   final isFetchingClients = false.obs;
+  final RxString selectedSupervisorId = ''.obs;
   int page = 1;
   String? lastSearch;
   String? lastCategoryId;
@@ -289,6 +290,7 @@ class EquipmentController extends GetxController {
       "equipmentTypeId": equipmentTypeId.value,
       "subCategoryId": subCategoryId!.value,
       "clientId": clientId ?? clientIdController.text,
+      "supervisorId": selectedSupervisorId.value
     };
     try {
       print(data);

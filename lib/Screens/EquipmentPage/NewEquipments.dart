@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../Colors/Colors.dart';
 import '../../Controlls/AuthController/AuthController.dart';
 import '../../Controlls/EquipmentController/EquipmentController.dart';
+import '../../Controlls/WorkersController/WorkerController.dart';
 import '../../Widget/CustomTextField.dart';
 
 class NewEquipmentsRequest extends StatelessWidget {
@@ -41,6 +42,7 @@ class NewEquipmentsRequest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(EquipmentController());
+    final workerController = Get.put(WorkerController());
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -125,8 +127,9 @@ class NewEquipmentsRequest extends StatelessWidget {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null)
+                      if (picked != null) {
                         controller.installationDate.value = picked;
+                      }
                     },
                     decoration: customInputDecoration(
                         label: "Installation Date", icon: Icons.calendar_today),
@@ -153,14 +156,16 @@ class NewEquipmentsRequest extends StatelessWidget {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null)
+                      if (picked != null) {
                         controller.warrantyExpiry.value = picked;
+                      }
                     },
                     decoration: customInputDecoration(
                         label: "Warranty Expiry", icon: Icons.calendar_today),
                   )),
               const SizedBox(height: 16),
               Obx(() => DropdownButtonFormField<String>(
+                    dropdownColor: backgroundColor,
                     value: controller.equipmentTypeId.value.isEmpty
                         ? null
                         : controller.equipmentTypeId.value,
@@ -187,6 +192,7 @@ class NewEquipmentsRequest extends StatelessWidget {
                   )),
               const SizedBox(height: 16),
               Obx(() => DropdownButtonFormField<String>(
+                    dropdownColor: backgroundColor,
                     value: controller.locationType.value.isEmpty
                         ? null
                         : controller.locationType.value,
@@ -211,8 +217,35 @@ class NewEquipmentsRequest extends StatelessWidget {
                 hint: "Location Remarks",
                 controller: controller.locationRemarksController,
               ),
+              const SizedBox(
+                height: 16,
+              ),
+              Obx(() => DropdownButtonFormField<String>(
+                    dropdownColor: backgroundColor,
+                    value: controller.selectedSupervisorId.value.isEmpty
+                        ? null
+                        : controller.selectedSupervisorId.value,
+                    isExpanded: true,
+                    decoration:
+                        customInputDecoration(label: "Select Supervisor"),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Please select supervisor'
+                        : null,
+                    items: workerController.workerList.map((cat) {
+                      return DropdownMenuItem<String>(
+                        value: cat.id,
+                        child: Text(
+                            "${cat.firstName ?? 'Unnamed'} ${cat.lastName ?? 'Unnamed'}"),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      controller.selectedSupervisorId.value = value ?? '';
+                      print(controller.selectedSupervisorId.value);
+                    },
+                  )),
               const SizedBox(height: 16),
               Obx(() => DropdownButtonFormField<String>(
+                    dropdownColor: backgroundColor,
                     value: controller.categoryId.value.isEmpty
                         ? null
                         : controller.categoryId.value,
@@ -289,6 +322,35 @@ class NewEquipmentsRequest extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSupervisorDropdown(WorkerController workerController,
+      EquipmentController equipmentController) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: DropdownButton<String>(
+        dropdownColor: backgroundColor,
+        isExpanded: true,
+        value: equipmentController.selectedSupervisorId.value.isEmpty
+            ? null
+            : equipmentController.selectedSupervisorId.value,
+        hint: const Text('Select Team Lead'),
+        underline: const SizedBox(),
+        items: workerController.workersDataByDep.map((worker) {
+          return DropdownMenuItem<String>(
+            value: worker.id,
+            child: Text("${worker.firstName} ${worker.lastName}"),
+          );
+        }).toList(),
+        onChanged: (value) {
+          equipmentController.selectedSupervisorId.value = value ?? '';
+        },
       ),
     );
   }

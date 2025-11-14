@@ -107,6 +107,8 @@ class ComplaintDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("complaint Id is $complaintId");
+    print(token);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -515,7 +517,9 @@ class ComplaintDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                (userDetailModel!.data!.role == "ADMIN")
+                (userDetailModel!.data!.role == "ADMIN" ||
+                        complaint.equipment?.supervisor!.id ==
+                            userDetailModel!.data!.id)
                     ? GestureDetector(
                         onTap: () {
                           Get.to(AssignWorkPage(complaintId: complaintId));

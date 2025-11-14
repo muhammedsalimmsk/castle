@@ -1,7 +1,6 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../Colors/Colors.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -43,6 +42,7 @@ class CustomDrawer extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
+                    color: buttonColor,
                     'assets/images/book-square.png',
                     width: 35,
                   ),
@@ -87,6 +87,7 @@ class CustomDrawer extends StatelessWidget {
                     Obx(() => DrawerListTile(
                           title: "Equipment",
                           iconWidget: Image.asset(
+                            color: buttonColor,
                             'assets/icons/equipment.png',
                             width: 24,
                             height: 24,
@@ -103,6 +104,7 @@ class CustomDrawer extends StatelessWidget {
                   Obx(() => DrawerListTile(
                         title: "Complaints",
                         iconWidget: Image.asset(
+                          color: buttonColor,
                           'assets/icons/book.png',
                           width: 24,
                           height: 24,
@@ -121,6 +123,7 @@ class CustomDrawer extends StatelessWidget {
                     Obx(() => DrawerListTile(
                           title: "Routine",
                           iconWidget: Image.asset(
+                            color: buttonColor,
                             'assets/icons/routing.png',
                             width: 24,
                             height: 24,
@@ -317,7 +320,7 @@ class DrawerListTile extends StatelessWidget {
           leading: iconWidget ??
               Icon(
                 icon,
-                color: iSSelected ? containerColor : drawerItemColor,
+                color: buttonColor,
                 size: 25,
               ),
           title: Text(

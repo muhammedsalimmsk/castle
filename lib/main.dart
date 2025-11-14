@@ -22,10 +22,14 @@ import 'Screens/RoutineScreens/WorkerRoutinePage.dart';
 import 'Screens/WorkersPage/WorkersPage.dart';
 import 'Services/ApiService.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 void main() {
   GoogleFonts.config.allowRuntimeFetching = true;
   usePathUrlStrategy();
+  WidgetsFlutterBinding.ensureInitialized();
+  OneSignal.initialize("7013c88e-2296-421e-a136-1c775c6904cc");
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   runApp(const MyApp());
 }
 
@@ -47,7 +51,6 @@ Future<bool> checkTokenStatus() async {
 
   final now = DateTime.now();
 
-  // ✅ Check if token is expired
   if (now.isAfter(expiresAt)) {
     try {
       final apiService = ApiService();

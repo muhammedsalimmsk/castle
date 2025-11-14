@@ -289,8 +289,8 @@ class ComplaintController extends GetxController {
     };
     print(data);
     try {
-      final response = await _apiService.patchRequest(endpoint,
-          data: data, bearerToken: token);
+      final response =
+          await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
         isRefresh = true;

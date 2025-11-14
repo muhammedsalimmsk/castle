@@ -357,6 +357,46 @@ class ComplaintDetailsPage extends StatelessWidget {
                           ],
                         ),
                       const SizedBox(height: 12),
+                      if (complaint.equipment?.supervisor != null)
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.person,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                                "Supervisor: ${complaint.equipment!.supervisor!.firstName} ${complaint.equipment!.supervisor!.lastName}"),
+                          ],
+                        ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                              "Supervisor phone: ${complaint.equipment!.supervisor!.phone ?? "N?A"}"),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.email,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                              "Supervisor email: ${complaint.equipment!.supervisor!.email ?? "N?A"}"),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           const Icon(

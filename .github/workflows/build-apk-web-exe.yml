@@ -110,6 +110,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Cache Flutter Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.os }}\Pub\Cache
+          key: ${{ runner.os }}-flutter-pub-${{ hashFiles('**/pubspec.yaml') }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-flutter-pub-
+
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:

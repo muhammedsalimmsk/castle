@@ -16,3 +16,7 @@ const notWorkingTextColor = Color(0xfffA30D11);
 const addNewButtonColor = Color(0xfff624DE3);
 const drawerItemColor = Color(0xfff8E92BC);
 const buttonShadeColor = Color(0xfffC4C4C4);
+const cardShadowColor = Color(0xfffE5E7EB);
+const searchBackgroundColor = Color(0xfffF9FAFB);
+const dividerColor = Color(0xfffE5E7EB);
+const cardHoverColor = Color(0xfffF3F4F6);

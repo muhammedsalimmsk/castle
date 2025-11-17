@@ -30,8 +30,7 @@ migrate_working_dir/
 .pub/
 
 # Ignore all build artifacts EXCEPT build/web/
-build/**/*
-!build/web/
+build
 
 # Symbolication related
 app.*.symbols
@@ -43,3 +42,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+build/web/flutter_bootstrap.js
+build/web/flutter_service_worker.js
+build/web/main.dart.js

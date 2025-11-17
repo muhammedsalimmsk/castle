@@ -6,12 +6,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../Colors/Colors.dart';
 import '../../Controlls/DashboardController/AdminDashboardController.dart';
 import 'package:get/get.dart';
-import '../../Model/Admin Dashboard/dash_client_stat_model/datum.dart';
 import 'Widgets/LinkinOverlay.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -131,30 +129,31 @@ class DashboardPage extends StatelessWidget {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _InfoCard(
                 title: 'Complaints',
                 value: controller.totalComplaints.value.toString(),
                 subtitle: 'Total open',
-                icon: Icons.report_problem_outlined,
-                width: 120,
+                icon: Icons.report_problem_rounded,
+                width: 140,
               ),
+              const SizedBox(width: 12),
               _InfoCard(
                 title: 'Clients',
                 value: controller.totalClients.value.toString(),
                 subtitle: 'Active',
-                icon: Icons.people_outline,
-                width: 120,
+                icon: Icons.people_rounded,
+                width: 140,
               ),
+              const SizedBox(width: 12),
               _InfoCard(
                 title: 'Equipment',
                 value: controller.totalEquipment.value.toString(),
                 subtitle: 'Total',
-                icon: Icons.build_outlined,
-                width: 120,
+                icon: Icons.precision_manufacturing_rounded,
+                width: 140,
               ),
             ],
           ),
@@ -165,156 +164,331 @@ class DashboardPage extends StatelessWidget {
 
   Widget _priorityChartCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 6,
-        color: Colors.white,
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Complaints by Priority',
-                        style: TextStyle(
-                            color: containerColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    SizedBox(
-                      height: 140,
-                      child: PieChart(
-                        PieChartData(
-                          sections: [
-                            PieChartSectionData(
-                                color: Colors.red,
-                                value: controller.urgent.value.toDouble(),
-                                title: 'Urgent'),
-                            PieChartSectionData(
-                                color: buttonColor,
-                                value: controller.medium.value.toDouble(),
-                                title: 'Medium'),
-                            PieChartSectionData(
-                                color: Colors.green,
-                                value: controller.high.value.toDouble(),
-                                title: 'High'),
-                          ],
-                          sectionsSpace: 2,
-                          centerSpaceRadius: 30,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              VerticalDivider(width: 12),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: dividerColor,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cardShadowColor.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _priorityLegend('Urgent', controller.urgent.value),
-                  _priorityLegend('Medium', controller.medium.value),
-                  _priorityLegend('High', controller.high.value),
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Complaints by Priority',
+                        style: TextStyle(
+                          color: containerColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 120,
+                    child: PieChart(
+                      PieChartData(
+                        sections: [
+                          PieChartSectionData(
+                            color: notWorkingTextColor,
+                            value: controller.urgent.value.toDouble(),
+                            title: 'Urgent',
+                            radius: 45,
+                            titleStyle: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: backgroundColor,
+                            ),
+                          ),
+                          PieChartSectionData(
+                            color: buttonColor,
+                            value: controller.medium.value.toDouble(),
+                            title: 'Medium',
+                            radius: 45,
+                            titleStyle: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: backgroundColor,
+                            ),
+                          ),
+                          PieChartSectionData(
+                            color: workingTextColor,
+                            value: controller.high.value.toDouble(),
+                            title: 'High',
+                            radius: 45,
+                            titleStyle: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: backgroundColor,
+                            ),
+                          ),
+                        ],
+                        sectionsSpace: 3,
+                        centerSpaceRadius: 30,
+                      ),
+                    ),
+                  ),
                 ],
-              )
-            ],
-          ),
+              ),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _priorityLegend(
+                    'Urgent', controller.urgent.value, notWorkingTextColor),
+                const SizedBox(height: 12),
+                _priorityLegend('Medium', controller.medium.value, buttonColor),
+                const SizedBox(height: 12),
+                _priorityLegend(
+                    'High', controller.high.value, workingTextColor),
+              ],
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget _priorityLegend(String label, int value) {
-    Color dotColor;
-    if (label == 'Urgent') {
-      dotColor = Colors.red;
-    } else if (label == 'Medium') {
-      dotColor = buttonColor;
-    } else {
-      dotColor = Colors.green;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+  Widget _priorityLegend(String label, int value, Color dotColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: dotColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: dotColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-              width: 12,
-              height: 12,
-              decoration:
-                  BoxDecoration(color: dotColor, shape: BoxShape.circle)),
-          SizedBox(width: 8),
-          Text(label, style: TextStyle(color: containerColor)),
-          SizedBox(width: 8),
-          Text('(${value.toString()})',
-              style: TextStyle(color: containerColor.withOpacity(0.7))),
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: containerColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            value.toString(),
+            style: TextStyle(
+              color: dotColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _recentComplaintsCard() {
-    return Card(
-      color: backgroundColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 6,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Container(
-        color: backgroundColor,
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: dividerColor,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cardShadowColor.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Recent Complaints',
-                    style: TextStyle(
-                        color: containerColor, fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: buttonColor,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Recent Complaints',
+                      style: TextStyle(
+                        color: containerColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ],
+                ),
                 TextButton(
                   onPressed: () {},
-                  style: TextButton.styleFrom(foregroundColor: buttonColor),
-                  child: Text('View All'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: buttonColor,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_ios, size: 14),
+                    ],
+                  ),
                 )
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 16),
             SizedBox(
               height: 350,
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: controller.recentComplaints.length,
-                separatorBuilder: (_, __) => Divider(),
+                separatorBuilder: (_, __) => Divider(
+                  height: 1,
+                  color: dividerColor,
+                ),
                 itemBuilder: (context, index) {
                   final r = controller.recentComplaints[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: _priorityBadge(r.priority),
-                    title: Text(r.title ?? '-',
-                        style: TextStyle(
-                            color: containerColor,
-                            fontWeight: FontWeight.w600)),
-                    subtitle: Text(r.description ?? '',
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(r.status ?? '',
-                            style: TextStyle(
-                                color: r.status == 'resolved'
-                                    ? Colors.green
-                                    : buttonColor)),
-                        SizedBox(height: 6),
-                        Text(
-                            DateFormat('dd MMM')
-                                .format(r.reportedAt ?? DateTime.now()),
-                            style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      ],
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          children: [
+                            _priorityBadge(r.priority),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    r.title ?? '-',
+                                    style: TextStyle(
+                                      color: containerColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    r.description ?? '',
+                                    style: TextStyle(
+                                      color: subtitleColor,
+                                      fontSize: 13,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: (r.status == 'resolved'
+                                        ? workingWidgetColor
+                                        : buttonColor.withOpacity(0.1)),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    r.status ?? '',
+                                    style: TextStyle(
+                                      color: r.status == 'resolved'
+                                          ? workingTextColor
+                                          : buttonColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  DateFormat('dd MMM')
+                                      .format(r.reportedAt ?? DateTime.now()),
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    onTap: () {},
                   );
                 },
               ),
@@ -327,42 +501,72 @@ class DashboardPage extends StatelessWidget {
 
   Widget _priorityBadge(String? priority) {
     if (priority == null) {
-      return CircleAvatar(
-          backgroundColor: Colors.grey[200],
-          child: Icon(Icons.info_outline, color: containerColor));
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: searchBackgroundColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(Icons.info_outline_rounded, color: subtitleColor, size: 20),
+      );
     }
-    Color color = Colors.grey;
-    IconData icon = Icons.label;
+    Color color = subtitleColor;
+    IconData icon = Icons.label_outline_rounded;
     if (priority.toLowerCase() == 'urgent') {
-      color = Colors.red;
-      icon = Icons.priority_high;
+      color = notWorkingTextColor;
+      icon = Icons.priority_high_rounded;
     } else if (priority.toLowerCase() == 'medium') {
-      color = Colors.orange;
-      icon = Icons.report;
+      color = buttonColor;
+      icon = Icons.report_rounded;
     } else if (priority.toLowerCase() == 'high') {
-      color = Colors.purple;
-      icon = Icons.warning_amber_outlined;
+      color = Colors.orange;
+      icon = Icons.warning_amber_rounded;
     }
-    return CircleAvatar(
-        backgroundColor: color.withOpacity(0.15),
-        child: Icon(icon, color: color));
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Icon(icon, color: color, size: 20),
+    );
   }
 
   Widget _clientsHorizontalCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Clients",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: buttonColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Clients",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -371,14 +575,14 @@ class DashboardPage extends StatelessWidget {
                 (index) {
                   final client = controller.clientStats[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 6.0),
+                    padding: const EdgeInsets.only(right: 12),
                     child: _buildClientCard(
-                        name: client.clientName ?? "Unknown",
-                        equipment: client.equipment?.total.toString() ??
-                            "No Equipment",
-                        complaints: client.complaints?.total?.toString() ?? "0",
-                        clientId: client.id!),
+                      name: client.clientName ?? "Unknown",
+                      equipment:
+                          client.equipment?.total.toString() ?? "No Equipment",
+                      complaints: client.complaints?.total?.toString() ?? "0",
+                      clientId: client.id!,
+                    ),
                   );
                 },
               ),
@@ -389,87 +593,59 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _clientCard(ClientStatModel c) {
-    return SizedBox(
-      width: 150,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: backgroundColor.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(c.clientName ?? '${c.firstName} ${c.lastName}',
-                    style: TextStyle(
-                        color: backgroundColor, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
-                Text('${c.equipment?.total ?? 0} equipment',
-                    style: TextStyle(color: backgroundColor.withOpacity(0.7))),
-                SizedBox(height: 8),
-                CircularPercentIndicator(
-                  radius: 36.0,
-                  lineWidth: 6.0,
-                  percent: ((c.complaints?.completed ?? 0) /
-                          ((c.complaints?.total ?? 1).toDouble()))
-                      .clamp(0.0, 1.0),
-                  center: Text(
-                      '${c.complaints?.completed ?? 0}/${c.complaints?.total ?? 0}'),
-                  progressColor: buttonColor,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _activeWorkersCard() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Active Workers',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: containerColor,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: buttonColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Active Workers',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: containerColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-
-          // Responsive Grid View
+          const SizedBox(height: 20),
           GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: controller.activeWorkers.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // Show 3 per row
+              crossAxisCount: 3,
               crossAxisSpacing: 16,
               mainAxisSpacing: 20,
-              childAspectRatio: 0.75, // Square items
+              childAspectRatio: 0.75,
             ),
             itemBuilder: (context, index) {
               final a = controller.activeWorkers[index];
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Circular bubble with gradient and shadow
                   Container(
-                    width: 65,
-                    height: 65,
+                    width: 70,
+                    height: 70,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [
-                          Colors.lightBlueAccent.withOpacity(0.8),
-                          buttonColor.withOpacity(0.8),
+                          buttonColor,
+                          buttonColor.withOpacity(0.7),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -477,23 +653,23 @@ class DashboardPage extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: buttonColor.withOpacity(0.3),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Center(
                       child: Text(
                         '${a.count ?? 0}',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: backgroundColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 20,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
                     a.department ?? '-',
                     textAlign: TextAlign.center,
@@ -502,6 +678,8 @@ class DashboardPage extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               );
@@ -513,78 +691,119 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-Widget _buildClientCard(
-    {required String name,
-    required String equipment,
-    required String complaints,
-    required String clientId}) {
-  return InkWell(
-    onTap: () {
-      // Get.to();
-    },
-    child: Container(
-      width: 200,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        border: Border.all(color: buttonColor),
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
+Widget _buildClientCard({
+  required String name,
+  required String equipment,
+  required String complaints,
+  required String clientId,
+}) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: () {
+        // Get.to();
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 200,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: dividerColor,
+            width: 1,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.blue.shade100,
-                child: Icon(Icons.business, color: Colors.blue.shade700),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+          boxShadow: [
+            BoxShadow(
+              color: cardShadowColor.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        buttonColor,
+                        buttonColor.withOpacity(0.7),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: buttonColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  child: Icon(
+                    Icons.business_rounded,
+                    color: backgroundColor,
+                    size: 24,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.build, size: 14, color: Colors.grey),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  equipment,
-                  style: const TextStyle(fontSize: 13, color: Colors.black54),
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: containerColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              const Icon(Icons.folder, size: 14, color: Colors.grey),
-              const SizedBox(width: 4),
-              Text(
-                "$complaints Complaints",
-                style: const TextStyle(fontSize: 13, color: Colors.black54),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.precision_manufacturing_rounded,
+                    size: 16, color: subtitleColor),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    equipment,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: subtitleColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.report_problem_rounded,
+                    size: 16, color: subtitleColor),
+                const SizedBox(width: 6),
+                Text(
+                  "$complaints Complaints",
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: subtitleColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -596,62 +815,79 @@ class _InfoCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final double width;
-  final VoidCallbackAction? onTap;
-  const _InfoCard(
-      {required this.title,
-      required this.value,
-      required this.subtitle,
-      required this.icon,
-      required this.width,
-      this.onTap});
+  const _InfoCard({
+    required this.title,
+    required this.value,
+    required this.subtitle,
+    required this.icon,
+    required this.width,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: GestureDetector(
-        onTap: () {
-          onTap;
-        },
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(16),
         child: Container(
+          width: width,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-              border: Border.all(color: buttonColor, width: 1),
-              color: buttonColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10)),
-          child: Container(
-            width: width,
-            padding: EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: buttonColor.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Icon(icon, color: buttonColor, size: 18),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                        child: Text(title,
-                            style: TextStyle(
-                                color: containerColor.withOpacity(0.9))))
-                  ],
-                ),
-                SizedBox(height: 12),
-                Text(value,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: containerColor)),
-                SizedBox(height: 4),
-                Text(subtitle,
-                    style: TextStyle(
-                        color: containerColor.withOpacity(0.6), fontSize: 12)),
-              ],
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: dividerColor,
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: buttonColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: buttonColor, size: 22),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                style: TextStyle(
+                  color: containerColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: subtitleColor,
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       ),

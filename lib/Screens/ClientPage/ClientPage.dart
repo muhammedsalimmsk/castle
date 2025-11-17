@@ -11,7 +11,7 @@ import '../../Widget/CustomDrawer.dart';
 
 class ClientPage extends StatelessWidget {
   ClientPage({super.key});
-  ClientRegisterController controller = Get.put(ClientRegisterController());
+  final ClientRegisterController controller = Get.put(ClientRegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -19,134 +19,550 @@ class ClientPage extends StatelessWidget {
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),
       backgroundColor: backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Modern Header Section
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: cardShadowColor.withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Clients",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: buttonColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: buttonColor.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Obx(
+                      () => Text(
+                        "${controller.clientData.length} Clients",
+                        style: TextStyle(
+                          color: buttonColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: searchBackgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search clients...",
+                    hintStyle: TextStyle(
+                      color: subtitleColor,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: buttonColor,
+                      size: 22,
+                    ),
                     suffixIcon: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.search,
-                          color: buttonColor,
-                        )),
-                    hintText: "Search here..",
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: buttonColor)),
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.filter_list_rounded,
+                        color: buttonColor,
+                        size: 22,
+                      ),
+                    ),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: buttonColor))),
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: buttonColor,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    filled: true,
+                    fillColor: searchBackgroundColor,
+                  ),
+                ),
               ),
-              Text(
-                "All Clients",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              Obx(() {
-                return SizedBox(
-                  height: 660,
-                  child: ListView.builder(
-                    itemCount: controller.clientData.length,
-                    itemBuilder: (context, index) {
-                      final ClientData client = controller.clientData[index];
-                      print(client.clientAddress);
-                      return ListTile(
-                        onTap: () {
-                          Get.to(() => ClientDetailPage(clientId: client.id!));
-                        },
-                        title: Text(
-                          client.clientName!,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle:
-                            Text("${client.firstName} ${client.lastName}"),
-                        leading: Icon(
-                          Icons.person,
-                          color: buttonColor,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+            ),
+            // Clients List
+            Expanded(
+              child: Obx(
+                () => controller.isLoading.value
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            IconButton(
-                              onPressed: () async {
-                                Get.defaultDialog(
-                                  backgroundColor: backgroundColor,
-                                  title: "Delete",
-                                  middleText: "Are you sure want to delete?",
-                                  actions: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Get.back();
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey[300],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "Cancel",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                    Obx(
-                                      () => controller.isLoading.value
-                                          ? Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            )
-                                          : ElevatedButton(
-                                              onPressed: () async {
-                                                await controller
-                                                    .deleteClient(client.id!);
-                                                Get.back();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: containerColor,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                "Delete",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                    )
-                                  ],
-                                );
-                              },
-                              icon: Icon(
-                                Icons.delete,
-                                color: buttonColor.withOpacity(0.7),
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                              strokeWidth: 3,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Loading clients...",
+                              style: TextStyle(
+                                color: subtitleColor,
+                                fontSize: 14,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                      );
-                    },
-                  ),
-                );
-              })
+                      )
+                    : controller.clientData.isEmpty
+                        ? RefreshIndicator(
+                            onRefresh: () async {
+                              await controller.getClientList();
+                            },
+                            color: buttonColor,
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 100),
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(24),
+                                        decoration: BoxDecoration(
+                                          color: searchBackgroundColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.business_outlined,
+                                          size: 64,
+                                          color: subtitleColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      Text(
+                                        "No clients found",
+                                        style: TextStyle(
+                                          color: containerColor,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Add new clients to get started",
+                                        style: TextStyle(
+                                          color: subtitleColor,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: () async {
+                              await controller.getClientList();
+                            },
+                            color: buttonColor,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                              itemCount: controller.clientData.length,
+                              itemBuilder: (context, index) {
+                                final ClientData client = controller.clientData[index];
+                                return _buildClientCard(client);
+                              },
+                            ),
+                          ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              buttonColor,
+              buttonColor.withOpacity(0.8),
             ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: buttonColor.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          onPressed: () {
+            controller.clearAllControllers();
+            Get.to(ClientRegisterOne());
+          },
+          icon: const Icon(Icons.add, color: backgroundColor),
+          label: Text(
+            "New Client",
+            style: TextStyle(
+              color: backgroundColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: buttonColor,
-        onPressed: () {
-          controller.clearAllControllers();
-          Get.to(ClientRegisterOne());
-        },
-        label: Text(
-          "Add New",
-          style: TextStyle(color: backgroundColor),
+    );
+  }
+
+  Widget _buildClientCard(ClientData client) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Get.to(() => ClientDetailPage(clientId: client.id!));
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: dividerColor,
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: cardShadowColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Icon Container
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        buttonColor,
+                        buttonColor.withOpacity(0.7),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: buttonColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.business_rounded,
+                    color: backgroundColor,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        client.clientName ?? 'Unknown Client',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: containerColor,
+                          letterSpacing: -0.3,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      if (client.firstName != null || client.lastName != null)
+                        Row(
+                          children: [
+                            Icon(Icons.person_outline, size: 14, color: subtitleColor),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                "${client.firstName ?? ''} ${client.lastName ?? ''}".trim(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          if (client.clientPhone != null)
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.phone, size: 14, color: subtitleColor),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    client.clientPhone!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: subtitleColor,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (client.count != null) ...[
+                            if (client.count!.equipment != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: buttonColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.precision_manufacturing, size: 12, color: buttonColor),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${client.count!.equipment} Equipment",
+                                      style: TextStyle(
+                                        color: buttonColor,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (client.count!.createdComplaints != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.report_problem, size: 12, color: Colors.orange),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${client.count!.createdComplaints} Complaints",
+                                      style: TextStyle(
+                                        color: Colors.orange,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Status Badge and Actions
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: client.isActive == true
+                            ? workingWidgetColor
+                            : notWorkingWidgetColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: client.isActive == true
+                                  ? workingTextColor
+                                  : notWorkingTextColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            client.isActive == true ? "Active" : "Inactive",
+                            style: TextStyle(
+                              color: client.isActive == true
+                                  ? workingTextColor
+                                  : notWorkingTextColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    IconButton(
+                      onPressed: () async {
+                        Get.defaultDialog(
+                          backgroundColor: backgroundColor,
+                          title: "Delete Client",
+                          titleStyle: TextStyle(
+                            color: containerColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                          middleText: "Are you sure you want to delete this client?",
+                          middleTextStyle: TextStyle(
+                            color: subtitleColor,
+                            fontSize: 14,
+                          ),
+                          contentPadding: const EdgeInsets.all(20),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Get.back();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: searchBackgroundColor,
+                                foregroundColor: containerColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                              ),
+                              child: const Text("Cancel"),
+                            ),
+                            const SizedBox(width: 12),
+                            Obx(
+                              () => controller.isLoading.value
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        await controller.deleteClient(client.id!);
+                                        Get.back();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: notWorkingTextColor,
+                                        foregroundColor: backgroundColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: const Text("Delete"),
+                                    ),
+                            )
+                          ],
+                        );
+                      },
+                      icon: Icon(
+                        Icons.delete_outline,
+                        color: notWorkingTextColor,
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(height: 4),
+                    Icon(
+                      Icons.chevron_right,
+                      color: subtitleColor,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

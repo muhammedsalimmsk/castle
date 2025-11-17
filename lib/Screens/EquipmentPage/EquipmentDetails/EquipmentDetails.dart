@@ -26,20 +26,33 @@ class EquipmentDetailsPage extends StatelessWidget {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         surfaceTintColor: backgroundColor,
-        title: const Text(
+        elevation: 0,
+        backgroundColor: backgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: containerColor),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
           'Equipment Details',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: containerColor,
+            fontSize: 20,
+          ),
         ),
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         actions: [
           if (userDetailModel!.data!.role == "ADMIN") ...[
             IconButton(
-              icon: Icon(Icons.edit, color: Colors.blueAccent),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: buttonColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.edit, color: buttonColor, size: 20),
+              ),
               onPressed: () {
-                // Navigate to edit page
                 addToController();
                 Get.to(UpdateEquipmentPage(
                   equipmentId: equipment.id!,
@@ -47,144 +60,355 @@ class EquipmentDetailsPage extends StatelessWidget {
               },
             ),
             IconButton(
-              icon: Icon(Icons.delete, color: Colors.redAccent),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: notWorkingWidgetColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.delete_outline,
+                    color: notWorkingTextColor, size: 20),
+              ),
               onPressed: () {
                 Get.dialog(
                   AlertDialog(
                     backgroundColor: backgroundColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    title: const Text(
-                      "Delete",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: buttonColor),
+                    title: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: notWorkingWidgetColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.warning_amber_rounded,
+                            color: notWorkingTextColor,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            "Delete Equipment",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: containerColor,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    content: const Text(
-                        "Are you sure you want to delete this item?"),
+                    content: Text(
+                      "Are you sure you want to delete this equipment? This action cannot be undone.",
+                      style: TextStyle(color: subtitleColor, fontSize: 14),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Get.back(),
-                        child: const Text("Cancel"),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(color: subtitleColor),
+                        ),
                       ),
                       Obx(
                         () => controller.isDeleting.value
-                            ? CircularProgressIndicator(
-                                color: buttonColor,
+                            ? Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(
+                                  color: buttonColor,
+                                ),
                               )
                             : ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
+                                  backgroundColor: notWorkingTextColor,
                                   foregroundColor: backgroundColor,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
                                   ),
                                 ),
                                 onPressed: () async {
-                                  // Your delete action here
                                   await controller.deleteEquip(equipment.id!);
                                 },
-                                child: const Text(
-                                  "Delete",
-                                ),
+                                child: const Text("Delete"),
                               ),
                       ),
                     ],
                   ),
                 );
-                // Navigate to edit page
               },
             )
           ]
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Circle Avatar
-            Center(
-              child: CircleAvatar(
-                radius: 45,
-                backgroundColor: Colors.blue.shade50,
-                child: Icon(Icons.precision_manufacturing,
-                    color: Colors.blue, size: 40),
+            // Modern Header Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: cardShadowColor.withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Icon Container
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: buttonColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: buttonColor.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.precision_manufacturing,
+                      color: buttonColor,
+                      size: 50,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Equipment Name
+                  Text(
+                    equipment.name ?? 'Unknown Equipment',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  // Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: equipment.isActive == true
+                          ? workingWidgetColor
+                          : notWorkingWidgetColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: equipment.isActive == true
+                                ? workingTextColor
+                                : notWorkingTextColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          equipment.isActive == true ? "Active" : "Inactive",
+                          style: TextStyle(
+                            color: equipment.isActive == true
+                                ? workingTextColor
+                                : notWorkingTextColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-
-            // Equipment Name
-            Center(
-              child: Text(
-                equipment.name ?? 'Unknown Equipment',
-                style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87),
-              ),
-            ),
-            const SizedBox(height: 20),
 
             // Equipment Details Section
-            _sectionTitle('Equipment Info'),
-            _buildDetailItem("Model Number", equipment.modelNumber ?? ''),
-            _buildDetailItem("Serial Number", equipment.serialNumber ?? ''),
-            _buildDetailItem(
-                "Installation Date", formatDate(equipment.installationDate)),
-            _buildDetailItem(
-                "Warranty Expiry", formatDate(equipment.warrantyExpiry)),
-            _buildDetailItem("Location Type", equipment.locationType ?? ''),
-            _buildDetailItem(
-                "Location Remarks", equipment.locationRemarks ?? ''),
-            _buildDetailItem("Category", equipment.category?.name ?? 'N/A'),
-            _buildDetailItem(
-              "Status",
-              equipment.isActive == true ? "Active" : "Inactive",
-              valueColor:
-                  equipment.isActive == true ? Colors.green : Colors.red,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: _sectionTitle('Equipment Information'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  _buildDetailItem(
+                    Icons.model_training,
+                    "Model Number",
+                    equipment.modelNumber ?? 'N/A',
+                  ),
+                  _buildDetailItem(
+                    Icons.qr_code,
+                    "Serial Number",
+                    equipment.serialNumber ?? 'N/A',
+                  ),
+                  _buildDetailItem(
+                    Icons.calendar_today,
+                    "Installation Date",
+                    formatDate(equipment.installationDate),
+                  ),
+                  _buildDetailItem(
+                    Icons.verified,
+                    "Warranty Expiry",
+                    formatDate(equipment.warrantyExpiry),
+                  ),
+                  _buildDetailItem(
+                    Icons.location_on,
+                    "Location Type",
+                    equipment.locationType ?? 'N/A',
+                  ),
+                  _buildDetailItem(
+                    Icons.note,
+                    "Location Remarks",
+                    equipment.locationRemarks ?? 'N/A',
+                  ),
+                  _buildDetailItem(
+                    Icons.category,
+                    "Category",
+                    equipment.category?.name ?? 'N/A',
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 24),
+
+            // Supervisor Info Section
+            if (equipment.supervisor != null) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                child: _sectionTitle('Supervisor Information'),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    _buildDetailItem(
+                      Icons.person,
+                      "Name",
+                      "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
+                              .trim()
+                              .isEmpty
+                          ? 'N/A'
+                          : "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
+                              .trim(),
+                    ),
+                    _buildDetailItem(
+                      Icons.email,
+                      "Email",
+                      equipment.supervisor?.email ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.phone,
+                      "Phone",
+                      equipment.supervisor?.phone ?? 'N/A',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Client Info Section
-            _sectionTitle('Client Info'),
-            _buildDetailItem(
-                "Client Name", equipment.client?.clientName ?? 'N/A'),
-            _buildDetailItem(
-                "Client Address", equipment.client?.clientAddress ?? 'N/A'),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+              child: _sectionTitle('Client Information'),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  _buildDetailItem(
+                    Icons.business,
+                    "Client Name",
+                    equipment.client?.clientName ?? 'N/A',
+                  ),
+                  _buildDetailItem(
+                    Icons.location_city,
+                    "Client Address",
+                    equipment.client?.clientAddress ?? 'N/A',
+                  ),
+                ],
+              ),
+            ),
 
             const SizedBox(height: 24),
 
-            // Extra Info (optional)
-            _sectionTitle('Other Info'),
-            _buildDetailItem("Created At", formatDate(equipment.createdAt)),
-            _buildDetailItem("Updated At", formatDate(equipment.updatedAt)),
-            _buildDetailItem(
-                "Complaints",
-                equipment.count != null
-                    ? equipment.count!.complaints.toString()
-                    : 'N/A'),
-            SizedBox(
-              height: 10,
+            // Other Info Section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+              child: _sectionTitle('Additional Information'),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  _buildDetailItem(
+                    Icons.access_time,
+                    "Created At",
+                    formatDate(equipment.createdAt),
+                  ),
+                  _buildDetailItem(
+                    Icons.update,
+                    "Updated At",
+                    formatDate(equipment.updatedAt),
+                  ),
+                  _buildDetailItem(
+                    Icons.report_problem,
+                    "Total Complaints",
+                    equipment.count != null
+                        ? equipment.count!.complaints.toString()
+                        : '0',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
             if (userDetailModel?.data?.role?.toUpperCase() == "CLIENT")
               Padding(
-                padding: const EdgeInsets.only(top: 24),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      elevation: 4,
+                      shadowColor: buttonColor.withOpacity(0.3),
                     ),
-                    icon: const Icon(Icons.report_problem, color: Colors.white),
+                    icon: const Icon(Icons.report_problem,
+                        color: Colors.white, size: 22),
                     label: const Text(
                       "Register Complaint",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                     onPressed: () => _showComplaintDialog(context),
                   ),
@@ -206,50 +430,122 @@ class EquipmentDetailsPage extends StatelessWidget {
       builder: (_) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Text("Register Complaint"),
+            backgroundColor: backgroundColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: buttonColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.report_problem,
+                    color: buttonColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Register Complaint",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Title",
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: subtitleColor),
+                      filled: true,
+                      fillColor: searchBackgroundColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: dividerColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
+                    style: TextStyle(color: containerColor),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: descriptionController,
                     maxLines: 4,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Description",
+                      labelStyle: TextStyle(color: subtitleColor),
                       alignLabelWithHint: true,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: "Priority",
-                      border: OutlineInputBorder(),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedPriority,
-                        items: ["Low", "Medium", "High", "Urgent"]
-                            .map((priority) => DropdownMenuItem(
-                                  value: priority,
-                                  child: Text(priority),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() => selectedPriority = value);
-                          }
-                        },
+                      filled: true,
+                      fillColor: searchBackgroundColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: dividerColor),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: dividerColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: buttonColor, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                    style: TextStyle(color: containerColor),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: searchBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: dividerColor),
+                    ),
+                    child: DropdownButton<String>(
+                      value: selectedPriority,
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      icon: Icon(Icons.keyboard_arrow_down, color: buttonColor),
+                      style: TextStyle(color: containerColor),
+                      items: ["Low", "Medium", "High", "Urgent"]
+                          .map((priority) => DropdownMenuItem(
+                                value: priority,
+                                child: Text(priority),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => selectedPriority = value);
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -257,26 +553,53 @@ class EquipmentDetailsPage extends StatelessWidget {
             ),
             actions: [
               TextButton(
-                child: const Text("Cancel",
-                    style: TextStyle(color: Colors.black54)),
                 onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
               Obx(() => controller.isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(color: buttonColor),
+                    )
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonColor,
+                        foregroundColor: backgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        elevation: 2,
                       ),
-                      child: const Text("Submit",
-                          style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Submit",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       onPressed: () async {
                         final title = titleController.text.trim();
                         final description = descriptionController.text.trim();
 
                         if (title.isEmpty || description.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text("Please fill all fields")),
+                            SnackBar(
+                              content: const Text("Please fill all fields"),
+                              backgroundColor: notWorkingTextColor,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           );
                           return;
                         }
@@ -300,38 +623,89 @@ class EquipmentDetailsPage extends StatelessWidget {
 
   Widget _sectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: buttonColor),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: containerColor,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDetailItem(String label, String value, {Color? valueColor}) {
+  Widget _buildDetailItem(IconData icon, String label, String value) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: buttonColor),
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: dividerColor,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: cardShadowColor.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: buttonColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: buttonColor,
+              size: 20,
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor ?? Colors.black87,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: containerColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

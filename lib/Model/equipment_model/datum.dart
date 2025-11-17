@@ -1,6 +1,7 @@
 import 'category.dart';
 import 'client.dart';
 import 'count.dart';
+import '../complaint_detail_model/supervisor.dart';
 
 class EquipmentDetailData {
   String? id;
@@ -21,6 +22,7 @@ class EquipmentDetailData {
   Category? category;
   Client? client;
   Count? count;
+  Supervisor? supervisor;
 
   EquipmentDetailData({
     this.id,
@@ -41,6 +43,7 @@ class EquipmentDetailData {
     this.category,
     this.client,
     this.count,
+    this.supervisor,
   });
 
   factory EquipmentDetailData.fromJson(Map<String, dynamic> json) =>
@@ -77,6 +80,9 @@ class EquipmentDetailData {
         count: json['_count'] == null
             ? null
             : Count.fromJson(json['_count'] as Map<String, dynamic>),
+        supervisor: json['supervisor'] == null
+            ? null
+            : Supervisor.fromJson(json['supervisor'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => {
@@ -98,5 +104,6 @@ class EquipmentDetailData {
         'category': category?.toJson(),
         'client': client?.toJson(),
         '_count': count?.toJson(),
+        'supervisor': supervisor?.toJson(),
       };
 }

@@ -15,6 +15,7 @@ import 'Screens/EquipmentPage/EquipmentPage.dart';
 import 'Screens/HomePage/AdminHomePage.dart';
 import 'Screens/HomePage/ClientHomePage.dart';
 import 'Screens/HomePage/WorkerHomePage.dart';
+import 'Screens/InvoicePage/InvoiceListPage.dart';
 import 'Screens/PartsRequestPagee/PartsListPage.dart';
 import 'Screens/PartsRequestPagee/PartsRequestPage.dart';
 import 'Screens/RoutineScreens/RoutinePage/RoutinePage.dart';
@@ -108,6 +109,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/clients', page: () => ClientPage()),
         GetPage(name: '/workers', page: () => WorkersPage()),
         GetPage(name: '/requestedParts', page: () => RequestedPartsPage()),
+        GetPage(name: '/invoices', page: () => InvoiceListPage()),
         // add more as needed
       ],
       home: SplashScreen(),

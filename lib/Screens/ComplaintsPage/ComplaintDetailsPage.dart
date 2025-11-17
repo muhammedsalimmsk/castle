@@ -4,25 +4,29 @@ import 'package:castle/Screens/ComplaintsPage/Widgets/ComplaitTImeLineWidget.dar
 import 'package:castle/Screens/ComplaintsPage/Widgets/PartsRequestDialogue.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:castle/Model/complaint_model/datum.dart';
 import 'package:castle/Colors/Colors.dart';
 import 'package:get/get.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 import '../../Controlls/AuthController/AuthController.dart';
 import '../../Model/TimeLineEntry.dart';
 import '../../Model/complaint_detail_model/comment.dart';
 import '../../Model/complaint_detail_model/status_update.dart';
 import '../PartsRequestPagee/RequestedPartWorkerPage.dart';
 import 'AssignWorkPage/AssignWorkPage.dart';
-import 'Widgets/AddCommentDialogue.dart';
 import 'Widgets/StatusUpdateDialogue.dart';
 
-class ComplaintDetailsPage extends StatelessWidget {
+class ComplaintDetailsPage extends StatefulWidget {
   final String complaintId;
-  final ComplaintController complaintController =
-      Get.put(ComplaintController());
 
   ComplaintDetailsPage({super.key, required this.complaintId});
+
+  @override
+  State<ComplaintDetailsPage> createState() => _ComplaintDetailsPageState();
+}
+
+class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
+  final ComplaintController complaintController =
+      Get.put(ComplaintController());
+  final TextEditingController commentController = TextEditingController();
 
   /// Formats a raw API string (e.g., "IN_PROGRESS" or "parts_requested")
   /// into a user-friendly format (e.g., "In Progress" or "Parts Requested").
@@ -106,88 +110,193 @@ class ComplaintDetailsPage extends StatelessWidget {
   }
 
   @override
+  void dispose() {
+    commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("complaint Id is $complaintId");
+    print("complaint Id is ${widget.complaintId}");
     print(token);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         surfaceTintColor: backgroundColor,
-        title: const Text(
-          'Complaint Details',
-          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
-        ),
-        iconTheme: IconThemeData(color: buttonColor),
-        backgroundColor: backgroundColor,
         elevation: 0,
-        foregroundColor: containerColor,
+        backgroundColor: backgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: containerColor),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          'Complaint Details',
+          style: TextStyle(
+            color: containerColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           if (userDetailModel!.data!.role == "ADMIN")
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.green,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      backgroundColor: backgroundColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      title: const Text("Confirm Close"),
-                      content: const Text(
-                        "Are you sure you want to close this complaint?",
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("Cancel"),
-                        ),
-                        Obx(
-                          () => complaintController.closeLoading.value
-                              ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: buttonColor,
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: workingWidgetColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            backgroundColor: backgroundColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            title: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: workingWidgetColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                )
-                              : ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: workingTextColor,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    "Close Complaint",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: containerColor,
+                                      fontSize: 18,
                                     ),
                                   ),
-                                  onPressed: () {
-                                    complaintController
-                                        .closeComplaint(complaintId);
-                                  },
-                                  icon: const Icon(Icons.check_circle),
-                                  label: const Text("Close"),
                                 ),
-                        )
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: const Icon(Icons.assignment_turned_in_outlined),
-              label: const Text("Close"),
+                              ],
+                            ),
+                            content: Text(
+                              "Are you sure you want to close this complaint?",
+                              style:
+                                  TextStyle(color: subtitleColor, fontSize: 14),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Obx(
+                                () => complaintController.closeLoading.value
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: CircularProgressIndicator(
+                                          color: buttonColor,
+                                        ),
+                                      )
+                                    : ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: workingTextColor,
+                                          foregroundColor: backgroundColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          complaintController.closeComplaint(
+                                              widget.complaintId);
+                                        },
+                                        icon: const Icon(Icons.check_circle,
+                                            size: 20),
+                                        label: const Text("Close"),
+                                      ),
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.assignment_turned_in_outlined,
+                            color: workingTextColor,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Close",
+                            style: TextStyle(
+                              color: workingTextColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
         ],
       ),
       body: GetBuilder<ComplaintController>(
         initState: (_) => WidgetsBinding.instance.addPostFrameCallback((_) {
           complaintController.fetchComplaintDetails(
-            complaintId,
+            widget.complaintId,
             userDetailModel!.data!.role!.toLowerCase(),
           );
         }),
         builder: (_) {
           if (complaintController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                    strokeWidth: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Loading complaint details...",
+                    style: TextStyle(
+                      color: subtitleColor,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
           final complaint = complaintController.complaintDetailModel.data!;
@@ -196,396 +305,644 @@ class ComplaintDetailsPage extends StatelessWidget {
             complaint.comments ?? [],
           );
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                sectionTitle("Complaint Info"),
-                buildStyledCard(
+                // Modern Header Section
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: cardShadowColor.withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Title
                       Text(
                         complaint.title ?? 'No Title',
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: containerColor,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
+                      const SizedBox(height: 16),
+                      // Status and Priority Badges
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
                         children: [
-                          Chip(
-                            label: Text(formatApiString(complaint.status)),
-                            backgroundColor: getStatusColor(complaint.status),
-                            labelStyle: const TextStyle(color: Colors.white),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: getStatusColor(complaint.status)
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: getStatusColor(complaint.status),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: getStatusColor(complaint.status),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  formatApiString(complaint.status),
+                                  style: TextStyle(
+                                    color: getStatusColor(complaint.status),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(width: 8),
-                          Chip(
-                            label: Text(formatApiString(complaint.priority)),
-                            backgroundColor:
-                                getPriorityColor(complaint.priority),
-                            labelStyle: const TextStyle(color: Colors.white),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: getPriorityColor(complaint.priority)
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: getPriorityColor(complaint.priority),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.flag,
+                                  size: 14,
+                                  color: getPriorityColor(complaint.priority),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  formatApiString(complaint.priority),
+                                  style: TextStyle(
+                                    color: getPriorityColor(complaint.priority),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
+                      // Assigned To
                       if (complaint.teamLead != null)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Assigned To:",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(
-                                "${complaint.teamLead!.firstName!} ${complaint.teamLead!.lastName!}"),
-                          ],
+                        _buildInfoRow(
+                          Icons.person_outline,
+                          "Assigned To",
+                          "${complaint.teamLead!.firstName!} ${complaint.teamLead!.lastName!}",
                         ),
-                      if (complaint.description?.isNotEmpty == true)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Description",
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 6),
-                            Text(complaint.description!),
-                          ],
+                      // Description
+                      if (complaint.description?.isNotEmpty == true) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: searchBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.description,
+                                    size: 18,
+                                    color: buttonColor,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Description",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: containerColor,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                complaint.description!,
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                      ],
                     ],
                   ),
                 ),
+                // Client Details Section
                 if (userDetailModel!.data!.role != "CLIENT") ...[
-                  sectionTitle("Client Details"),
-                  buildStyledCard(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: sectionTitle("Client Information"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Equipment details
-
                         if (complaint.clientData!.clientName != null)
-                          Row(
-                            children: [
-                              const Icon(Icons.person,
-                                  size: 20, color: Colors.blueGrey),
-                              const SizedBox(width: 8),
-                              Text(
-                                complaint.clientData!.clientName ?? "N/A",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                          _buildDetailItem(
+                            Icons.business,
+                            "Client Name",
+                            complaint.clientData!.clientName ?? "N/A",
                           ),
-                        const SizedBox(height: 8),
-
                         if (complaint.clientData!.clientAddress != null)
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on,
-                                  size: 20, color: Colors.redAccent),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  complaint.clientData!.clientAddress ?? "N/A",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ),
-                            ],
+                          _buildDetailItem(
+                            Icons.location_city,
+                            "Address",
+                            complaint.clientData!.clientAddress ?? "N/A",
                           ),
-                        const SizedBox(height: 8),
-
                         if (complaint.clientData!.clientEmail != null)
-                          Row(
-                            children: [
-                              const Icon(Icons.email,
-                                  size: 20, color: Colors.teal),
-                              const SizedBox(width: 8),
-                              Text(
-                                complaint.clientData!.clientEmail ?? "N/A",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
+                          _buildDetailItem(
+                            Icons.email,
+                            "Email",
+                            complaint.clientData!.clientEmail ?? "N/A",
                           ),
-                        const SizedBox(height: 8),
-
                         if (complaint.clientData!.phone != null)
-                          Row(
-                            children: [
-                              const Icon(Icons.phone,
-                                  size: 20, color: Colors.green),
-                              const SizedBox(width: 8),
-                              Text(
-                                "${complaint.clientData!.phone}",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
+                          _buildDetailItem(
+                            Icons.phone,
+                            "Phone",
+                            complaint.clientData!.phone ?? "N/A",
                           ),
-                        const SizedBox(height: 8),
-
                         if (complaint.clientData!.contactPerson != null)
-                          Row(
-                            children: [
-                              const Icon(Icons.person_outline,
-                                  size: 20, color: Colors.indigo),
-                              const SizedBox(width: 8),
-                              Text(
-                                complaint.clientData!.contactPerson ?? "N/A",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
+                          _buildDetailItem(
+                            Icons.person,
+                            "Contact Person",
+                            complaint.clientData!.contactPerson ?? "N/A",
                           ),
                       ],
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 24),
                 ],
-                sectionTitle("Equipment Details"),
-                buildStyledCard(
+                // Equipment Details Section
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                  child: sectionTitle("Equipment Information"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (complaint.equipment != null)
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.build_circle_outlined,
-                              size: 30,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              complaint.equipment?.name ?? "N/A",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 18),
-                            ),
-                          ],
+                        _buildDetailItem(
+                          Icons.precision_manufacturing,
+                          "Equipment Name",
+                          complaint.equipment?.name ?? "N/A",
                         ),
-                      const SizedBox(height: 12),
-                      if (complaint.equipment?.supervisor != null)
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.person,
-                              size: 18,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                                "Supervisor: ${complaint.equipment!.supervisor!.firstName} ${complaint.equipment!.supervisor!.lastName}"),
-                          ],
+                      if (complaint.equipment?.supervisor != null) ...[
+                        _buildDetailItem(
+                          Icons.person,
+                          "Supervisor Name",
+                          "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
+                                  .trim()
+                                  .isEmpty
+                              ? "N/A"
+                              : "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
+                                  .trim(),
                         ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.phone,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                              "Supervisor phone: ${complaint.equipment!.supervisor!.phone ?? "N?A"}"),
-                        ],
+                        _buildDetailItem(
+                          Icons.phone,
+                          "Supervisor Phone",
+                          complaint.equipment!.supervisor!.phone ?? "N/A",
+                        ),
+                        _buildDetailItem(
+                          Icons.email,
+                          "Supervisor Email",
+                          complaint.equipment!.supervisor!.email ?? "N/A",
+                        ),
+                      ],
+                      _buildDetailItem(
+                        Icons.calendar_today,
+                        "Reported At",
+                        formatDate(complaint.reportedAt),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.email,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                              "Supervisor email: ${complaint.equipment!.supervisor!.email ?? "N?A"}"),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 8),
-                          Text("Reported: ${formatDate(complaint.reportedAt)}"),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 8),
-                          Text("Created: ${formatDate(complaint.createdAt)}"),
-                        ],
+                      _buildDetailItem(
+                        Icons.access_time,
+                        "Created At",
+                        formatDate(complaint.createdAt),
                       ),
                     ],
                   ),
                 ),
-                if (userDetailModel!.data!.role == "WORKER") ...[
-                  sectionTitle("Parts Request"),
-                  Row(
+                const SizedBox(height: 24),
+                // Action Buttons Section
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          await complaintController.getPartsList();
-                          Get.dialog(PartRequestDialog(
-                            complaintId: complaint.id!,
-                            type: 'CLIENT_PROVIDED',
-                          ));
-                        },
-                        icon: Icon(Icons.build),
-                        label: Text("Parts-Client"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          foregroundColor: Colors.white,
+                      if (userDetailModel!.data!.role == "WORKER") ...[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: sectionTitle("Parts Request"),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          await complaintController.getPartsList();
-                          Get.dialog(PartRequestDialog(
-                            complaintId: complaint.id!,
-                            type: 'ADMIN_INVENTORY',
-                          ));
-                        },
-                        icon: Icon(Icons.build),
-                        label: Text("Parts-Admin"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          foregroundColor: Colors.white,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  await complaintController.getPartsList();
+                                  Get.dialog(PartRequestDialog(
+                                    complaintId: complaint.id!,
+                                    type: 'CLIENT_PROVIDED',
+                                  ));
+                                },
+                                icon: const Icon(Icons.build, size: 20),
+                                label: const Text("Parts-Client"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: buttonColor,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  await complaintController.getPartsList();
+                                  Get.dialog(PartRequestDialog(
+                                    complaintId: complaint.id!,
+                                    type: 'ADMIN_INVENTORY',
+                                  ));
+                                },
+                                icon: const Icon(Icons.build, size: 20),
+                                label: const Text("Parts-Admin"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: buttonColor,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      await complaintController.getRequestedPartsList();
-                      Get.to(() => RequestedPartsWorkerPage());
-                    },
-                    icon: Icon(Icons.list),
-                    label: Text("View Requested Parts"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: containerColor,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-                if (userDetailModel!.data!.role != "WORKER") ...[
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Get.dialog(AddCommentDialog(complaintId: complaint.id!));
-                    },
-                    icon: const Icon(Icons.add_comment_outlined),
-                    label: const Text("Add Comments"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-                SizedBox(
-                  height: 10,
-                ),
-                if (userDetailModel!.data!.role != "CLIENT") ...[
-                  GestureDetector(
-                    onTap: () {
-                      Get.dialog(StatusUpdateDialog(
-                        complaintId: complaintId,
-                      ));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: buttonColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: buttonColor),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Update Status", // 🔥 changes here
-                          style: TextStyle(
-                              color: buttonColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                if (userDetailModel!.data!.role == "CLIENT" &&
-                    complaint.status == "Closed") ...[
-                  GestureDetector(
-                    onTap: () {
-                      // Get.dialog(StatusUpdateDialog(
-                      //   complaintId: complaintId,
-                      // ));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: buttonColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: buttonColor),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Feedback", // 🔥 changes here
-                          style: TextStyle(
-                              color: buttonColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                if (combinedTimeline.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      sectionTitle("Timeline"),
-                      buildStyledCard(
-                        child: ComplaintTimelineWidget(
-                          entries: combinedTimeline,
-                        ),
-                      ),
-                    ],
-                  ),
-                (userDetailModel!.data!.role == "ADMIN" ||
-                        complaint.equipment?.supervisor!.id ==
-                            userDetailModel!.data!.id)
-                    ? GestureDetector(
-                        onTap: () {
-                          Get.to(AssignWorkPage(complaintId: complaintId));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(8),
+                        const SizedBox(height: 12),
+                        SizedBox(
                           width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: buttonColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: buttonColor),
-                          ),
-                          child: Center(
-                            child: Text(
-                              complaint.assignedWorkers!.isEmpty
-                                  ? "Assign Complaint"
-                                  : "Update Worker", // 🔥 changes here
-                              style: TextStyle(
-                                  color: buttonColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              await complaintController.getRequestedPartsList();
+                              Get.to(() => RequestedPartsWorkerPage());
+                            },
+                            icon: const Icon(Icons.list, size: 20),
+                            label: const Text("View Requested Parts"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: containerColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
                             ),
                           ),
                         ),
-                      )
-                    : const SizedBox.shrink(),
+                      ],
+                      if (userDetailModel!.data!.role != "WORKER") ...[
+                        // Comment Input Section
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: backgroundColor,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: dividerColor,
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: cardShadowColor.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.add_comment_outlined,
+                                    color: buttonColor,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "Add Comment",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: containerColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: commentController,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                  hintText: "Type your comment here...",
+                                  hintStyle: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                  filled: true,
+                                  fillColor: searchBackgroundColor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: dividerColor,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: dividerColor,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: buttonColor,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                ),
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Obx(
+                                () => SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: complaintController
+                                            .isLoading2.value
+                                        ? null
+                                        : () async {
+                                            if (commentController.text
+                                                .trim()
+                                                .isEmpty) {
+                                              Get.snackbar(
+                                                "Error",
+                                                "Please enter a comment",
+                                                backgroundColor:
+                                                    notWorkingTextColor,
+                                                colorText: backgroundColor,
+                                                snackPosition:
+                                                    SnackPosition.BOTTOM,
+                                              );
+                                              return;
+                                            }
+
+                                            await complaintController
+                                                .updateComplaintComment(
+                                              userDetailModel!.data!.role!
+                                                  .toLowerCase(),
+                                              complaint.id!,
+                                              commentController.text.trim(),
+                                            );
+
+                                            // Refresh complaint details
+                                            await complaintController
+                                                .fetchComplaintDetails(
+                                              complaint.id!,
+                                              userDetailModel!.data!.role!
+                                                  .toLowerCase(),
+                                            );
+
+                                            // Clear the text field
+                                            commentController.clear();
+
+                                            Get.snackbar(
+                                              "Success",
+                                              "Comment added successfully",
+                                              backgroundColor: workingTextColor,
+                                              colorText: backgroundColor,
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM,
+                                            );
+                                          },
+                                    icon: complaintController.isLoading2.value
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        : const Icon(Icons.send_rounded,
+                                            size: 20),
+                                    label: Text(
+                                      complaintController.isLoading2.value
+                                          ? "Adding..."
+                                          : "Add Comment",
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: workingTextColor,
+                                      foregroundColor: backgroundColor,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      elevation: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      if (userDetailModel!.data!.role != "CLIENT") ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Get.dialog(StatusUpdateDialog(
+                                complaintId: widget.complaintId,
+                              ));
+                            },
+                            icon: const Icon(Icons.update, size: 20),
+                            label: const Text("Update Status"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                              foregroundColor: backgroundColor,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (userDetailModel!.data!.role == "CLIENT" &&
+                          complaint.status == "Closed") ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              // Get.dialog(StatusUpdateDialog(
+                              //   complaintId: complaintId,
+                              // ));
+                            },
+                            icon: const Icon(Icons.feedback, size: 20),
+                            label: const Text("Feedback"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                              foregroundColor: backgroundColor,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Timeline Section
+                if (combinedTimeline.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                    child: sectionTitle("Timeline"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: dividerColor,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: cardShadowColor.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: ComplaintTimelineWidget(
+                        entries: combinedTimeline,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                // Assign Worker Section
+                if (userDetailModel!.data!.role == "ADMIN" ||
+                    complaint.equipment?.supervisor?.id ==
+                        userDetailModel!.data!.id)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Get.to(
+                              AssignWorkPage(complaintId: widget.complaintId));
+                        },
+                        icon: Icon(
+                          complaint.assignedWorkers!.isEmpty
+                              ? Icons.person_add
+                              : Icons.person_outline,
+                          size: 20,
+                        ),
+                        label: Text(
+                          complaint.assignedWorkers!.isEmpty
+                              ? "Assign Complaint"
+                              : "Update Worker",
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: containerColor,
+                          foregroundColor: backgroundColor,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           );
@@ -594,32 +951,122 @@ class ComplaintDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget buildStyledCard({required Widget child}) {
+  Widget sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: buttonColor,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: containerColor,
+              letterSpacing: -0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String label, String value) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: buttonColor, width: 1.2),
-        boxShadow: const [
-          BoxShadow(color: borderColor, blurRadius: 6, offset: Offset(0, 3)),
+        border: Border.all(
+          color: dividerColor,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: cardShadowColor.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
         ],
       ),
-      child: child,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: buttonColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: buttonColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: containerColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget sectionTitle(String title) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(
-          title,
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: subtitleColor),
+        const SizedBox(width: 8),
+        Text(
+          "$label: ",
           style: TextStyle(
-            color: containerColor,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            color: subtitleColor,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
         ),
-      );
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              color: containerColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

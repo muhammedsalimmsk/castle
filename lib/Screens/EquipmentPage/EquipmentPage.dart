@@ -40,77 +40,169 @@ class _EquipmentPageState extends State<EquipmentPage> {
     return Scaffold(
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+      backgroundColor: backgroundColor,
+      body: SafeArea(
         child: Column(
           children: [
-            // 🔍 Search & Filter UI
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.search),
-                      hintText: "Search here..",
-                      fillColor: backgroundColor,
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: shadeColor)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+            // Modern Header Section
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: cardShadowColor.withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Title Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Equipment",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: containerColor,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
+                      Obx(() => Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: searchBackgroundColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: dividerColor,
+                                width: 1,
+                              ),
+                            ),
+                            child: DropdownButton<String>(
+                              value: controller.selectedValue.value,
+                              underline: const SizedBox(),
+                              icon: Icon(Icons.keyboard_arrow_down,
+                                  color: buttonColor),
+                              style: TextStyle(
+                                color: containerColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              items: controller.sortOptions
+                                  .map((value) => DropdownMenuItem(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: TextStyle(
+                                            color: containerColor,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                controller.selectedValue.value = value!;
+                              },
+                            ),
+                          )),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  onPressed: () {
-                    // filter action
-                  },
-                  icon: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: shadeColor),
-                      color: buttonColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child:
-                        Icon(FontAwesomeIcons.sliders, color: backgroundColor),
-                  ),
-                )
-              ],
-            ),
-            // 🧾 Title & Sort Dropdown
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Equipment",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Obx(() => DropdownButton<String>(
-                      value: controller.selectedValue.value,
-                      underline: SizedBox(),
-                      style: const TextStyle(color: Colors.black),
-                      borderRadius: BorderRadius.circular(10),
-                      items: controller.sortOptions
-                          .map((value) => DropdownMenuItem(
-                                value: value,
-                                child: Text(
-                                  value,
-                                  style: TextStyle(
-                                      color: buttonColor,
-                                      fontWeight: FontWeight.bold),
+                  const SizedBox(height: 16),
+                  // 🔍 Modern Search & Filter UI
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: searchBackgroundColor,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: dividerColor,
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: cardShadowColor.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Search equipment...",
+                              hintStyle: TextStyle(
+                                color: subtitleColor,
+                                fontSize: 15,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: buttonColor,
+                                size: 22,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: subtitleColor,
+                                  size: 20,
                                 ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        controller.selectedValue.value = value!;
-                        // Optionally refresh list based on sort
-                      },
-                    )),
-              ],
+                                onPressed: () {
+                                  // Clear search
+                                },
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                            ),
+                            style: TextStyle(
+                              color: containerColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: buttonColor.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              // filter action
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              child: Icon(
+                                FontAwesomeIcons.sliders,
+                                color: backgroundColor,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
 
             // 📋 Equipment List using FutureBuilder
@@ -119,42 +211,136 @@ class _EquipmentPageState extends State<EquipmentPage> {
                 future: _equipmentFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Error: ${snapshot.error}"),
-                          const SizedBox(height: 10),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              // Retry logic
-                              controller.getEquipmentDetail(role);
-                              (context as Element).reassemble();
-                            },
-                            icon: Icon(Icons.refresh),
-                            label: Text("Retry"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: containerColor,
-                              foregroundColor: Colors.white,
+                          CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                            strokeWidth: 3,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Loading equipment...",
+                            style: TextStyle(
+                              color: subtitleColor,
+                              fontSize: 14,
                             ),
                           ),
                         ],
                       ),
                     );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: notWorkingWidgetColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.error_outline,
+                                size: 48,
+                                color: notWorkingTextColor,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "Oops! Something went wrong",
+                              style: TextStyle(
+                                color: containerColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "${snapshot.error}",
+                              style: TextStyle(
+                                color: subtitleColor,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _equipmentFuture =
+                                      controller.getEquipmentDetail(role);
+                                });
+                              },
+                              icon: const Icon(Icons.refresh, size: 20),
+                              label: const Text("Retry"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: buttonColor,
+                                foregroundColor: backgroundColor,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return RefreshIndicator(
                       onRefresh: () async {
-                        await controller.getEquipmentDetail(role);
-                        setState(() {});
+                        setState(() {
+                          _equipmentFuture = controller.getEquipmentDetail(role);
+                        });
                       },
+                      color: buttonColor,
                       child: ListView(
-                        physics:
-                            const AlwaysScrollableScrollPhysics(), // to allow pull even if empty
-                        children: const [
-                          SizedBox(height: 200), // space to allow scroll
-                          Center(child: Text("No equipment found.")),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          const SizedBox(height: 100),
+                          Center(
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: searchBackgroundColor,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.precision_manufacturing_outlined,
+                                    size: 64,
+                                    color: subtitleColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Text(
+                                  "No equipment found",
+                                  style: TextStyle(
+                                    color: containerColor,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Try adjusting your search or filters",
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     );
@@ -167,55 +353,133 @@ class _EquipmentPageState extends State<EquipmentPage> {
                         _equipmentFuture = controller.getEquipmentDetail(role);
                       });
                     },
+                    color: buttonColor,
                     child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
                       itemCount: equipmentList.length,
                       itemBuilder: (context, index) {
                         final datas = equipmentList[index];
 
                         return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 4),
-                          child: InkWell(
-                            onTap: () {
-                              Get.to(EquipmentDetailsPage(
-                                equipment: datas,
-                              ));
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color(0xfff0431a4).withOpacity(0.20),
-                                    spreadRadius: 0.8,
-                                    blurRadius: 3,
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(EquipmentDetailsPage(
+                                  equipment: datas,
+                                ));
+                              },
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: backgroundColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: dividerColor,
+                                    width: 1,
                                   ),
-                                ],
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.precision_manufacturing,
-                                  color: buttonColor,
-                                ),
-                                title: Text(
-                                  datas.name!,
-                                  style: TextStyle(color: containerColor),
-                                ),
-                                subtitle: Text(datas.serialNumber ?? "N/A"),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(datas.category?.name ?? 'N/A'),
-                                        Text(datas.serialNumber!),
-                                      ],
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: cardShadowColor.withOpacity(0.4),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                      spreadRadius: 0,
                                     ),
                                   ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Row(
+                                    children: [
+                                      // Icon Container
+                                      Container(
+                                        width: 56,
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          color: buttonColor.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        child: Icon(
+                                          Icons.precision_manufacturing,
+                                          color: buttonColor,
+                                          size: 28,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      // Content
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              datas.name!,
+                                              style: TextStyle(
+                                                color: containerColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: -0.3,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.tag,
+                                                  size: 14,
+                                                  color: subtitleColor,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  datas.serialNumber ?? "N/A",
+                                                  style: TextStyle(
+                                                    color: subtitleColor,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      // Category Badge & Arrow
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: buttonColor.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              datas.category?.name ?? 'N/A',
+                                              style: TextStyle(
+                                                color: buttonColor,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            color: subtitleColor,
+                                            size: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

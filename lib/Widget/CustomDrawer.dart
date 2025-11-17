@@ -15,6 +15,7 @@ class CustomDrawer extends StatelessWidget {
   final RxBool workersSelected = false.obs;
   final RxBool partsListSelected = false.obs;
   final RxBool requestedPartsSelected = false.obs;
+  final RxBool invoicesSelected = false.obs;
 
   void resetSelection() {
     overviewSelected.value = false;
@@ -25,6 +26,7 @@ class CustomDrawer extends StatelessWidget {
     workersSelected.value = false;
     partsListSelected.value = false;
     requestedPartsSelected.value = false;
+    invoicesSelected.value = false;
   }
 
   @override
@@ -34,22 +36,56 @@ class CustomDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // Drawer Header
+            // Modern Drawer Header
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    color: buttonColor,
-                    'assets/images/book-square.png',
-                    width: 35,
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: cardShadowColor.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          buttonColor,
+                          buttonColor.withOpacity(0.7),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: buttonColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/images/book-square.png',
+                      width: 28,
+                      height: 28,
+                      color: backgroundColor,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
                     "Nuegas",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: containerColor,
+                      letterSpacing: -0.3,
+                    ),
                   ),
                 ],
               ),
@@ -58,6 +94,7 @@ class CustomDrawer extends StatelessWidget {
             // Drawer Menu Items
             Expanded(
               child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 children: [
                   // Overview
                   Obx(() => DrawerListTile(
@@ -192,6 +229,20 @@ class CustomDrawer extends StatelessWidget {
                           },
                         )),
 
+                  // Invoices
+                  if (userDetailModel!.data!.role == "ADMIN")
+                    Obx(() => DrawerListTile(
+                          title: 'Invoices',
+                          icon: Icons.receipt_long,
+                          iSSelected: invoicesSelected.value,
+                          onTap: () {
+                            resetSelection();
+                            invoicesSelected.value = true;
+                            Navigator.pop(context);
+                            Get.toNamed('/invoices');
+                          },
+                        )),
+
                   // Requested Parts
                   if (userDetailModel!.data!.role != "WORKER")
                     Obx(() => DrawerListTile(
@@ -209,82 +260,81 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
 
-            // Help Center Footer
+            // Modern Help Center Footer
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: containerColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.help_outline, color: Colors.white),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "Help Center",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "Having Trouble? Please contact us for help.",
-                            style: TextStyle(color: Colors.white, fontSize: 10),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: backgroundColor,
-                            ),
-                            child: const Text(
-                              "Go To Help Center",
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: containerColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              padding: const EdgeInsets.all(16),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      buttonColor,
+                      buttonColor.withOpacity(0.8),
+                    ],
                   ),
-                  Positioned(
-                    top: -100,
-                    left: -94,
-                    child: Container(
-                      width: 160,
-                      height: 160,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: buttonColor.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
+                        color: backgroundColor.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -70,
-                    right: -94,
-                    child: Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
-                        shape: BoxShape.circle,
+                      child: Icon(
+                        Icons.help_outline_rounded,
+                        color: backgroundColor,
+                        size: 24,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Text(
+                      "Help Center",
+                      style: TextStyle(
+                        color: backgroundColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Having Trouble? Please contact us for help.",
+                      style: TextStyle(
+                        color: backgroundColor.withOpacity(0.9),
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: backgroundColor,
+                      ),
+                      child: Text(
+                        "Go To Help Center",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: buttonColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -312,27 +362,66 @@ class DrawerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Divider(),
-        ListTile(
-          leading: iconWidget ??
-              Icon(
-                icon,
-                color: buttonColor,
-                size: 25,
-              ),
-          title: Text(
-            title,
-            style: TextStyle(
-              color: iSSelected ? containerColor : drawerItemColor,
-              fontWeight: iSSelected ? FontWeight.bold : FontWeight.normal,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: iSSelected
+                  ? buttonColor.withOpacity(0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: iSSelected
+                  ? Border.all(
+                      color: buttonColor.withOpacity(0.3),
+                      width: 1,
+                    )
+                  : null,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iSSelected
+                        ? buttonColor.withOpacity(0.15)
+                        : buttonColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: iconWidget ??
+                      Icon(
+                        icon,
+                        color: iSSelected ? buttonColor : buttonColor.withOpacity(0.8),
+                        size: 20,
+                      ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: iSSelected ? containerColor : subtitleColor,
+                      fontWeight: iSSelected ? FontWeight.bold : FontWeight.w500,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                if (iSSelected)
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: buttonColor,
+                    size: 20,
+                  ),
+              ],
             ),
           ),
-          onTap: onTap,
         ),
-      ],
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ import '../../Colors/Colors.dart';
 import '../../Controlls/AuthController/AuthController.dart';
 import '../../Widget/CustomAppBarWidget.dart';
 import '../../Widget/CustomDrawer.dart';
+import '../../Utils/ResponsiveHelper.dart';
 
 class WorkersPage extends StatelessWidget {
   WorkersPage({super.key});
@@ -24,11 +25,16 @@ class WorkersPage extends StatelessWidget {
       appBar: CustomAppBar(),
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Modern Header Section
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveHelper.getMaxContentWidth(context),
+            ),
+            child: Column(
+              children: [
+                // Modern Header Section
+                Container(
+                  padding: ResponsiveHelper.getResponsivePadding(context),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 boxShadow: [
@@ -77,7 +83,10 @@ class WorkersPage extends StatelessWidget {
             ),
             // Search Bar
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                top: 12,
+                bottom: 16,
+              ),
               child: Container(
                 decoration: BoxDecoration(
                   color: searchBackgroundColor,
@@ -139,91 +148,118 @@ class WorkersPage extends StatelessWidget {
             // Workers List
             Expanded(
               child: Obx(
-                () => controller.isLoading.value
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
-                              strokeWidth: 3,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              "Loading workers...",
-                              style: TextStyle(
-                                color: subtitleColor,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : controller.workerList.isEmpty
-                        ? RefreshIndicator(
-                            onRefresh: () async {
-                              await controller.getWorkers();
-                            },
-                            color: buttonColor,
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
+                    () => controller.isLoading.value
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 100),
-                                Center(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(24),
-                                        decoration: BoxDecoration(
-                                          color: searchBackgroundColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.people_outline,
-                                          size: 64,
-                                          color: subtitleColor,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 24),
-                                      Text(
-                                        "No workers found",
-                                        style: TextStyle(
-                                          color: containerColor,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        "Add new workers to get started",
-                                        style: TextStyle(
-                                          color: subtitleColor,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+                                CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                  strokeWidth: 3,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Loading workers...",
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ],
                             ),
                           )
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              await controller.getWorkers();
-                            },
-                            color: buttonColor,
-                            child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              itemCount: controller.workerList.length,
-                              itemBuilder: (context, index) {
-                                final WorkerData worker = controller.workerList[index];
-                                return _buildWorkerCard(worker);
-                              },
-                            ),
-                          ),
-              ),
+                        : controller.workerList.isEmpty
+                            ? RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.getWorkers();
+                                },
+                                color: buttonColor,
+                                child: ListView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    const SizedBox(height: 100),
+                                    Center(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(24),
+                                            decoration: BoxDecoration(
+                                              color: searchBackgroundColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.people_outline,
+                                              size: 64,
+                                              color: subtitleColor,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                          Text(
+                                            "No workers found",
+                                            style: TextStyle(
+                                              color: containerColor,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            "Add new workers to get started",
+                                            style: TextStyle(
+                                              color: subtitleColor,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ResponsiveHelper.isLargeScreen(context)
+                                ? RefreshIndicator(
+                                    onRefresh: () async {
+                                      await controller.getWorkers();
+                                    },
+                                    color: buttonColor,
+                                    child: GridView.builder(
+                                      padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                                        top: 0,
+                                      ),
+                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                                        crossAxisSpacing: 16,
+                                        mainAxisSpacing: 12,
+                                        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.3 : 1.2,
+                                      ),
+                                      itemCount: controller.workerList.length,
+                                      itemBuilder: (context, index) {
+                                        final WorkerData worker = controller.workerList[index];
+                                        return _buildWorkerCard(worker);
+                                      },
+                                    ),
+                                  )
+                                : RefreshIndicator(
+                                    onRefresh: () async {
+                                      await controller.getWorkers();
+                                    },
+                                    color: buttonColor,
+                                    child: ListView.builder(
+                                      padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                                        top: 0,
+                                      ),
+                                      itemCount: controller.workerList.length,
+                                      itemBuilder: (context, index) {
+                                        final WorkerData worker = controller.workerList[index];
+                                        return _buildWorkerCard(worker);
+                                      },
+                                    ),
+                                  ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: userDetailModel!.data!.role == "ADMIN"

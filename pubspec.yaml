@@ -52,6 +52,8 @@ dependencies:
   flutter_expandable_fab: ^2.5.2
   gap: ^3.0.1
   shared_preferences: ^2.5.3
+  path_provider: ^2.1.1
+  dio: ^5.4.0
   flutter:
     sdk: flutter
   equatable: any

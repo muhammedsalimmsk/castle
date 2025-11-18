@@ -243,144 +243,156 @@ class EquipmentDetailsPage extends StatelessWidget {
               ),
             ),
 
-            // Equipment Details Section
+            // All Details in One Container
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-              child: _sectionTitle('Equipment Information'),
+              child: _sectionTitle('Details'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.model_training,
-                    "Model Number",
-                    equipment.modelNumber ?? 'N/A',
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
                   ),
-                  _buildDetailItem(
-                    Icons.qr_code,
-                    "Serial Number",
-                    equipment.serialNumber ?? 'N/A',
-                  ),
-                  _buildDetailItem(
-                    Icons.calendar_today,
-                    "Installation Date",
-                    formatDate(equipment.installationDate),
-                  ),
-                  _buildDetailItem(
-                    Icons.verified,
-                    "Warranty Expiry",
-                    formatDate(equipment.warrantyExpiry),
-                  ),
-                  _buildDetailItem(
-                    Icons.location_on,
-                    "Location Type",
-                    equipment.locationType ?? 'N/A',
-                  ),
-                  _buildDetailItem(
-                    Icons.note,
-                    "Location Remarks",
-                    equipment.locationRemarks ?? 'N/A',
-                  ),
-                  _buildDetailItem(
-                    Icons.category,
-                    "Category",
-                    equipment.category?.name ?? 'N/A',
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Supervisor Info Section
-            if (equipment.supervisor != null) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                child: _sectionTitle('Supervisor Information'),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    _buildDetailItem(
-                      Icons.person,
-                      "Name",
-                      "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
-                              .trim()
-                              .isEmpty
-                          ? 'N/A'
-                          : "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
-                              .trim(),
-                    ),
-                    _buildDetailItem(
-                      Icons.email,
-                      "Email",
-                      equipment.supervisor?.email ?? 'N/A',
-                    ),
-                    _buildDetailItem(
-                      Icons.phone,
-                      "Phone",
-                      equipment.supervisor?.phone ?? 'N/A',
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Equipment Information Section
+                    _buildSubSectionTitle('Equipment Information'),
+                    const SizedBox(height: 12),
+                    _buildDetailItem(
+                      Icons.model_training,
+                      "Model Number",
+                      equipment.modelNumber ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.qr_code,
+                      "Serial Number",
+                      equipment.serialNumber ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.calendar_today,
+                      "Installation Date",
+                      formatDate(equipment.installationDate),
+                    ),
+                    _buildDetailItem(
+                      Icons.verified,
+                      "Warranty Expiry",
+                      formatDate(equipment.warrantyExpiry),
+                    ),
+                    _buildDetailItem(
+                      Icons.location_on,
+                      "Location Type",
+                      equipment.locationType ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.note,
+                      "Location Remarks",
+                      equipment.locationRemarks ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.category,
+                      "Category",
+                      equipment.category?.name ?? 'N/A',
+                    ),
 
-            // Client Info Section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-              child: _sectionTitle('Client Information'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.business,
-                    "Client Name",
-                    equipment.client?.clientName ?? 'N/A',
-                  ),
-                  _buildDetailItem(
-                    Icons.location_city,
-                    "Client Address",
-                    equipment.client?.clientAddress ?? 'N/A',
-                  ),
-                ],
-              ),
-            ),
+                    // Supervisor Information Section
+                    if (equipment.supervisor != null) ...[
+                      const SizedBox(height: 24),
+                      Divider(
+                        color: dividerColor,
+                        thickness: 1,
+                        height: 1,
+                      ),
+                      const SizedBox(height: 24),
+                      _buildSubSectionTitle('Supervisor Information'),
+                      const SizedBox(height: 12),
+                      _buildDetailItem(
+                        Icons.person,
+                        "Name",
+                        "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
+                                .trim()
+                                .isEmpty
+                            ? 'N/A'
+                            : "${equipment.supervisor?.firstName ?? ''} ${equipment.supervisor?.lastName ?? ''}"
+                                .trim(),
+                      ),
+                      _buildDetailItem(
+                        Icons.email,
+                        "Email",
+                        equipment.supervisor?.email ?? 'N/A',
+                      ),
+                      _buildDetailItem(
+                        Icons.phone,
+                        "Phone",
+                        equipment.supervisor?.phone ?? 'N/A',
+                      ),
+                    ],
 
-            const SizedBox(height: 24),
+                    // Client Information Section
+                    const SizedBox(height: 24),
+                    Divider(
+                      color: dividerColor,
+                      thickness: 1,
+                      height: 1,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSubSectionTitle('Client Information'),
+                    const SizedBox(height: 12),
+                    _buildDetailItem(
+                      Icons.business,
+                      "Client Name",
+                      equipment.client?.clientName ?? 'N/A',
+                    ),
+                    _buildDetailItem(
+                      Icons.location_city,
+                      "Client Address",
+                      equipment.client?.clientAddress ?? 'N/A',
+                    ),
 
-            // Other Info Section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-              child: _sectionTitle('Additional Information'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.access_time,
-                    "Created At",
-                    formatDate(equipment.createdAt),
-                  ),
-                  _buildDetailItem(
-                    Icons.update,
-                    "Updated At",
-                    formatDate(equipment.updatedAt),
-                  ),
-                  _buildDetailItem(
-                    Icons.report_problem,
-                    "Total Complaints",
-                    equipment.count != null
-                        ? equipment.count!.complaints.toString()
-                        : '0',
-                  ),
-                ],
+                    // Additional Information Section
+                    const SizedBox(height: 24),
+                    Divider(
+                      color: dividerColor,
+                      thickness: 1,
+                      height: 1,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSubSectionTitle('Additional Information'),
+                    const SizedBox(height: 12),
+                    _buildDetailItem(
+                      Icons.access_time,
+                      "Created At",
+                      formatDate(equipment.createdAt),
+                    ),
+                    _buildDetailItem(
+                      Icons.update,
+                      "Updated At",
+                      formatDate(equipment.updatedAt),
+                    ),
+                    _buildDetailItem(
+                      Icons.report_problem,
+                      "Total Complaints",
+                      equipment.count != null
+                          ? equipment.count!.complaints.toString()
+                          : '0',
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -649,41 +661,37 @@ class EquipmentDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(IconData icon, String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: dividerColor,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: cardShadowColor.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-        ],
+  Widget _buildSubSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: containerColor,
+        letterSpacing: -0.2,
       ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: buttonColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               icon,
               color: buttonColor,
-              size: 20,
+              size: 18,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,7 +710,7 @@ class EquipmentDetailsPage extends StatelessWidget {
                   style: TextStyle(
                     color: containerColor,
                     fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                    fontSize: 14,
                   ),
                 ),
               ],

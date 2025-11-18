@@ -60,23 +60,40 @@ class EquipmentController extends GetxController {
   final installationDate = Rxn<DateTime>();
   final warrantyExpiry = Rxn<DateTime>();
 
-  List<ClientData> get filteredClients {
-    if (searchQuery.value.isEmpty) {
+  final clientSearchQuery = ''.obs;
+  RxList<ClientData> filteredClients = <ClientData>[].obs;
+
+  List<ClientData> get filteredClientsList {
+    if (clientSearchQuery.value.isEmpty) {
       return clientData;
     }
     return clientData
-        .where((c) =>
-            (c.firstName ?? '')
-                .toLowerCase()
-                .contains(searchQuery.value.toLowerCase()) ||
-            (c.lastName ?? '')
-                .toLowerCase()
-                .contains(searchQuery.value.toLowerCase()))
+        .where((c) {
+          final clientName = c.clientName ?? 
+              '${c.firstName ?? ''} ${c.lastName ?? ''}'.trim();
+          return clientName.toLowerCase()
+              .contains(clientSearchQuery.value.toLowerCase());
+        })
         .toList();
+  }
+
+  void searchClients(String query) {
+    clientSearchQuery.value = query;
+    if (query.isEmpty) {
+      filteredClients.value = clientData;
+    } else {
+      filteredClients.value = clientData.where((client) {
+        final clientName = client.clientName ?? 
+            '${client.firstName ?? ''} ${client.lastName ?? ''}'.trim();
+        return clientName.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
   }
 
   List<String> sortOptions = ["Name", "Price", "Rating"];
   var isOpen = false.obs;
+  final selectedClientId = Rxn<String>();
+  final equipmentSearchQuery = ''.obs;
 
   void toggle() {
     isOpen.value = !isOpen.value;
@@ -218,33 +235,56 @@ class EquipmentController extends GetxController {
     }
   }
 
-  Future getClientList({bool isRefresh = false}) async {
-    if (isFetchingClients.value || !hasMoreClients) return;
+  Future getClientList({bool isRefresh = false, String? search}) async {
+    if (isFetchingClients.value) return;
 
     isFetchingClients.value = true;
     if (isRefresh) {
-      page = 1;
-      hasMoreClients = true;
       clientData.clear();
+      filteredClients.clear();
     }
 
     try {
-      final response = await _apiService.getRequest(
-        '/api/v1/admin/clients?page=$page&limit=10&search=${searchQuery.value}',
-        bearerToken: token,
-      );
-      if (response.isOk) {
-        clientModel = ClientModel.fromJson(response.body);
-        final newClients = clientModel.data!;
-        if (newClients.isEmpty) {
-          hasMoreClients = false;
+      int currentPage = 1;
+      bool hasMore = true;
+      const int limit = 100; // Load 100 per page
+
+      while (hasMore) {
+        final queryParams = <String, String>{
+          'page': currentPage.toString(),
+          'limit': limit.toString(),
+          if (search != null && search.isNotEmpty) 'search': search,
+        };
+        final uri = Uri.parse('/api/v1/admin/clients')
+            .replace(queryParameters: queryParams);
+
+        final response = await _apiService.getRequest(
+          uri.toString(),
+          bearerToken: token,
+        );
+
+        if (response.isOk) {
+          clientModel = ClientModel.fromJson(response.body);
+          final newClients = clientModel.data ?? [];
+          
+          if (newClients.isEmpty || newClients.length < limit) {
+            hasMore = false;
+          }
+          
+          if (newClients.isNotEmpty) {
+            clientData.addAll(newClients);
+            currentPage++;
+          } else {
+            hasMore = false;
+          }
         } else {
-          clientData.addAll(newClients);
-          page++;
+          hasMore = false;
+          print(response.body);
         }
-      } else {
-        print(response.body);
       }
+
+      // Update filtered clients
+      filteredClients.value = clientData;
     } catch (e) {
       print("Client fetch error: $e");
     } finally {
@@ -253,8 +293,8 @@ class EquipmentController extends GetxController {
   }
 
   void onSearchChanged(String query) {
-    searchQuery.value = query;
-    getClientList(isRefresh: true);
+    clientSearchQuery.value = query;
+    searchClients(query);
   }
 
   final specificationInput = TextEditingController();
@@ -332,12 +372,28 @@ class EquipmentController extends GetxController {
     }
   }
 
-  Future<List<EquipmentDetailData>?> getEquipmentDetail(String role) async {
-    final endpoint = '/api/v1/$role/equipment';
+  Future<List<EquipmentDetailData>?> getEquipmentDetail(
+    String role, {
+    String? search,
+    String? clientId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final baseUrl = '/api/v1/$role/equipment';
+    
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+      if (search != null && search.isNotEmpty) 'search': search,
+      if (clientId != null && clientId.isNotEmpty) 'clientId': clientId,
+    };
+
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+    
     try {
-      print(endpoint);
+      print(uri.toString());
       final response =
-          await _apiService.getRequest(endpoint, bearerToken: token);
+          await _apiService.getRequest(uri.toString(), bearerToken: token);
       if (response.isOk) {
         print("ujbbsbbb${response.body}");
         equipmentModel = EquipmentModel.fromJson(response.body);

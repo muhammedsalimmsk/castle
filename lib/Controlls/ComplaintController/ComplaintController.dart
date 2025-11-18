@@ -96,7 +96,13 @@ class ComplaintController extends GetxController {
   int limit = 10;
   bool hasMore = true;
   bool isRefresh = false;
+  TextEditingController searchController = TextEditingController();
+  RxString searchText = ''.obs;
   String search = '';
+  RxString selectedSort = ''.obs;
+  RxString selectedClientId = ''.obs;
+  RxString selectedDepartmentId = ''.obs;
+  
   final List<String> statuses = [
     'OPEN',
     'ASSIGNED',
@@ -113,6 +119,13 @@ class ComplaintController extends GetxController {
     'MEDIUM',
     'HIGH',
     'URGENT',
+  ];
+  
+  final List<String> sortOptions = [
+    'Name',
+    'Priority',
+    'Status',
+    'Date',
   ];
   void selectDueDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
@@ -152,6 +165,49 @@ class ComplaintController extends GetxController {
   void setPriority(String value) {
     selectedPriority.value = value;
   }
+  
+  void setClientId(String value) {
+    selectedClientId.value = value;
+  }
+  
+  void setDepartmentId(String value) {
+    selectedDepartmentId.value = value;
+  }
+  
+  void setSort(String value) {
+    selectedSort.value = value;
+  }
+  
+  void clearFilters() {
+    selectedStatus.value = '';
+    selectedPriority.value = '';
+    selectedClientId.value = '';
+    selectedDepartmentId.value = '';
+    searchController.clear();
+    search = '';
+    searchText.value = '';
+  }
+  
+  @override
+  void onInit() async {
+    super.onInit();
+    final role = userDetailModel!.data!.role!.toLowerCase();
+
+    // Add listener to search controller
+    searchController.addListener(() {
+      searchText.value = searchController.text;
+    });
+
+    scrollController.addListener(() async {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 300) {
+        await getComplaint(role: role);
+      }
+    });
+
+    print(role);
+    await getComplaint(role: userDetailModel!.data!.role!.toLowerCase());
+  }
 
   void scrollToRight() {
     scrollController.animateTo(
@@ -178,23 +234,6 @@ class ComplaintController extends GetxController {
     }
   }
 
-  @override
-  void onInit() async {
-    super.onInit();
-    // TODO: implement onInit
-    final role = userDetailModel!.data!.role!.toLowerCase();
-
-    scrollController.addListener(() async {
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent - 300) {
-        await getComplaint(role: role);
-      }
-    });
-
-    print(role);
-    await getComplaint(role: userDetailModel!.data!.role!.toLowerCase());
-  }
-
   void scrollToLeft() {
     scrollController.animateTo(
       scrollController.offset - 410,
@@ -206,6 +245,7 @@ class ComplaintController extends GetxController {
   @override
   void onClose() {
     scrollController.dispose();
+    searchController.dispose();
     super.onClose();
   }
 
@@ -238,8 +278,44 @@ class ComplaintController extends GetxController {
 
     isLoading.value = true;
 
-    final endpoint =
-        "/api/v1/$role/complaints?page=$page&limit=$limit&search=$search";
+    // Build query parameters
+    final queryParams = <String, String>{
+      'page': page.toString(),
+      'limit': limit.toString(),
+    };
+    
+    // Add search parameter
+    if (search.isNotEmpty) {
+      queryParams['search'] = search;
+    }
+    
+    // Add status filter
+    if (selectedStatus.value.isNotEmpty) {
+      queryParams['status'] = selectedStatus.value;
+    }
+    
+    // Add priority filter
+    if (selectedPriority.value.isNotEmpty) {
+      queryParams['priority'] = selectedPriority.value;
+    }
+    
+    // Add clientId filter
+    if (selectedClientId.value.isNotEmpty) {
+      queryParams['clientId'] = selectedClientId.value;
+    }
+    
+    // Add departmentId filter
+    if (selectedDepartmentId.value.isNotEmpty) {
+      queryParams['departmentId'] = selectedDepartmentId.value;
+    }
+    
+    // Add sort parameter
+    if (selectedSort.value.isNotEmpty) {
+      queryParams['sort'] = selectedSort.value.toLowerCase();
+    }
+
+    final uri = Uri.parse("/api/v1/$role/complaints").replace(queryParameters: queryParams);
+    final endpoint = uri.toString();
 
     try {
       print(endpoint);
@@ -273,6 +349,14 @@ class ComplaintController extends GetxController {
       isLoading.value = false;
       update();
     }
+  }
+  
+  void applyFilters({required String role}) {
+    search = searchController.text.trim();
+    isRefresh = true;
+    page = 1;
+    hasMore = true;
+    getComplaint(role: role);
   }
 
   Future assignComplaint(String complaintId,

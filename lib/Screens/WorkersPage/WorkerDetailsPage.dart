@@ -170,31 +170,55 @@ class WorkerDetailsPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.person_rounded,
-                    "Full Name",
-                    fullName.isEmpty ? 'N/A' : fullName,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
                   ),
-                  if (worker.email != null)
-                    _buildDetailItem(
-                      Icons.email_rounded,
-                      "Email",
-                      worker.email!,
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                      spreadRadius: 0,
                     ),
-                  if (worker.phone != null)
-                    _buildDetailItem(
-                      Icons.phone_rounded,
-                      "Phone",
-                      worker.phone!,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildInfoRow(
+                      Icons.person_rounded,
+                      "Full Name",
+                      fullName.isEmpty ? 'N/A' : fullName,
                     ),
-                  _buildDetailItem(
-                    Icons.calendar_today_rounded,
-                    "Joined At",
-                    formatDate(worker.createdAt),
-                  ),
-                ],
+                    if (worker.email != null) ...[
+                      const Divider(height: 24, color: dividerColor),
+                      _buildInfoRow(
+                        Icons.email_rounded,
+                        "Email",
+                        worker.email!,
+                      ),
+                    ],
+                    if (worker.phone != null) ...[
+                      const Divider(height: 24, color: dividerColor),
+                      _buildInfoRow(
+                        Icons.phone_rounded,
+                        "Phone",
+                        worker.phone!,
+                      ),
+                    ],
+                    const Divider(height: 24, color: dividerColor),
+                    _buildInfoRow(
+                      Icons.calendar_today_rounded,
+                      "Joined At",
+                      formatDate(worker.createdAt),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -298,67 +322,47 @@ class WorkerDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(IconData icon, String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: dividerColor,
-          width: 1,
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: buttonColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: buttonColor,
+            size: 20,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: cardShadowColor.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: buttonColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: buttonColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: subtitleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: containerColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  color: containerColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

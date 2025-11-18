@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
@@ -5,8 +6,11 @@ import 'package:castle/Model/invoice_model/invoice_model.dart';
 import 'package:castle/Model/invoice_model/invoice_data.dart';
 import 'package:castle/Model/client_model/datum.dart';
 import 'package:castle/Services/ApiService.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class InvoiceController extends GetxController {
   final ApiService _apiService = ApiService();
@@ -248,7 +252,7 @@ class InvoiceController extends GetxController {
 
     try {
       final response = await _apiService.getRequest(
-        '/api/invoices/$invoiceId',
+        '/api/v1/reports/invoices/$invoiceId',
         bearerToken: token,
       );
 
@@ -420,7 +424,7 @@ class InvoiceController extends GetxController {
 
     try {
       final response = await _apiService.patchRequest(
-        '/api/invoices/$invoiceId',
+        '/api/v1/reports/invoices/$invoiceId',
         data: data,
         bearerToken: token,
       );
@@ -466,7 +470,7 @@ class InvoiceController extends GetxController {
 
     try {
       final response = await _apiService.deleteRequest(
-        '/api/invoices/$invoiceId',
+        '/api/v1/reports/invoices/$invoiceId',
         bearerToken: token,
       );
 
@@ -507,30 +511,220 @@ class InvoiceController extends GetxController {
   // Download PDF
   Future<void> downloadInvoicePdf(String invoiceId) async {
     try {
+      isLoading.value = true;
+
+      // Check and request storage permission
+      if (Platform.isAndroid) {
+        // Check current permission status
+        PermissionStatus storageStatus = await Permission.storage.status;
+
+        // If not granted, request it
+        if (!storageStatus.isGranted) {
+          storageStatus = await Permission.storage.request();
+        }
+
+        // If still not granted, check if it's permanently denied
+        if (!storageStatus.isGranted) {
+          if (storageStatus.isPermanentlyDenied) {
+            isLoading.value = false;
+            _showPermissionDialog();
+            return;
+          }
+
+          // Try manage external storage for Android 11+ (API 30+)
+          PermissionStatus manageStorageStatus =
+              await Permission.manageExternalStorage.status;
+          if (!manageStorageStatus.isGranted) {
+            manageStorageStatus =
+                await Permission.manageExternalStorage.request();
+          }
+
+          // If both permissions are denied, show dialog
+          if (!manageStorageStatus.isGranted) {
+            isLoading.value = false;
+            if (manageStorageStatus.isPermanentlyDenied) {
+              _showPermissionDialog();
+            } else {
+              Get.snackbar(
+                'Permission Required',
+                'Storage permission is required to download files',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.orange,
+                colorText: Colors.white,
+              );
+            }
+            return;
+          }
+        }
+      }
+
       final baseUrl =
           _apiService.baseUrl ?? 'https://api-tekcastle-9360.onrender.com';
-      final pdfUrl = '$baseUrl/api/invoices/$invoiceId/download';
+      final pdfUrl = '$baseUrl/api/v1/reports/invoices/$invoiceId/download';
 
-      Get.snackbar(
-        'Info',
-        'PDF download link: $pdfUrl',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: buttonColor,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
+      // Get download directory
+      Directory? downloadDir;
+      if (Platform.isAndroid) {
+        // For Android, use external storage downloads directory
+        final externalDir = await getExternalStorageDirectory();
+        if (externalDir != null) {
+          // Navigate to Downloads folder
+          final basePath = externalDir.path.split('Android')[0];
+          downloadDir = Directory('$basePath/Download');
+          if (!await downloadDir.exists()) {
+            // Try alternative path
+            downloadDir = Directory('$basePath/Downloads');
+            if (!await downloadDir.exists()) {
+              // Create Download directory if it doesn't exist
+              downloadDir = Directory('$basePath/Download');
+              await downloadDir.create(recursive: true);
+            }
+          }
+        }
+      } else if (Platform.isIOS) {
+        // For iOS, use application documents directory
+        downloadDir = await getApplicationDocumentsDirectory();
+      } else {
+        // For other platforms (Windows, macOS, Linux)
+        // Try to get Downloads directory, fallback to Documents
+        final appDocDir = await getApplicationDocumentsDirectory();
+        Directory? platformDownloadDir;
+        if (Platform.isWindows) {
+          final userProfile = Platform.environment['USERPROFILE'] ?? '';
+          platformDownloadDir = Directory('$userProfile\\Downloads');
+        } else if (Platform.isMacOS || Platform.isLinux) {
+          final userHome = Platform.environment['HOME'] ?? '';
+          platformDownloadDir = Directory('$userHome/Downloads');
+        }
+
+        // Use platform download dir if it exists, otherwise use app documents
+        if (platformDownloadDir != null && await platformDownloadDir.exists()) {
+          downloadDir = platformDownloadDir;
+        } else {
+          downloadDir = appDocDir;
+        }
+      }
+
+      if (downloadDir == null) {
+        throw Exception('Could not access download directory');
+      }
+
+      // Create filename
+      final fileName = 'invoice_$invoiceId.pdf';
+      final filePath = '${downloadDir.path}/$fileName';
+
+      // Download file using Dio
+      final dio = Dio();
+      final response = await dio.download(
+        pdfUrl,
+        filePath,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+          validateStatus: (status) => status! < 500,
+        ),
+        onReceiveProgress: (received, total) {
+          // Progress tracking can be added here if needed
+          // final progress = (received / total * 100).toStringAsFixed(0);
+        },
       );
 
-      // Note: For actual download, you may need to use url_launcher package
-      // or implement a custom download handler based on your platform
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          'Success',
+          'Invoice PDF downloaded to Downloads folder',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+      } else {
+        throw Exception('Download failed with status: ${response.statusCode}');
+      }
     } catch (e) {
+      print('Download error: $e');
       Get.snackbar(
         'Error',
-        'Failed to get PDF URL: $e',
+        'Failed to download invoice PDF: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
       );
+    } finally {
+      isLoading.value = false;
     }
+  }
+
+  // Show permission dialog
+  void _showPermissionDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Storage Permission Required',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Storage permission is required to download invoice PDFs to your device. Please enable it in the app settings.',
+          style: TextStyle(
+            fontSize: 14,
+            color: containerColor,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: subtitleColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await openAppSettings();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: buttonColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            child: const Text(
+              'Open Settings',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
   }
 
   // Add invoice item

@@ -480,39 +480,58 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      children: [
-                        if (complaint.clientData!.clientName != null)
-                          _buildDetailItem(
-                            Icons.business,
-                            "Client Name",
-                            complaint.clientData!.clientName ?? "N/A",
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: dividerColor,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: cardShadowColor.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                            spreadRadius: 0,
                           ),
-                        if (complaint.clientData!.clientAddress != null)
-                          _buildDetailItem(
-                            Icons.location_city,
-                            "Address",
-                            complaint.clientData!.clientAddress ?? "N/A",
-                          ),
-                        if (complaint.clientData!.clientEmail != null)
-                          _buildDetailItem(
-                            Icons.email,
-                            "Email",
-                            complaint.clientData!.clientEmail ?? "N/A",
-                          ),
-                        if (complaint.clientData!.phone != null)
-                          _buildDetailItem(
-                            Icons.phone,
-                            "Phone",
-                            complaint.clientData!.phone ?? "N/A",
-                          ),
-                        if (complaint.clientData!.contactPerson != null)
-                          _buildDetailItem(
-                            Icons.person,
-                            "Contact Person",
-                            complaint.clientData!.contactPerson ?? "N/A",
-                          ),
-                      ],
+                        ],
+                      ),
+                      child: Column(
+                        children: _buildDetailItemsWithDividers([
+                          if (complaint.clientData!.clientName != null)
+                            _buildDetailRow(
+                              Icons.business,
+                              "Client Name",
+                              complaint.clientData!.clientName ?? "N/A",
+                            ),
+                          if (complaint.clientData!.clientAddress != null)
+                            _buildDetailRow(
+                              Icons.location_city,
+                              "Address",
+                              complaint.clientData!.clientAddress ?? "N/A",
+                            ),
+                          if (complaint.clientData!.clientEmail != null)
+                            _buildDetailRow(
+                              Icons.email,
+                              "Email",
+                              complaint.clientData!.clientEmail ?? "N/A",
+                            ),
+                          if (complaint.clientData!.phone != null)
+                            _buildDetailRow(
+                              Icons.phone,
+                              "Phone",
+                              complaint.clientData!.phone ?? "N/A",
+                            ),
+                          if (complaint.clientData!.contactPerson != null)
+                            _buildDetailRow(
+                              Icons.person,
+                              "Contact Person",
+                              complaint.clientData!.contactPerson ?? "N/A",
+                            ),
+                        ]),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -524,47 +543,68 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      if (complaint.equipment != null)
-                        _buildDetailItem(
-                          Icons.precision_manufacturing,
-                          "Equipment Name",
-                          complaint.equipment?.name ?? "N/A",
-                        ),
-                      if (complaint.equipment?.supervisor != null) ...[
-                        _buildDetailItem(
-                          Icons.person,
-                          "Supervisor Name",
-                          "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
-                                  .trim()
-                                  .isEmpty
-                              ? "N/A"
-                              : "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
-                                  .trim(),
-                        ),
-                        _buildDetailItem(
-                          Icons.phone,
-                          "Supervisor Phone",
-                          complaint.equipment!.supervisor!.phone ?? "N/A",
-                        ),
-                        _buildDetailItem(
-                          Icons.email,
-                          "Supervisor Email",
-                          complaint.equipment!.supervisor!.email ?? "N/A",
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: dividerColor,
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cardShadowColor.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                          spreadRadius: 0,
                         ),
                       ],
-                      _buildDetailItem(
-                        Icons.calendar_today,
-                        "Reported At",
-                        formatDate(complaint.reportedAt),
-                      ),
-                      _buildDetailItem(
-                        Icons.access_time,
-                        "Created At",
-                        formatDate(complaint.createdAt),
-                      ),
-                    ],
+                    ),
+                    child: Column(
+                      children: _buildDetailItemsWithDividers([
+                        if (complaint.equipment != null)
+                          _buildDetailRow(
+                            Icons.precision_manufacturing,
+                            "Equipment Name",
+                            complaint.equipment?.name ?? "N/A",
+                          ),
+                        if (complaint.equipment?.supervisor != null) ...[
+                          _buildDetailRow(
+                            Icons.person,
+                            "Supervisor Name",
+                            "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
+                                    .trim()
+                                    .isEmpty
+                                ? "N/A"
+                                : "${complaint.equipment!.supervisor!.firstName ?? ''} ${complaint.equipment!.supervisor!.lastName ?? ''}"
+                                    .trim(),
+                          ),
+                          if (complaint.equipment!.supervisor!.phone != null)
+                            _buildDetailRow(
+                              Icons.phone,
+                              "Supervisor Phone",
+                              complaint.equipment!.supervisor!.phone ?? "N/A",
+                            ),
+                          if (complaint.equipment!.supervisor!.email != null)
+                            _buildDetailRow(
+                              Icons.email,
+                              "Supervisor Email",
+                              complaint.equipment!.supervisor!.email ?? "N/A",
+                            ),
+                        ],
+                        _buildDetailRow(
+                          Icons.calendar_today,
+                          "Reported At",
+                          formatDate(complaint.reportedAt),
+                        ),
+                        _buildDetailRow(
+                          Icons.access_time,
+                          "Created At",
+                          formatDate(complaint.createdAt),
+                        ),
+                      ]),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -979,68 +1019,63 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
     );
   }
 
-  Widget _buildDetailItem(IconData icon, String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: dividerColor,
-          width: 1,
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: buttonColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: buttonColor,
+            size: 20,
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: cardShadowColor.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: buttonColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: buttonColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: subtitleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: containerColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  color: containerColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  List<Widget> _buildDetailItemsWithDividers(List<Widget> items) {
+    if (items.isEmpty) return [];
+    if (items.length == 1) return items;
+
+    final List<Widget> result = [];
+    for (int i = 0; i < items.length; i++) {
+      result.add(items[i]);
+      if (i < items.length - 1) {
+        result.add(SizedBox(height: 24,));
+      }
+    }
+    return result;
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {

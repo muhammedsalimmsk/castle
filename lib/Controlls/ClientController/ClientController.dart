@@ -22,10 +22,6 @@ class ClientRegisterController extends GetxController {
   final phone = TextEditingController();
   final clientName = TextEditingController();
   final clientAddress = TextEditingController();
-  // final clientCity = TextEditingController();
-  // final clientState = TextEditingController();
-  // final clientCountry = TextEditingController();
-  // final clientPostalCode = TextEditingController();
   final clientPhone = TextEditingController();
   final clientEmail = TextEditingController();
   final contactPerson = TextEditingController();
@@ -83,10 +79,6 @@ class ClientRegisterController extends GetxController {
     phone.text = client.phone?.toString() ?? '';
     clientName.text = client.clientName ?? '';
     clientAddress.text = client.clientAddress ?? '';
-    // clientCity.text = client.clientCity ?? '';
-    // clientState.text = client.clientState ?? '';
-    // clientCountry.text = client.clientCountry ?? '';
-    // clientPostalCode.text = client.clientPostalCode ?? '';
     clientPhone.text = client.phone?.toString() ?? '';
     clientEmail.text = client.clientEmail ?? '';
     contactPerson.text = client.contactPerson ?? '';
@@ -115,7 +107,7 @@ class ClientRegisterController extends GetxController {
   }
 
   Future updateClient(String clientId) async {
-    final endpoint = "/api/v1/admin/clients/$clientId";
+    final endpoint = "/api/v1/common/clients/$clientId";
     isLoading.value = true;
     final data = {
       "email": email.text.trim(),
@@ -148,19 +140,50 @@ class ClientRegisterController extends GetxController {
     }
   }
 
-  Future getClientList() async {
+  Future getClientList({String? search}) async {
     try {
-      final response = await _apiService.getRequest(
-          '/api/v1/admin/clients?page=$page&limit=100',
-          bearerToken: token);
-      if (response.isOk) {
-        clientModel = ClientModel.fromJson(response.body);
-        clientData.value = clientModel.data!;
-        print(response.body);
-      } else {
-        print(response.body);
-        Get.snackbar("Error", response.body['error']);
+      clientData.clear();
+      int currentPage = 1;
+      bool hasMore = true;
+      const int limit = 100; // Load 100 per page
+
+      while (hasMore) {
+        final queryParams = <String, String>{
+          'page': currentPage.toString(),
+          'limit': limit.toString(),
+          if (search != null && search.isNotEmpty) 'search': search,
+        };
+        final uri = Uri.parse('/api/v1/admin/clients')
+            .replace(queryParameters: queryParams);
+
+        final response = await _apiService.getRequest(
+          uri.toString(),
+          bearerToken: token,
+        );
+
+        if (response.isOk) {
+          clientModel = ClientModel.fromJson(response.body);
+          final newClients = clientModel.data ?? [];
+          
+          if (newClients.isEmpty || newClients.length < limit) {
+            hasMore = false;
+          }
+          
+          if (newClients.isNotEmpty) {
+            clientData.addAll(newClients);
+            currentPage++;
+          } else {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+          print(response.body);
+          Get.snackbar("Error", response.body['error']);
+        }
       }
+      
+      // Update filtered clients
+      filteredClients.value = clientData;
     } catch (e) {
       print(e);
       rethrow;

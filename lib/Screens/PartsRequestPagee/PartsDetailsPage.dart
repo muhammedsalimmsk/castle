@@ -176,24 +176,43 @@ class PartsDetailsPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.tag_rounded,
-                    "Part Number",
-                    part.partNumber ?? 'N/A',
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
                   ),
-                  _buildDetailItem(
-                    Icons.category_rounded,
-                    "Category",
-                    part.category ?? 'N/A',
-                  ),
-                  _buildDetailItem(
-                    Icons.scale_rounded,
-                    "Unit",
-                    part.unit ?? 'N/A',
-                  ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: _buildDetailItemsWithDividers([
+                    _buildDetailRow(
+                      Icons.tag_rounded,
+                      "Part Number",
+                      part.partNumber ?? 'N/A',
+                    ),
+                    _buildDetailRow(
+                      Icons.category_rounded,
+                      "Category",
+                      part.category ?? 'N/A',
+                    ),
+                    _buildDetailRow(
+                      Icons.scale_rounded,
+                      "Unit",
+                      part.unit ?? 'N/A',
+                    ),
+                  ]),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -324,28 +343,47 @@ class PartsDetailsPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.attach_money_rounded,
-                    "Unit Price",
-                    part.unitPrice != null
-                        ? "\$${part.unitPrice!.toStringAsFixed(2)}"
-                        : 'N/A',
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
                   ),
-                  if (part.supplier != null)
-                    _buildDetailItem(
-                      Icons.business_rounded,
-                      "Supplier",
-                      part.supplier!,
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      spreadRadius: 0,
                     ),
-                  if (part.location != null)
-                    _buildDetailItem(
-                      Icons.location_on_rounded,
-                      "Location",
-                      part.location!,
+                  ],
+                ),
+                child: Column(
+                  children: _buildDetailItemsWithDividers([
+                    _buildDetailRow(
+                      Icons.attach_money_rounded,
+                      "Unit Price",
+                      part.unitPrice != null
+                          ? "\$${part.unitPrice!.toStringAsFixed(2)}"
+                          : 'N/A',
                     ),
-                ],
+                    if (part.supplier != null)
+                      _buildDetailRow(
+                        Icons.business_rounded,
+                        "Supplier",
+                        part.supplier!,
+                      ),
+                    if (part.location != null)
+                      _buildDetailRow(
+                        Icons.location_on_rounded,
+                        "Location",
+                        part.location!,
+                      ),
+                  ]),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -386,19 +424,38 @@ class PartsDetailsPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  _buildDetailItem(
-                    Icons.calendar_today_rounded,
-                    "Created At",
-                    formatDate(part.createdAt),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
                   ),
-                  _buildDetailItem(
-                    Icons.update_rounded,
-                    "Updated At",
-                    formatDate(part.updatedAt),
-                  ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: _buildDetailItemsWithDividers([
+                    _buildDetailRow(
+                      Icons.calendar_today_rounded,
+                      "Created At",
+                      formatDate(part.createdAt),
+                    ),
+                    _buildDetailRow(
+                      Icons.update_rounded,
+                      "Updated At",
+                      formatDate(part.updatedAt),
+                    ),
+                  ]),
+                ),
               ),
             ),
             const SizedBox(height: 32),
@@ -429,70 +486,6 @@ class PartsDetailsPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: containerColor,
               letterSpacing: -0.3,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailItem(IconData icon, String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: dividerColor,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: cardShadowColor.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: buttonColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: buttonColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: containerColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -534,6 +527,65 @@ class PartsDetailsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: buttonColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: buttonColor,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: subtitleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  color: containerColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildDetailItemsWithDividers(List<Widget> items) {
+    if (items.isEmpty) return [];
+    if (items.length == 1) return items;
+
+    final List<Widget> result = [];
+    for (int i = 0; i < items.length; i++) {
+      result.add(items[i]);
+      if (i < items.length - 1) {
+        result.add(const SizedBox(height: 24));
+      }
+    }
+    return result;
   }
 }
 

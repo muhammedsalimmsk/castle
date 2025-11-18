@@ -5,6 +5,7 @@ import 'package:castle/Screens/PartsRequestPagee/NewPartsPage.dart';
 import 'package:castle/Screens/PartsRequestPagee/PartsDetailsPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
+import 'package:castle/Utils/ResponsiveHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -51,11 +52,16 @@ class PartsListPage extends StatelessWidget {
       drawer: CustomDrawer(),
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Modern Header Section
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveHelper.getMaxContentWidth(context),
+            ),
+            child: Column(
+              children: [
+                // Modern Header Section
+                Container(
+                  padding: ResponsiveHelper.getResponsivePadding(context),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 boxShadow: [
@@ -102,94 +108,185 @@ class PartsListPage extends StatelessWidget {
                 ],
               ),
             ),
+            // Search Bar
+            Padding(
+              padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                top: 12,
+                bottom: 16,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: searchBackgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search parts...",
+                    hintStyle: TextStyle(
+                      color: subtitleColor,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: buttonColor,
+                      size: 22,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.filter_list_rounded,
+                        color: buttonColor,
+                        size: 22,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: buttonColor,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    filled: true,
+                    fillColor: searchBackgroundColor,
+                  ),
+                ),
+              ),
+            ),
             // Parts List
             Expanded(
               child: Obx(
-                () => controller.isLoading.value
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
-                              strokeWidth: 3,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              "Loading parts...",
-                              style: TextStyle(
-                                color: subtitleColor,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : controller.partsData.isEmpty
-                        ? RefreshIndicator(
-                            onRefresh: () async {
-                              await controller.getPartsList();
-                            },
-                            color: buttonColor,
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
+                    () => controller.isLoading.value
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 100),
-                                Center(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(24),
-                                        decoration: BoxDecoration(
-                                          color: searchBackgroundColor,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.inventory_2_outlined,
-                                          size: 64,
-                                          color: subtitleColor,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 24),
-                                      Text(
-                                        "No parts found",
-                                        style: TextStyle(
-                                          color: containerColor,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        "Add new parts to get started",
-                                        style: TextStyle(
-                                          color: subtitleColor,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+                                CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                  strokeWidth: 3,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Loading parts...",
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ],
                             ),
                           )
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              await controller.getPartsList();
-                            },
-                            color: buttonColor,
-                            child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                              itemCount: controller.partsData.length,
-                              itemBuilder: (context, index) {
-                                PartsDetail part = controller.partsData[index];
-                                return _buildPartCard(part);
-                              },
-                            ),
-                          ),
-              ),
+                        : controller.partsData.isEmpty
+                            ? RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.getPartsList();
+                                },
+                                color: buttonColor,
+                                child: ListView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    const SizedBox(height: 100),
+                                    Center(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(24),
+                                            decoration: BoxDecoration(
+                                              color: searchBackgroundColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.inventory_2_outlined,
+                                              size: 64,
+                                              color: subtitleColor,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                          Text(
+                                            "No parts found",
+                                            style: TextStyle(
+                                              color: containerColor,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            "Add new parts to get started",
+                                            style: TextStyle(
+                                              color: subtitleColor,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ResponsiveHelper.isLargeScreen(context)
+                                ? RefreshIndicator(
+                                    onRefresh: () async {
+                                      await controller.getPartsList();
+                                    },
+                                    color: buttonColor,
+                                    child: GridView.builder(
+                                      padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                                        top: 0,
+                                      ),
+                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                                        crossAxisSpacing: 16,
+                                        mainAxisSpacing: 12,
+                                        childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.3 : 1.2,
+                                      ),
+                                      itemCount: controller.partsData.length,
+                                      itemBuilder: (context, index) {
+                                        PartsDetail part = controller.partsData[index];
+                                        return _buildPartCard(part);
+                                      },
+                                    ),
+                                  )
+                                : RefreshIndicator(
+                                    onRefresh: () async {
+                                      await controller.getPartsList();
+                                    },
+                                    color: buttonColor,
+                                    child: ListView.builder(
+                                      padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                                        top: 0,
+                                      ),
+                                      itemCount: controller.partsData.length,
+                                      itemBuilder: (context, index) {
+                                        PartsDetail part = controller.partsData[index];
+                                        return _buildPartCard(part);
+                                      },
+                                    ),
+                                  ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: Container(

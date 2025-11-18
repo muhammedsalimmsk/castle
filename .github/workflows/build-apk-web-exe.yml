@@ -1,4 +1,4 @@
-name: Build Flutter APK and Web
+name: Build Flutter APK, Web, and Windows
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-android-web:
     runs-on: ubuntu-latest
 
     steps:
@@ -51,7 +51,6 @@ jobs:
       - name: Extract app version (from pubspec) and set APK name
         id: vars
         run: |
-          # try to parse pubspec version: e.g. 1.2.3+45 -> version=1.2.3 build=45
           VERSION_LINE=$(grep '^version:' pubspec.yaml || true)
           VERSION=$(echo "$VERSION_LINE" | sed -E "s/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/" || true)
           BUILD=$(echo "$VERSION_LINE" | sed -E "s/.*\+([0-9]+).*/\1/" || true)
@@ -66,16 +65,15 @@ jobs:
 
       - name: Build Android (single universal APK)
         run: flutter build apk --release --no-shrink
-        
+
       - name: Collect APK into artifacts dir
         run: |
           mkdir -p artifacts
-          # Copy the single universal APK
           if [ -f build/app/outputs/flutter-apk/app-release.apk ]; then
             cp build/app/outputs/flutter-apk/app-release.apk artifacts/${APP_NAME}.apk
           fi
           ls -la artifacts
-        
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -88,6 +86,7 @@ jobs:
 
       - name: Prepare web build folder for commit (move build/web to 'web-build' safely)
         run: |
+          rm -rf web-build
           mv build/web web-build
 
       - name: Configure Git user (for web build commit)
@@ -97,10 +96,42 @@ jobs:
 
       - name: Commit and push web build to master (skip ci)
         run: |
-          # add web-build as a directory so we don't accidentally delete user web/ content; adapt as necessary
           rm -rf web || true
           git add web-build
           git commit -m "Update Flutter web build - ${{ github.sha }} [skip ci]" || echo "No changes to commit"
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Cache Flutter Pub cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.os }}\Pub\Cache
+          key: ${{ runner.os }}-flutter-pub-${{ hashFiles('**/pubspec.yaml') }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-flutter-pub-
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows app
+        run: flutter build windows --release
+
+      - name: Upload Windows build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: build/windows/x64/runner/Release
+          retention-days: 7

@@ -24,7 +24,7 @@ class RoutineDetailsPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: containerColor),
             onPressed: () {
-              Get.to(UpdateRoutinePage(routineDetail: detail));
+              Get.toNamed('/routineUpdate', arguments: {'routineDetail': detail});
               // Navigate to edit routine page
               // Get.to(UpdateRoutinePage(routineId: '...'));
             },
@@ -67,7 +67,7 @@ class RoutineDetailsPage extends StatelessWidget {
             const SizedBox(height: 20),
             InkWell(
               onTap: () {
-                Get.to(TaskListPage(routineId: detail.id!));
+                Get.toNamed('/routineTask', arguments: {'routineId': detail.id!});
               },
               child: Container(
                 padding: EdgeInsets.all(8),

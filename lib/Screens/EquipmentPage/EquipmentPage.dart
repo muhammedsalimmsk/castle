@@ -899,7 +899,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                     FloatingActionButton(
                       backgroundColor: buttonColor,
                       heroTag: "f12",
-                      onPressed: () => Get.to(ClientAddPage()),
+                      onPressed: () => Get.toNamed('/clientAdd'),
                       child: Image.asset(
                         'assets/icons/equipment.png',
                         width: 24,
@@ -923,7 +923,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                       backgroundColor: buttonColor,
                       heroTag: ":f14",
                       onPressed: () {
-                        Get.to(EquipmentCategoryPage());
+                        Get.toNamed('/equipmentCategory');
                       },
                       child: Icon(Icons.category),
                     ),
@@ -940,7 +940,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
                       backgroundColor: buttonColor,
                       heroTag: ":f34",
                       onPressed: () {
-                        Get.to(EquipmentTypePage());
+                        Get.toNamed('/equipmentType');
                       },
                       child: Icon(Icons.type_specimen),
                     ),
@@ -958,9 +958,7 @@ class _EquipmentPageState extends State<EquipmentPage> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          Get.to(EquipmentDetailsPage(
-            equipment: datas,
-          ));
+          Get.toNamed('/equipmentDetails', arguments: {'equipment': datas});
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(
@@ -1049,6 +1047,54 @@ class _EquipmentPageState extends State<EquipmentPage> {
                         ),
                       ],
                     ),
+                    if (datas.modelNumber != null && datas.modelNumber!.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 14,
+                            color: subtitleColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              "Model: ${datas.modelNumber!}",
+                              style: TextStyle(
+                                color: subtitleColor,
+                                fontSize: 13,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (datas.client?.clientName != null && datas.client!.clientName!.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.business_outlined,
+                            size: 14,
+                            color: subtitleColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              datas.client!.clientName!,
+                              style: TextStyle(
+                                color: subtitleColor,
+                                fontSize: 13,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     if (datas.category?.name != null)
                       Container(

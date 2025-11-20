@@ -8,6 +8,7 @@ import 'package:castle/Utils/ResponsiveHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../Controlls/AuthController/AuthController.dart';
 import 'Widgets/FilterPage.dart';
@@ -487,10 +488,9 @@ class ComplaintPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () async {
-            Get.to(
-              ComplaintDetailsPage(
-                complaintId: datas.id!,
-              ),
+            Get.toNamed(
+              '/complaintDetails',
+              arguments: {'complaintId': datas.id!},
             );
           },
           borderRadius: BorderRadius.circular(16),
@@ -569,6 +569,54 @@ class ComplaintPage extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                      if (datas.reportedAt != null) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                              color: subtitleColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                "Reported: ${DateFormat('dd MMM yyyy').format(datas.reportedAt!)}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (datas.dueDate != null) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.event_outlined,
+                              size: 14,
+                              color: subtitleColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                "Due: ${DateFormat('dd MMM yyyy').format(datas.dueDate!)}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,

@@ -81,7 +81,7 @@ class ProfilePage extends StatelessWidget {
                       userDetailModel = null;
                       token = null;
                       Get.delete<ComplaintController>();
-                      Get.offAll(LoginPage());
+                      Get.offAllNamed('/login');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor, // 🔴 Confirm button color

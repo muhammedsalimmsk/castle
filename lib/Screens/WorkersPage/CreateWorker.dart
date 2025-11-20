@@ -10,20 +10,38 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import '../../Controlls/DepartmentController/DepartmentController.dart';
 import '../../Widget/CustomTextField.dart';
 
-class CreateWorker extends StatelessWidget {
+class CreateWorker extends StatefulWidget {
   final String? workerId;
-  CreateWorker({super.key, this.workerId});
+  const CreateWorker({super.key, this.workerId});
+
+  @override
+  State<CreateWorker> createState() => _CreateWorkerState();
+}
+
+class _CreateWorkerState extends State<CreateWorker> {
   final WorkerController controller = Get.find();
   final DepartmentController deptController = Get.put(DepartmentController());
   final formKey = GlobalKey<FormState>();
+  late RxBool isObscure;
+  late RxBool isObscure2;
+
+  @override
+  void initState() {
+    super.initState();
+    isObscure = true.obs;
+    isObscure2 = true.obs;
+
+    // If workerId is null, we're creating a new worker - clear all fields
+    if (widget.workerId == null) {
+      controller.clearField();
+    }
+
+    deptController.getDepartment();
+  }
 
   @override
   Widget build(BuildContext context) {
     PhoneNumber number = PhoneNumber(isoCode: 'IN');
-    RxBool isObscure = true.obs;
-    RxBool isObscure2 = true.obs;
-
-    deptController.getDepartment();
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -147,125 +165,147 @@ class CreateWorker extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Password Section (only for new workers)
-                if (!controller.isUpdateWorker) ...[
-                  _sectionTitle('Password'),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: dividerColor,
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: cardShadowColor.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                          spreadRadius: 0,
-                        ),
-                      ],
+                // Password Section
+                _sectionTitle('Password'),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: dividerColor,
+                      width: 1,
                     ),
-                    child: Column(
-                      children: [
-                        Obx(() => TextFormField(
-                              controller: controller.password,
-                              validator: (val) {
-                                if (val == null) {
+                    boxShadow: [
+                      BoxShadow(
+                        color: cardShadowColor.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Obx(() => TextFormField(
+                            controller: controller.password,
+                            validator: (val) {
+                              if (!controller.isUpdateWorker) {
+                                // Required for new workers
+                                if (val == null || val.isEmpty) {
                                   return "Password is required";
                                 } else if (val.length < 6) {
                                   return "Password should be more than 6 letters";
-                                } else {
-                                  return null;
                                 }
-                              },
-                              obscureText: isObscure.value,
-                              style: TextStyle(color: containerColor),
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 20,
-                                ),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    isObscure.value = !isObscure.value;
-                                  },
-                                  icon: isObscure.value
-                                      ? Icon(Icons.visibility_off,
-                                          color: subtitleColor)
-                                      : Icon(Icons.visibility,
-                                          color: subtitleColor),
-                                ),
-                                hintText: "Password",
-                                hintStyle: TextStyle(color: subtitleColor),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: buttonColor),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: borderColor),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: borderColor),
-                                ),
+                              } else {
+                                // Optional for updates, but if provided, must be valid
+                                if (val != null &&
+                                    val.isNotEmpty &&
+                                    val.length < 6) {
+                                  return "Password should be more than 6 letters";
+                                }
+                              }
+                              return null;
+                            },
+                            obscureText: isObscure.value,
+                            style: TextStyle(color: containerColor),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 20,
                               ),
-                            )),
-                        const SizedBox(height: 16),
-                        Obx(() => TextFormField(
-                              validator: (val) {
-                                if (val == null) {
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  isObscure.value = !isObscure.value;
+                                },
+                                icon: isObscure.value
+                                    ? Icon(Icons.visibility_off,
+                                        color: subtitleColor)
+                                    : Icon(Icons.visibility,
+                                        color: subtitleColor),
+                              ),
+                              hintText: controller.isUpdateWorker
+                                  ? "Password (leave empty to keep current)"
+                                  : "Password",
+                              hintStyle: TextStyle(color: subtitleColor),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: buttonColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: borderColor),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: borderColor),
+                              ),
+                            ),
+                          )),
+                      const SizedBox(height: 16),
+                      Obx(() => TextFormField(
+                            validator: (val) {
+                              if (!controller.isUpdateWorker) {
+                                // Required for new workers
+                                if (val == null || val.isEmpty) {
                                   return "Password is required";
                                 } else if (val.length < 6) {
                                   return "Password should be more than 6 letters";
                                 } else if (controller.password.text != val) {
                                   return "Passwords don't match";
-                                } else {
-                                  return null;
                                 }
-                              },
-                              obscureText: isObscure2.value,
-                              style: TextStyle(color: containerColor),
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 20,
-                                ),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    isObscure2.value = !isObscure2.value;
-                                  },
-                                  icon: isObscure2.value
-                                      ? Icon(Icons.visibility_off,
-                                          color: subtitleColor)
-                                      : Icon(Icons.visibility,
-                                          color: subtitleColor),
-                                ),
-                                hintText: "Confirm Password",
-                                hintStyle: TextStyle(color: subtitleColor),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: buttonColor),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: borderColor),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(color: borderColor),
-                                ),
+                              } else {
+                                // Optional for updates, but if provided, must match
+                                if (val != null && val.isNotEmpty) {
+                                  if (val.length < 6) {
+                                    return "Password should be more than 6 letters";
+                                  } else if (controller.password.text != val) {
+                                    return "Passwords don't match";
+                                  }
+                                }
+                              }
+                              return null;
+                            },
+                            obscureText: isObscure2.value,
+                            style: TextStyle(color: containerColor),
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 20,
                               ),
-                            )),
-                      ],
-                    ),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  isObscure2.value = !isObscure2.value;
+                                },
+                                icon: isObscure2.value
+                                    ? Icon(Icons.visibility_off,
+                                        color: subtitleColor)
+                                    : Icon(Icons.visibility,
+                                        color: subtitleColor),
+                              ),
+                              hintText: controller.isUpdateWorker
+                                  ? "Confirm Password (leave empty to keep current"
+                                  : "Confirm Password",
+                              hintStyle: TextStyle(color: subtitleColor),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: buttonColor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: borderColor),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: borderColor),
+                              ),
+                            ),
+                          )),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                ],
+                ),
+                const SizedBox(height: 24),
                 // Department Section
                 _sectionTitle('Department Assignment'),
                 const SizedBox(height: 16),
@@ -340,8 +380,7 @@ class CreateWorker extends StatelessWidget {
 
                           // Add primary to secondary if missing
                           if (value != null &&
-                              !controller.selectedDepartments
-                                  .contains(value)) {
+                              !controller.selectedDepartments.contains(value)) {
                             controller.selectedDepartments.add(value);
                           }
                         },
@@ -383,8 +422,8 @@ class CreateWorker extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: borderColor),
                         ),
-                        buttonIcon: Icon(Icons.arrow_drop_down,
-                            color: subtitleColor),
+                        buttonIcon:
+                            Icon(Icons.arrow_drop_down, color: subtitleColor),
                         buttonText: Text(
                           "Choose Department(s)",
                           style: TextStyle(
@@ -423,7 +462,7 @@ class CreateWorker extends StatelessWidget {
                         onTap: () async {
                           if (formKey.currentState!.validate()) {
                             if (controller.isUpdateWorker) {
-                              await controller.updateWorker(workerId!);
+                              await controller.updateWorker(widget.workerId!);
                             } else {
                               await controller.createWorker();
                             }
@@ -445,7 +484,9 @@ class CreateWorker extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              controller.isUpdateWorker ? "Update Worker" : "Create Worker",
+                              controller.isUpdateWorker
+                                  ? "Update Worker"
+                                  : "Create Worker",
                               style: TextStyle(
                                 color: backgroundColor,
                                 fontSize: 16,

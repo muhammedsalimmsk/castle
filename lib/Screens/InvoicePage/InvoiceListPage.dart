@@ -33,13 +33,15 @@ class InvoiceListPage extends StatelessWidget {
                 _buildFilters(context),
                 Expanded(
                   child: Obx(() {
-                    if (controller.isLoading.value && controller.invoices.isEmpty) {
+                    if (controller.isLoading.value &&
+                        controller.invoices.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(buttonColor),
                               strokeWidth: 3,
                             ),
                             const SizedBox(height: 16),
@@ -54,10 +56,11 @@ class InvoiceListPage extends StatelessWidget {
                         ),
                       );
                     }
-                    
+
                     if (controller.invoices.isEmpty) {
                       return RefreshIndicator(
-                        onRefresh: () => controller.fetchInvoices(refresh: true),
+                        onRefresh: () =>
+                            controller.fetchInvoices(refresh: true),
                         color: buttonColor,
                         child: ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -102,48 +105,56 @@ class InvoiceListPage extends StatelessWidget {
                         ),
                       );
                     }
-                    
+
                     // Use GridView for large screens, ListView for mobile
                     if (ResponsiveHelper.isLargeScreen(context)) {
                       return RefreshIndicator(
-                        onRefresh: () => controller.fetchInvoices(refresh: true),
+                        onRefresh: () =>
+                            controller.fetchInvoices(refresh: true),
                         color: buttonColor,
                         child: GridView.builder(
-                          padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                          padding:
+                              ResponsiveHelper.getResponsivePadding(context)
+                                  .copyWith(
                             top: 0,
                           ),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: ResponsiveHelper.getGridCrossAxisCount(context),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                ResponsiveHelper.getGridCrossAxisCount(context),
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 12,
-                            childAspectRatio: ResponsiveHelper.isDesktop(context) ? 1.3 : 1.2,
+                            childAspectRatio:
+                                ResponsiveHelper.isDesktop(context) ? 1.3 : 1.2,
                           ),
-                          itemCount: controller.invoices.length + 
+                          itemCount: controller.invoices.length +
                               (controller.isLoadingMore.value ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index == controller.invoices.length) {
                               return Center(
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      buttonColor),
                                 ),
                               );
                             }
-                            
+
                             final invoice = controller.invoices[index];
                             return _buildInvoiceCard(invoice, context);
                           },
                         ),
                       );
                     }
-                    
+
                     return RefreshIndicator(
                       onRefresh: () => controller.fetchInvoices(refresh: true),
                       color: buttonColor,
                       child: ListView.builder(
-                        padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                        padding: ResponsiveHelper.getResponsivePadding(context)
+                            .copyWith(
                           top: 0,
                         ),
-                        itemCount: controller.invoices.length + 
+                        itemCount: controller.invoices.length +
                             (controller.isLoadingMore.value ? 1 : 0),
                         itemBuilder: (context, index) {
                           if (index == controller.invoices.length) {
@@ -151,12 +162,13 @@ class InvoiceListPage extends StatelessWidget {
                               padding: const EdgeInsets.all(20),
                               child: Center(
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      buttonColor),
                                 ),
                               ),
                             );
                           }
-                          
+
                           final invoice = controller.invoices[index];
                           return _buildInvoiceCard(invoice, context);
                         },
@@ -172,7 +184,7 @@ class InvoiceListPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           controller.clearForm();
-          Get.to(() => CreateInvoicePage());
+          Get.toNamed('/createInvoice');
         },
         backgroundColor: buttonColor,
         icon: const Icon(Icons.add, color: Colors.white),
@@ -234,7 +246,8 @@ class InvoiceListPage extends StatelessWidget {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(buttonColor),
                         ),
                       )
                     : Icon(Icons.refresh, color: buttonColor)),
@@ -260,86 +273,88 @@ class InvoiceListPage extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.white,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Row(
-            children: [
-              Flexible(
-                flex: 1,
-                child: Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedStatus.value.isEmpty
-                      ? null
-                      : controller.selectedStatus.value,
-                  decoration: InputDecoration(
-                    labelText: 'Status',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: borderColor),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    isDense: true,
-                  ),
-                  isExpanded: true,
-                  items: [
-                    const DropdownMenuItem<String>(
-                      value: '',
-                      child: Text('All Status'),
-                    ),
-                    ...controller.statusTypes.map((status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(status),
-                        )),
-                  ],
-                  onChanged: (value) {
-                    controller.selectedStatus.value = value ?? '';
-                    controller.fetchInvoices(refresh: true);
-                  },
-                )),
-              ),
-              const SizedBox(width: 12),
-              Flexible(
-                flex: 1,
-                child: Obx(() => DropdownButtonFormField<String>(
-                  value: controller.selectedReportType.value.isEmpty
-                      ? null
-                      : controller.selectedReportType.value,
-                  decoration: InputDecoration(
-                    labelText: 'Type',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: borderColor),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    isDense: true,
-                  ),
-                  isExpanded: true,
-                  items: [
-                    const DropdownMenuItem<String>(
-                      value: '',
-                      child: Text('All Types'),
-                    ),
-                    ...controller.reportTypes.map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type.replaceAll('_', ' ')),
-                        )),
-                  ],
-                  onChanged: (value) {
-                    controller.selectedReportType.value = value ?? '';
-                    controller.fetchInvoices(refresh: true);
-                  },
-                )),
-              ),
-            ],
-          );
-        },
-      ),
+        color: Colors.white,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Obx(() => DropdownButtonFormField<String>(
+                        value: controller.selectedStatus.value.isEmpty
+                            ? null
+                            : controller.selectedStatus.value,
+                        decoration: InputDecoration(
+                          labelText: 'Status',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: borderColor),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          isDense: true,
+                        ),
+                        isExpanded: true,
+                        items: [
+                          const DropdownMenuItem<String>(
+                            value: '',
+                            child: Text('All Status'),
+                          ),
+                          ...controller.statusTypes
+                              .map((status) => DropdownMenuItem(
+                                    value: status,
+                                    child: Text(status),
+                                  )),
+                        ],
+                        onChanged: (value) {
+                          controller.selectedStatus.value = value ?? '';
+                          controller.fetchInvoices(refresh: true);
+                        },
+                      )),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  flex: 1,
+                  child: Obx(() => DropdownButtonFormField<String>(
+                        value: controller.selectedReportType.value.isEmpty
+                            ? null
+                            : controller.selectedReportType.value,
+                        decoration: InputDecoration(
+                          labelText: 'Type',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: borderColor),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          isDense: true,
+                        ),
+                        isExpanded: true,
+                        items: [
+                          const DropdownMenuItem<String>(
+                            value: '',
+                            child: Text('All Types'),
+                          ),
+                          ...controller.reportTypes
+                              .map((type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type.replaceAll('_', ' ')),
+                                  )),
+                        ],
+                        onChanged: (value) {
+                          controller.selectedReportType.value = value ?? '';
+                          controller.fetchInvoices(refresh: true);
+                        },
+                      )),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -352,7 +367,8 @@ class InvoiceListPage extends StatelessWidget {
         child: InkWell(
           onTap: () {
             controller.fetchInvoiceById(invoice.id!);
-            Get.to(() => InvoiceDetailsPage(invoiceId: invoice.id!));
+            Get.toNamed('/invoiceDetails',
+                arguments: {'invoiceId': invoice.id!});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(
@@ -441,8 +457,10 @@ class InvoiceListPage extends StatelessWidget {
                           Expanded(
                             child: Text(
                               invoice.client?.clientName ??
-                                  (invoice.client?.firstName != null || invoice.client?.lastName != null
-                                      ? '${invoice.client?.firstName ?? ''} ${invoice.client?.lastName ?? ''}'.trim()
+                                  (invoice.client?.firstName != null ||
+                                          invoice.client?.lastName != null
+                                      ? '${invoice.client?.firstName ?? ''} ${invoice.client?.lastName ?? ''}'
+                                          .trim()
                                       : 'No Client'),
                               style: TextStyle(
                                 fontSize: 13,
@@ -457,11 +475,13 @@ class InvoiceListPage extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 14, color: subtitleColor),
+                          Icon(Icons.calendar_today,
+                              size: 14, color: subtitleColor),
                           const SizedBox(width: 6),
                           Text(
                             invoice.dueDate != null
-                                ? DateFormat('MMM dd, yyyy').format(invoice.dueDate!)
+                                ? DateFormat('MMM dd, yyyy')
+                                    .format(invoice.dueDate!)
                                 : 'No due date',
                             style: TextStyle(
                               fontSize: 12,
@@ -508,7 +528,8 @@ class InvoiceListPage extends StatelessWidget {
                                   onPressed: () {
                                     controller.downloadInvoicePdf(invoice.id!);
                                   },
-                                  icon: Icon(Icons.download, color: buttonColor, size: 20),
+                                  icon: Icon(Icons.download,
+                                      color: buttonColor, size: 20),
                                   tooltip: 'Download PDF',
                                   padding: const EdgeInsets.all(8),
                                   constraints: const BoxConstraints(),
@@ -521,8 +542,10 @@ class InvoiceListPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: IconButton(
-                                  onPressed: () => _showDeleteDialog(context, invoice),
-                                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                                  onPressed: () =>
+                                      _showDeleteDialog(context, invoice),
+                                  icon: const Icon(Icons.delete_outline,
+                                      color: Colors.red, size: 20),
                                   tooltip: 'Delete',
                                   padding: const EdgeInsets.all(8),
                                   constraints: const BoxConstraints(),
@@ -546,7 +569,7 @@ class InvoiceListPage extends StatelessWidget {
   Widget _buildStatusChip(String status) {
     Color chipColor;
     Color textColor;
-    
+
     switch (status.toUpperCase()) {
       case 'PAID':
         chipColor = Colors.green.shade50;
@@ -568,7 +591,7 @@ class InvoiceListPage extends StatelessWidget {
         chipColor = Colors.orange.shade50;
         textColor = Colors.orange.shade700;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -588,7 +611,7 @@ class InvoiceListPage extends StatelessWidget {
 
   void _showSearchDialog(BuildContext context) {
     final searchController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -655,4 +678,3 @@ class InvoiceListPage extends StatelessWidget {
     );
   }
 }
-

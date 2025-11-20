@@ -1,5 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Screens/ClientPage/ClientRegisterPage.dart';
+import 'package:castle/Screens/LoginDetailsPage/LoginDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
@@ -12,6 +13,7 @@ class ClientDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(clientId);
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -29,7 +31,7 @@ class ClientDetailPage extends StatelessWidget {
           IconButton(
               onPressed: () {
                 controller.fillClientData(controller.clientDetails);
-                Get.to(ClientRegisterOne());
+                Get.toNamed('/clientRegister');
               },
               icon: Icon(Icons.edit))
         ],
@@ -211,6 +213,32 @@ class ClientDetailPage extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+
+                const SizedBox(height: 30),
+
+                // LOGIN DETAILS BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Get.toNamed('/loginDetails', arguments: {
+                        'userId': client.id ?? '',
+                        'isClient': true
+                      });
+                    },
+                    icon: const Icon(LucideIcons.logIn, size: 20),
+                    label: const Text("View Login Details"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                  ),
                 ),
               ],
             ),

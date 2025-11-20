@@ -149,7 +149,7 @@ class ClientRegisterOne extends StatelessWidget {
               InkWell(
                 onTap: () {
                   if (formKeyOne.currentState!.validate()) {
-                    Get.to(ClientRegisterPageTwo());
+                    Get.toNamed('/clientRegisterTwo');
                   }
                 },
                 child: Container(

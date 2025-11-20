@@ -89,8 +89,7 @@ class RequestedPartDetailPage extends StatelessWidget {
                               vertical: 10, horizontal: 18),
                         ),
                         onPressed: () {
-                          Get.to(() => ComplaintDetailsPage(
-                              complaintId: partData.complaintId!));
+                          Get.toNamed('/complaintDetails', arguments: {'complaintId': partData.complaintId!});
                         },
                         icon: const Icon(Icons.arrow_forward_ios_rounded,
                             size: 16),

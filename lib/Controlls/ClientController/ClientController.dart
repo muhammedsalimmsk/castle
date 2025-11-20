@@ -3,6 +3,8 @@ import 'package:castle/Model/client_detail_model/client_detail_model.dart';
 import 'package:castle/Model/client_detail_model/data.dart';
 import 'package:castle/Model/client_model/client_model.dart';
 import 'package:castle/Model/client_model/datum.dart';
+import 'package:castle/Model/login_details_model/login_details_model.dart';
+import 'package:castle/Model/login_details_model/data.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +37,32 @@ class ClientRegisterController extends GetxController {
   RxBool isExistingClient = false.obs;
   RxString selectedClientId = ''.obs;
   RxBool isLoading = false.obs;
+  RxBool isLoadingLoginDetails = false.obs;
+  LoginDetailsData? loginDetailsData;
+  
+  Future<LoginDetailsData?> getLoginDetails(String userId) async {
+    final endpoint = "/api/v1/admin/users/$userId/devices";
+    isLoadingLoginDetails.value = true;
+    try {
+      final response =
+          await _apiService.getRequest(endpoint, bearerToken: token);
+      if (response.isOk) {
+        final loginDetailsModel = LoginDetailsModel.fromJson(response.body);
+        loginDetailsData = loginDetailsModel.data;
+        return loginDetailsData;
+      } else {
+        print("get client login details error");
+        print(response.body);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    } finally {
+      isLoadingLoginDetails.value = false;
+    }
+  }
+  
   Future createClient() async {
     final Map<String, dynamic> body = {
       "email": email.text.trim(),
@@ -85,7 +113,7 @@ class ClientRegisterController extends GetxController {
   }
 
   Future<ClientDetailsData?> getClientById(String clientId) async {
-    final endpoint = "/api/v1/admin/clients/$clientId";
+    final endpoint = "/api/v1/common/clients/$clientId";
     // isLoading.value = true;
     try {
       final response =
@@ -94,10 +122,12 @@ class ClientRegisterController extends GetxController {
         clientDetailModel = ClientDetailModel.fromJson(response.body);
         return clientDetails = clientDetailModel.data!;
       } else {
+        print("get client by id error");
         print(response.body);
         Get.snackbar("Error", "Something Error");
       }
     } catch (e) {
+      print("get client by id error catch");
       print(e);
       rethrow;
     } finally {

@@ -295,7 +295,7 @@ class EquipmentTypePage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Get.to(() => EquipTypeDetails(equipTypeDetails: equipType));
+            Get.toNamed('/equipTypeDetails', arguments: {'equipTypeDetails': equipType});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

@@ -2,6 +2,7 @@ import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Model/equipment_model/datum.dart';
 import 'package:castle/Screens/EquipmentPage/UpdatePage/EquipmentUpdatePage.dart';
+import 'package:castle/Screens/ClientPage/ClientDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -54,9 +55,7 @@ class EquipmentDetailsPage extends StatelessWidget {
               ),
               onPressed: () {
                 addToController();
-                Get.to(UpdateEquipmentPage(
-                  equipmentId: equipment.id!,
-                ));
+                Get.toNamed('/equipmentUpdate', arguments: {'equipmentId': equipment.id!});
               },
             ),
             IconButton(
@@ -351,7 +350,41 @@ class EquipmentDetailsPage extends StatelessWidget {
                       height: 1,
                     ),
                     const SizedBox(height: 24),
-                    _buildSubSectionTitle('Client Information'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSubSectionTitle('Client Information'),
+                        if (equipment.clientId != null && equipment.clientId!.isNotEmpty)
+                          TextButton.icon(
+                            onPressed: () {
+                              Get.toNamed('/clientDetails', arguments: {'clientId': equipment.clientId!});
+                            },
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: buttonColor,
+                            ),
+                            label: Text(
+                              "View Details",
+                              style: TextStyle(
+                                color: buttonColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              backgroundColor: buttonColor.withOpacity(0.1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                     const SizedBox(height: 12),
                     _buildDetailItem(
                       Icons.business,

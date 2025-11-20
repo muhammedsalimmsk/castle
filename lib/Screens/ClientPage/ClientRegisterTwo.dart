@@ -124,7 +124,7 @@ class ClientRegisterPageTwo extends StatelessWidget {
                               await controller.createClient();
                             }
 
-                            Get.off(ClientPage());
+                            Get.offNamed('/clients');
                           }
                         },
                         child: Container(

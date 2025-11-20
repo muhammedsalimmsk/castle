@@ -1,9 +1,10 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
-import 'package:castle/Model/depart_workers_model/data.dart';
 import 'package:castle/Model/depart_workers_model/depart_workers_model.dart';
 import 'package:castle/Model/depart_workers_model/worker.dart';
 import 'package:castle/Model/workers_model/datum.dart';
 import 'package:castle/Model/workers_model/workers_model.dart';
+import 'package:castle/Model/login_details_model/login_details_model.dart';
+import 'package:castle/Model/login_details_model/data.dart';
 import 'package:castle/Screens/WorkersPage/WorkersPage.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,6 +28,31 @@ class WorkerController extends GetxController {
   var selectedDepartments = <String>[].obs;
   PhoneNumber number = PhoneNumber(isoCode: 'IN');
   RxList<WorkerData> workerList = <WorkerData>[].obs;
+  RxBool isLoadingLoginDetails = false.obs;
+  LoginDetailsData? loginDetailsData;
+
+  Future<LoginDetailsData?> getLoginDetails(String userId) async {
+    final endpoint = "/api/v1/admin/users/$userId/devices";
+    isLoadingLoginDetails.value = true;
+    try {
+      final response =
+          await _apiService.getRequest(endpoint, bearerToken: token);
+      if (response.isOk) {
+        final loginDetailsModel = LoginDetailsModel.fromJson(response.body);
+        loginDetailsData = loginDetailsModel.data;
+        return loginDetailsData;
+      } else {
+        print(response.body);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    } finally {
+      isLoadingLoginDetails.value = false;
+    }
+  }
+
   String getWorkerName(String id) {
     try {
       return workerList.firstWhere((worker) => worker.id == id).firstName!;
@@ -50,6 +76,9 @@ class WorkerController extends GetxController {
     lastName.clear();
     emailController.clear();
     phoneController.clear();
+    password.clear();
+    primaryDepartment.value = '';
+    selectedDepartments.clear();
   }
 
   Future createWorker() async {
@@ -73,7 +102,7 @@ class WorkerController extends GetxController {
         resetController();
         Get.snackbar("Success", "Successfully created worker");
         await getWorkers();
-        Get.off(WorkersPage());
+        Get.offNamed('/workers');
       } else {
         print(response.body);
       }
@@ -87,16 +116,21 @@ class WorkerController extends GetxController {
   Future updateWorker(String workerId) async {
     final endpoint = "/api/v1/admin/workers/$workerId";
     isLoading.value = true;
+    print(password.text);
     final data = {
       "email": emailController.text.trim(),
-      "password": password.text,
+      "password": password.text.trim().isEmpty ? null : password.text.trim(),
       "firstName": firstName.text.trim(),
       "lastName": lastName.text.trim(),
-      "phone": phoneController.text,
+      "phone": phoneController.text.trim().isEmpty
+          ? null
+          : phoneController.text.trim(),
       "departmentIds": selectedDepartments,
-      "primaryDepartmentId": primaryDepartment.value.toString()
+      "primaryDepartmentId": primaryDepartment.value.toString(),
     };
+
     try {
+      print(data);
       final response = await _apiService.patchRequest(endpoint,
           data: data, bearerToken: token);
       if (response.isOk) {
@@ -115,6 +149,7 @@ class WorkerController extends GetxController {
             snackPosition: SnackPosition.BOTTOM, colorText: Colors.green);
       } else {
         print(response.body);
+
         Get.snackbar("Error", response.body['error']);
       }
     } catch (e) {

@@ -2,6 +2,7 @@ import 'package:castle/Controlls/WorkersController/WorkerController.dart';
 import 'package:castle/Model/workers_model/datum.dart';
 import 'package:castle/Model/workers_model/worker_department.dart';
 import 'package:castle/Screens/WorkersPage/CreateWorker.dart';
+import 'package:castle/Screens/LoginDetailsPage/LoginDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Colors/Colors.dart';
@@ -48,7 +49,7 @@ class WorkerDetailsPage extends StatelessWidget {
           IconButton(
             onPressed: () {
               controller.addWorkerData(worker);
-              Get.to(() => CreateWorker(workerId: worker.id));
+              Get.toNamed('/createWorker', arguments: {'workerId': worker.id});
             },
             icon: Icon(
               Icons.edit_rounded,
@@ -286,6 +287,30 @@ class WorkerDetailsPage extends StatelessWidget {
                         ),
                       ),
                     ),
+            ),
+            const SizedBox(height: 24),
+            // Login Details Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Get.toNamed('/loginDetails', arguments: {'userId': worker.id ?? '', 'isClient': false});
+                  },
+                  icon: const Icon(LucideIcons.logIn, size: 20),
+                  label: const Text("View Login Details"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 32),
           ],
@@ -536,4 +561,5 @@ class WorkerDetailsPage extends StatelessWidget {
       ),
     );
   }
+
 }

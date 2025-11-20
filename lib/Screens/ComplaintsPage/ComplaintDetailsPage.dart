@@ -675,7 +675,7 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                           child: ElevatedButton.icon(
                             onPressed: () async {
                               await complaintController.getRequestedPartsList();
-                              Get.to(() => RequestedPartsWorkerPage());
+                              Get.toNamed('/requestedPartWorker');
                             },
                             icon: const Icon(Icons.list, size: 20),
                             label: const Text("View Requested Parts"),
@@ -957,8 +957,7 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Get.to(
-                              AssignWorkPage(complaintId: widget.complaintId));
+                          Get.toNamed('/assignWork', arguments: {'complaintId': widget.complaintId});
                         },
                         icon: Icon(
                           complaint.assignedWorkers!.isEmpty

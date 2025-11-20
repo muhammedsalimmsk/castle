@@ -53,11 +53,11 @@ class AuthController extends GetxController {
             'expiresAt', model.data?.expiresAt?.toIso8601String() ?? '');
         await getProfile();
         if (userDetailModel!.data!.role == "ADMIN") {
-          Get.offAll(DashboardPage());
+          Get.offAllNamed('/home');
         } else if (userDetailModel!.data!.role == "WORKER") {
-          Get.offAll(WorkerHomePage());
+          Get.offAllNamed('/workerHome');
         } else {
-          Get.offAll(ClientHomePage());
+          Get.offAllNamed('/clientHome');
         }
       } else {
         print(response.statusCode);
@@ -152,7 +152,7 @@ class AuthController extends GetxController {
         print(response.body);
         if (response.body['error'] == "Invalid or inactive user" ||
             response.body['error'] == "Invalid or expired token") {
-          Get.offAll(LoginPage());
+          Get.offAllNamed('/login');
         }
       }
     } catch (e) {

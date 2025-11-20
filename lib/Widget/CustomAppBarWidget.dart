@@ -61,7 +61,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.only(left: 8),
                 child: InkWell(
                   onTap: () {
-                    Get.to(ProfilePage());
+                    Get.toNamed('/profile');
                   },
                   child: CircleAvatar(
                     radius: 20,

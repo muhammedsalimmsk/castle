@@ -310,7 +310,7 @@ class PartsListPage extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           onPressed: () {
-            Get.to(PartRegisterPage());
+            Get.toNamed('/newPart');
           },
           icon: const Icon(Icons.add, color: backgroundColor),
           label: Text(
@@ -334,7 +334,7 @@ class PartsListPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Get.to(() => PartsDetailsPage(part: part));
+            Get.toNamed('/partsDetails', arguments: {'part': part});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

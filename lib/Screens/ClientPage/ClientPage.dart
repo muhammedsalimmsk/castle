@@ -280,7 +280,7 @@ class ClientPage extends StatelessWidget {
           elevation: 0,
           onPressed: () {
             controller.clearAllControllers();
-            Get.to(ClientRegisterOne());
+            Get.toNamed('/clientRegister');
           },
           icon: const Icon(Icons.add, color: backgroundColor),
           label: Text(
@@ -302,7 +302,7 @@ class ClientPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Get.to(() => ClientDetailPage(clientId: client.id!));
+            Get.toNamed('/clientDetails', arguments: {'clientId': client.id!});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

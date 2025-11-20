@@ -82,7 +82,7 @@ class WorkerRoutinePage extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () {
                               print(task.id);
-                              Get.to(TaskDetailPage(taskId: task.id!));
+                              Get.toNamed('/taskDetail', arguments: {'taskId': task.id!});
                             },
                             child: Container(
                               decoration: BoxDecoration(

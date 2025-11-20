@@ -269,7 +269,7 @@ class RequestedPartsPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Get.to(() => RequestedPartDetailPage(partData: data));
+            Get.toNamed('/requestedPartDetails', arguments: {'partData': data});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

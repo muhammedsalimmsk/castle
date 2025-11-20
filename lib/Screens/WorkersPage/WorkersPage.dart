@@ -318,7 +318,7 @@ class WorkersPage extends StatelessWidget {
                       backgroundColor: buttonColor,
                       heroTag: ":f15",
                       onPressed: () {
-                        Get.to(DepartmentPage());
+                        Get.toNamed('/departments');
                       },
                       child: const Icon(Icons.card_travel),
                     ),
@@ -357,7 +357,7 @@ class WorkersPage extends StatelessWidget {
                       backgroundColor: buttonColor,
                       heroTag: ":f34",
                       onPressed: () {
-                        Get.to(CreateWorker());
+                        Get.toNamed('/createWorker');
                       },
                       child: const Icon(Icons.person_add),
                     ),
@@ -380,7 +380,7 @@ class WorkersPage extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            Get.to(WorkerDetailsPage(worker: worker));
+            Get.toNamed('/workerDetails', arguments: {'worker': worker});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

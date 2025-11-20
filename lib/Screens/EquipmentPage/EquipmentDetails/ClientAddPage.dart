@@ -308,16 +308,14 @@ class ClientAddPage extends StatelessWidget {
                                       await controller.createClient();
                                       if (controller.selectedClientId.value !=
                                           '') {
-                                        Get.to(NewEquipmentsRequest(
-                                          clientId:
-                                              controller.selectedClientId.value,
-                                        ));
+                                        Get.toNamed('/newEquipment', arguments: {
+                                          'clientId': controller.selectedClientId.value,
+                                        });
                                       }
                                     } else {
-                                      Get.to(NewEquipmentsRequest(
-                                        clientId:
-                                            controller.selectedClientId.value,
-                                      ));
+                                      Get.toNamed('/newEquipment', arguments: {
+                                        'clientId': controller.selectedClientId.value,
+                                      });
                                     }
                                   }
                                 },

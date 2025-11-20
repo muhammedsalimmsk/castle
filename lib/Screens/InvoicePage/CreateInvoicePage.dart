@@ -1,6 +1,5 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/InvoiceController/InvoiceController.dart';
-import 'package:castle/Screens/InvoicePage/InvoiceListPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -678,7 +677,7 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
                     if (success) {
                       // Navigate to InvoiceListPage and refresh data
                       // The controller already shows success message and refreshes data
-                      Get.off(() => InvoiceListPage());
+                      Get.offNamed('/invoices');
                     }
                   },
             style: ElevatedButton.styleFrom(

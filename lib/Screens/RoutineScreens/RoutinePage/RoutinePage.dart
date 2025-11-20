@@ -302,7 +302,7 @@ class RoutinePage extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 onPressed: () {
-                  Get.to(AssignRoutinePage());
+                  Get.toNamed('/assignRoutine');
                 },
                 icon: const Icon(Icons.add, color: backgroundColor),
                 label: Text(
@@ -326,7 +326,7 @@ class RoutinePage extends StatelessWidget {
         child: InkWell(
           onTap: () async {
             await controller.getRoutinetask('', routine.id!);
-            Get.to(RoutineDetailsPage(detail: routine));
+            Get.toNamed('/routineDetails', arguments: {'detail': routine});
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(
@@ -415,6 +415,54 @@ class RoutinePage extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (routine.frequency != null && routine.frequency!.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.repeat,
+                              size: 14,
+                              color: subtitleColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                routine.frequency!,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (routine.equipment?.name != null) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.precision_manufacturing_outlined,
+                              size: 14,
+                              color: subtitleColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                routine.equipment!.name!,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),

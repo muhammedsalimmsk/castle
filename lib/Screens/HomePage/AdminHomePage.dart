@@ -84,6 +84,7 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(token);
     _initOneSignalAndAskPermission(context);
     return Scaffold(
       backgroundColor: backgroundColor,

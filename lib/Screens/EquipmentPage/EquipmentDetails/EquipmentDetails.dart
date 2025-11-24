@@ -1,8 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Model/equipment_model/datum.dart';
-import 'package:castle/Screens/EquipmentPage/UpdatePage/EquipmentUpdatePage.dart';
-import 'package:castle/Screens/ClientPage/ClientDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -350,41 +348,7 @@ class EquipmentDetailsPage extends StatelessWidget {
                       height: 1,
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildSubSectionTitle('Client Information'),
-                        if (equipment.clientId != null && equipment.clientId!.isNotEmpty)
-                          TextButton.icon(
-                            onPressed: () {
-                              Get.toNamed('/clientDetails', arguments: {'clientId': equipment.clientId!});
-                            },
-                            icon: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 14,
-                              color: buttonColor,
-                            ),
-                            label: Text(
-                              "View Details",
-                              style: TextStyle(
-                                color: buttonColor,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              backgroundColor: buttonColor.withOpacity(0.1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                    _buildSubSectionTitle('Client Information'),
                     const SizedBox(height: 12),
                     _buildDetailItem(
                       Icons.business,
@@ -396,6 +360,47 @@ class EquipmentDetailsPage extends StatelessWidget {
                       "Client Address",
                       equipment.client?.clientAddress ?? 'N/A',
                     ),
+                    if (equipment.client?.firstName != null || equipment.client?.lastName != null)
+                      _buildDetailItem(
+                        Icons.person,
+                        "Contact Person Name",
+                        "${equipment.client?.firstName ?? ''} ${equipment.client?.lastName ?? ''}"
+                                .trim()
+                                .isEmpty
+                            ? 'N/A'
+                            : "${equipment.client?.firstName ?? ''} ${equipment.client?.lastName ?? ''}"
+                                .trim(),
+                      ),
+                    if (equipment.client?.contactPerson != null)
+                      _buildDetailItem(
+                        Icons.contact_page,
+                        "Contact Person",
+                        equipment.client?.contactPerson ?? 'N/A',
+                      ),
+                    if (equipment.client?.email != null)
+                      _buildDetailItem(
+                        Icons.email,
+                        "Email",
+                        equipment.client?.email ?? 'N/A',
+                      ),
+                    if (equipment.client?.phone != null)
+                      _buildDetailItem(
+                        Icons.phone,
+                        "Phone",
+                        equipment.client?.phone ?? 'N/A',
+                      ),
+                    if (equipment.client?.clientEmail != null)
+                      _buildDetailItem(
+                        Icons.email_outlined,
+                        "Client Email",
+                        equipment.client?.clientEmail ?? 'N/A',
+                      ),
+                    if (equipment.client?.clientPhone != null)
+                      _buildDetailItem(
+                        Icons.phone_android,
+                        "Client Phone",
+                        equipment.client?.clientPhone ?? 'N/A',
+                      ),
 
                     // Additional Information Section
                     const SizedBox(height: 24),

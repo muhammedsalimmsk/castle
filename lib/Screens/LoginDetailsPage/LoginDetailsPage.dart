@@ -181,15 +181,16 @@ class LoginDetailsPage extends StatelessWidget {
 
                 if (loginData.lastLogin != null)
                   _infoTile(
-                    LucideIcons.logIn,
-                    "Last Login",
-                    DateFormat('dd MMM yyyy, hh:mm a').format(loginData.lastLogin!),
-                  ),
+                      LucideIcons.logIn,
+                      "Last Login",
+                      DateFormat('dd MMM yyyy, hh:mm a')
+                          .format(loginData.lastLogin!.toLocal())),
                 if (loginData.firstLogin != null)
                   _infoTile(
                     LucideIcons.calendar,
                     "First Login",
-                    DateFormat('dd MMM yyyy, hh:mm a').format(loginData.firstLogin!),
+                    DateFormat('dd MMM yyyy, hh:mm a')
+                        .format(loginData.firstLogin!.toLocal()),
                   ),
                 if (loginData.timezone != null)
                   _infoTile(
@@ -451,4 +452,3 @@ class LoginDetailsPage extends StatelessWidget {
     );
   }
 }
-

@@ -41,7 +41,27 @@ class _CreateWorkerState extends State<CreateWorker> {
 
   @override
   Widget build(BuildContext context) {
-    PhoneNumber number = PhoneNumber(isoCode: 'IN');
+    // Initialize phone number - parse from controller text if it exists
+    PhoneNumber initialPhoneNumber = PhoneNumber(isoCode: 'IN');
+    
+    // If controller has phone text and we're updating, parse it properly
+    if (controller.isUpdateWorker && controller.phoneController.text.isNotEmpty) {
+      // Extract just the digits (remove all non-digit characters)
+      String phoneDigits = controller.phoneController.text.replaceAll(RegExp(r'[^\d]'), '');
+      if (phoneDigits.isNotEmpty) {
+        // Remove country code if present (assuming IN +91, so remove first 2 digits if phone starts with 91)
+        if (phoneDigits.startsWith('91') && phoneDigits.length > 10) {
+          phoneDigits = phoneDigits.substring(2);
+        }
+        // Ensure we have at least 10 digits
+        if (phoneDigits.length >= 10) {
+          initialPhoneNumber = PhoneNumber(
+            isoCode: 'IN',
+            phoneNumber: phoneDigits,
+          );
+        }
+      }
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -138,8 +158,9 @@ class _CreateWorkerState extends State<CreateWorker> {
                         selectorConfig: const SelectorConfig(
                           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                         ),
-                        initialValue: number,
+                        initialValue: initialPhoneNumber,
                         textFieldController: controller.phoneController,
+                        ignoreBlank: controller.isUpdateWorker,
                         inputDecoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,

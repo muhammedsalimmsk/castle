@@ -137,11 +137,12 @@ class ClientRegisterController extends GetxController {
   }
 
   Future updateClient(String clientId) async {
-    final endpoint = "/api/v1/common/clients/$clientId";
+    final endpoint = "/api/v1/admin/clients/$clientId";
     isLoading.value = true;
     final data = {
       "email": email.text.trim(),
-      "password": password.text,
+       if (password.text.trim().isNotEmpty)
+    "password": password.text,
       "firstName": firstName.text.trim(),
       "lastName": lastName.text.trim(),
       "clientName": clientName.text.trim(),

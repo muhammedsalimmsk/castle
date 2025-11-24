@@ -1,16 +1,10 @@
-import 'package:castle/Colors/Colors.dart';
-import 'package:castle/Model/auth_model/UserModel.dart';
 import 'package:castle/Model/auth_model/auth_model.dart';
 import 'package:castle/Model/user_detail_model/user_detail_model.dart';
-import 'package:castle/Screens/HomePage/HomePage.dart';
-import 'package:castle/Screens/LoginPage/LoginPage.dart';
+
 import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:castle/Screens/HomePage/AdminHomePage.dart';
-import '../../Screens/HomePage/ClientHomePage.dart';
-import '../../Screens/HomePage/WorkerHomePage.dart';
 
 String? token;
 

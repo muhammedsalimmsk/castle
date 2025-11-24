@@ -7,10 +7,8 @@ import 'package:get/get.dart';
 import '../../Model/Admin Dashboard/active_woker_count/active_woker_count.dart';
 import '../../Model/Admin Dashboard/active_woker_count/datum.dart';
 import '../../Model/Admin Dashboard/complaint_by_department_model/datum.dart';
-import '../../Model/Admin Dashboard/dash_client_stat_model/complaints.dart';
 import '../../Model/Admin Dashboard/dash_client_stat_model/dash_client_stat_model.dart';
 import '../../Model/Admin Dashboard/dash_client_stat_model/datum.dart';
-import '../../Model/Admin Dashboard/dash_client_stat_model/equipment.dart';
 import '../../Model/Admin Dashboard/dash_recent_complaint_model/dash_recent_complaint_model.dart';
 import '../../Model/Admin Dashboard/dash_recent_complaint_model/datum.dart';
 import '../../Model/Admin Dashboard/header_model/header_model.dart';
@@ -121,7 +119,8 @@ class DashboardController extends GetxController {
         final String name = r['name'] as String;
         return _apiService
             .getRequest(ep, bearerToken: token)
-            .then((resp) => {'name': name, 'response': resp})
+            .then<Map<String, dynamic>>(
+                (resp) => {'name': name, 'response': resp})
             .catchError((err) {
           print('Error calling $name ($ep): $err');
           return {'name': name, 'response': null};
@@ -209,6 +208,7 @@ class DashboardController extends GetxController {
       Map<String, dynamic>? dashStaticJson}) {
     try {
       print('DashStatic JSON: $dashStaticJson');
+      print("headerJson: $headerJson");
 
       if (headerJson != null) {
         final header = HeaderModel.fromJson(headerJson);

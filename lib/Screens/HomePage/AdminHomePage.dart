@@ -51,7 +51,6 @@ class DashboardPage extends StatelessWidget {
         "role": userDetailModel!.data!.role,
       });
       await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
-      await OneSignal.User.addSms(userDetailModel!.data!.phone ?? "");
       await OneSignal.login(userDetailModel!.data!.id!);
       OneSignal.Notifications.requestPermission(true);
     }

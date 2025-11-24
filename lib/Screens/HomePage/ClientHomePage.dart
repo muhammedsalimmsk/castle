@@ -4,17 +4,80 @@ import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:permission_handler/permission_handler.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import '../../Controlls/DashboardController/CliientDashboardController.dart';
+import '../../Controlls/AuthController/AuthController.dart';
 
 class ClientHomePage extends StatelessWidget {
   ClientHomePage({super.key});
 
   final ClientDashboardController dashboardController =
       Get.put(ClientDashboardController());
+  Future<void> _initOneSignalAndAskPermission(BuildContext context) async {
+    // Ask for permission if not granted
+    final status = await Permission.notification.status;
+
+    if (!status.isGranted) {
+      final result = await Permission.notification.request();
+
+      if (result.isGranted) {
+        await OneSignal.User.addTags({
+          "role": userDetailModel!.data!.role,
+        });
+        await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+        await OneSignal.User.addSms(userDetailModel!.data!.phone ?? "");
+        await OneSignal.login(userDetailModel!.data!.id!);
+        OneSignal.Notifications.requestPermission(true);
+      } else if (result.isPermanentlyDenied) {
+        _showOpenSettingsDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Notifications denied ❌")),
+        );
+      }
+    } else {
+      // Already granted
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Notifications already enabled ✅")),
+      );
+      await OneSignal.User.addTags({
+        "role": userDetailModel!.data!.role,
+      });
+      await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+      await OneSignal.login(userDetailModel!.data!.id!);
+      OneSignal.Notifications.requestPermission(true);
+    }
+  }
+
+  void _showOpenSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Enable Notifications'),
+        content: const Text(
+          'Notifications are turned off. Please enable them in system settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await openAppSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    _initOneSignalAndAskPermission(context);
     return Scaffold(
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),
@@ -256,8 +319,9 @@ class ClientHomePage extends StatelessWidget {
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: _statusColor(complaint.status ?? "")
-                                          .withOpacity(0.15),
+                                      color:
+                                          _statusColor(complaint.status ?? "")
+                                              .withOpacity(0.15),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(

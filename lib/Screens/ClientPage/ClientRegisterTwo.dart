@@ -1,8 +1,6 @@
-import 'package:castle/Screens/ClientPage/ClientPage.dart';
 import 'package:castle/Widget/CustomTextField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../Controlls/ClientController/ClientController.dart';
 import '../../Colors/Colors.dart';
 
@@ -16,51 +14,26 @@ class ClientRegisterPageTwo extends StatelessWidget {
   Widget build(BuildContext context) {
     final clientFields = [
       [
-        "client Name",
+        "Client Name",
         controller.clientName,
         Icons.business,
         (String? val) =>
-            val == null || val.isEmpty ? "client name required" : null
+            val == null || val.isEmpty ? "Client name required" : null
       ],
       [
-        "client Address",
+        "Client Address",
         controller.clientAddress,
         Icons.location_on,
         (String? val) => val == null || val.isEmpty ? "Address required" : null
       ],
-      // [
-      //   "client City",
-      //   controller.clientCity,
-      //   Icons.location_city,
-      //   (String? val) => val == null || val.isEmpty ? "City required" : null
-      // ],
-      // [
-      //   "client State",
-      //   controller.clientState,
-      //   Icons.map,
-      //   (String? val) => val == null || val.isEmpty ? "State required" : null
-      // ],
-      // [
-      //   "client Country",
-      //   controller.clientCountry,
-      //   Icons.flag,
-      //   (String? val) => val == null || val.isEmpty ? "Country required" : null
-      // ],
-      // [
-      //   "client Postal Code",
-      //   controller.clientPostalCode,
-      //   Icons.mail,
-      //   (String? val) =>
-      //       val == null || val.isEmpty ? "Postal code required" : null
-      // ],
       [
-        "client Phone",
+        "Client Phone",
         controller.clientPhone,
         Icons.phone_android,
         (String? val) => val == null || val.isEmpty ? "Phone required" : null
       ],
       [
-        "client Email",
+        "Client Email",
         controller.clientEmail,
         Icons.email_outlined,
         (String? val) {
@@ -79,75 +52,151 @@ class ClientRegisterPageTwo extends StatelessWidget {
     ];
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("client Details", style: GoogleFonts.poppins()),
+        surfaceTintColor: backgroundColor,
+        elevation: 0,
+        backgroundColor: backgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: containerColor),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          controller.isUpdate ? 'Edit Client' : 'Create Client',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: containerColor,
+            fontSize: 20,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        foregroundColor: Colors.black87,
       ),
       body: Form(
         key: formKeyTwo,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: ListView.separated(
-                  itemCount: clientFields.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final item = clientFields[index];
-                    return CustomTextField(
-                      controller: item[1] as TextEditingController,
-                      icon: item[2] as IconData,
-                      hint: item[0] as String,
-                      validator: item[3] as String? Function(String?),
-                    );
-                  },
+              // Client Details Section
+              _sectionTitle('Client Details'),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: dividerColor,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: cardShadowColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    ...clientFields.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final item = entry.value;
+                      return Column(
+                        children: [
+                          CustomTextField(
+                            controller: item[1] as TextEditingController,
+                            icon: item[2] as IconData,
+                            hint: item[0] as String,
+                            validator: item[3] as String? Function(String?),
+                          ),
+                          if (index < clientFields.length - 1)
+                            const SizedBox(height: 16),
+                        ],
+                      );
+                    }).toList(),
+                  ],
                 ),
               ),
+              const SizedBox(height: 32),
+              // Submit Button
               Obx(
                 () => controller.isLoading.value
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(),
                       )
                     : InkWell(
                         onTap: () async {
                           if (formKeyTwo.currentState!.validate()) {
-                            // Add submit API logic here
                             if (controller.isUpdate) {
                               await controller
                                   .updateClient(controller.clientDetails.id!);
                             } else {
                               await controller.createClient();
                             }
-
                             Get.offNamed('/clients');
                           }
                         },
                         child: Container(
                           width: double.infinity,
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
                             color: buttonColor,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: buttonColor.withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
                           child: Center(
                             child: Text(
-                              "Submit",
+                              controller.isUpdate ? "Update Client" : "Submit",
                               style: TextStyle(
-                                  color: backgroundColor, fontSize: 16),
+                                color: backgroundColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
-              )
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: BoxDecoration(
+            color: buttonColor,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: containerColor,
+            letterSpacing: -0.3,
+          ),
+        ),
+      ],
     );
   }
 }

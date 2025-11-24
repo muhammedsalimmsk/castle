@@ -119,7 +119,8 @@ class WorkerController extends GetxController {
     print(password.text);
     final data = {
       "email": emailController.text.trim(),
-      "password": password.text.trim().isEmpty ? null : password.text.trim(),
+       if (password.text.trim().isNotEmpty)
+    "password": password.text,
       "firstName": firstName.text.trim(),
       "lastName": lastName.text.trim(),
       "phone": phoneController.text.trim().isEmpty

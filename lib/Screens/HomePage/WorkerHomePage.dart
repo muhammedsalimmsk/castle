@@ -4,6 +4,9 @@ import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../Controlls/AuthController/AuthController.dart';
 import '../../Controlls/DashboardController/WorkerDashboardController.dart';
 
 class WorkerHomePage extends StatelessWidget {
@@ -11,9 +14,70 @@ class WorkerHomePage extends StatelessWidget {
 
   final WorkerDashboardController dashboardController =
       Get.put(WorkerDashboardController());
+  Future<void> _initOneSignalAndAskPermission(BuildContext context) async {
+    // Ask for permission if not granted
+    final status = await Permission.notification.status;
+
+    if (!status.isGranted) {
+      final result = await Permission.notification.request();
+
+      if (result.isGranted) {
+        await OneSignal.User.addTags({
+          "role": userDetailModel!.data!.role,
+        });
+        await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+        await OneSignal.User.addSms(userDetailModel!.data!.phone ?? "");
+        await OneSignal.login(userDetailModel!.data!.id!);
+        OneSignal.Notifications.requestPermission(true);
+      } else if (result.isPermanentlyDenied) {
+        _showOpenSettingsDialog(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Notifications denied ❌")),
+        );
+      }
+    } else {
+      // Already granted
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Notifications already enabled ✅")),
+      );
+      await OneSignal.User.addTags({
+        "role": userDetailModel!.data!.role,
+      });
+      await OneSignal.User.addEmail(userDetailModel!.data!.email ?? "");
+      await OneSignal.login(userDetailModel!.data!.id!);
+      OneSignal.Notifications.requestPermission(true);
+    }
+  }
+
+  void _showOpenSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Enable Notifications'),
+        content: const Text(
+          'Notifications are turned off. Please enable them in system settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await openAppSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    _initOneSignalAndAskPermission(context);
     return Scaffold(
       drawer: CustomDrawer(),
       appBar: CustomAppBar(),
@@ -112,11 +176,13 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildPriorityChip("Urgent",
+                    _buildPriorityChip(
+                        "Urgent",
                         complaintsByPriority?.urgent?.toString() ?? "0",
                         Colors.red),
                     const SizedBox(width: 12),
-                    _buildPriorityChip("High",
+                    _buildPriorityChip(
+                        "High",
                         complaintsByPriority?.high?.toString() ?? "0",
                         Colors.orange),
                   ],
@@ -124,11 +190,13 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildPriorityChip("Medium",
+                    _buildPriorityChip(
+                        "Medium",
                         complaintsByPriority?.medium?.toString() ?? "0",
                         Colors.blue),
                     const SizedBox(width: 12),
-                    _buildPriorityChip("Low",
+                    _buildPriorityChip(
+                        "Low",
                         complaintsByPriority?.low?.toString() ?? "0",
                         Colors.green),
                   ],
@@ -140,11 +208,13 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildPriorityChip("Pending",
+                    _buildPriorityChip(
+                        "Pending",
                         partRequests?.pending?.toString() ?? "0",
                         Colors.orange),
                     const SizedBox(width: 12),
-                    _buildPriorityChip("Approved",
+                    _buildPriorityChip(
+                        "Approved",
                         partRequests?.approved?.toString() ?? "0",
                         Colors.green),
                   ],
@@ -152,7 +222,8 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildPriorityChip("Collected",
+                    _buildPriorityChip(
+                        "Collected",
                         partRequests?.collected?.toString() ?? "0",
                         Colors.blue),
                     const SizedBox(width: 12),
@@ -167,11 +238,13 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildPriorityChip("Pending",
+                    _buildPriorityChip(
+                        "Pending",
                         routineTasks?.pending?.toString() ?? "0",
                         Colors.orange),
                     const SizedBox(width: 12),
-                    _buildPriorityChip("In Progress",
+                    _buildPriorityChip(
+                        "In Progress",
                         routineTasks?.inProgress?.toString() ?? "0",
                         Colors.blue),
                   ],
@@ -179,7 +252,8 @@ class WorkerHomePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildPriorityChip("Completed",
+                    _buildPriorityChip(
+                        "Completed",
                         routineTasks?.completed?.toString() ?? "0",
                         Colors.green),
                     const SizedBox(width: 12),

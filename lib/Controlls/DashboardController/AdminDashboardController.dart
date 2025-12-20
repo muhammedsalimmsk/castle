@@ -33,8 +33,14 @@ class DashboardController extends GetxController {
       <ComplaintWithDepartment>[].obs;
   final Rx<DashStatic> dashStaticModel = DashStatic().obs;
 
-  // flags
+  // flags - individual loading states for each section
   final RxBool loading = false.obs;
+  final RxBool loadingTopCards = false.obs;
+  final RxBool loadingPriorityChart = false.obs;
+  final RxBool loadingClients = false.obs;
+  final RxBool loadingRecentComplaints = false.obs;
+  final RxBool loadingActiveWorkers = false.obs;
+  final RxBool loadingHeader = false.obs;
 
   final String headerEndpoint =
       '/api/v1/admin/dashboard/complaints-by-priority';
@@ -102,6 +108,14 @@ class DashboardController extends GetxController {
       return;
     }
 
+    // Set individual loading states
+    loadingHeader.value = true;
+    loadingTopCards.value = true;
+    loadingPriorityChart.value = true;
+    loadingClients.value = true;
+    loadingRecentComplaints.value = true;
+    loadingActiveWorkers.value = true;
+
     // Build named requests (endpoint path + name)
     final requests = [
       {'endpoint': headerEndpoint, 'name': 'header'},
@@ -152,12 +166,28 @@ class DashboardController extends GetxController {
           continue;
         }
         // assign by name
-        if (name == 'header') headerJson = decoded;
-        if (name == 'recent') recentJson = decoded;
-        if (name == 'clients') clientsJson = decoded;
-        if (name == 'activeWorkers') activeWorkersJson = decoded;
+        if (name == 'header') {
+          headerJson = decoded;
+          loadingHeader.value = false;
+          loadingPriorityChart.value = false;
+        }
+        if (name == 'recent') {
+          recentJson = decoded;
+          loadingRecentComplaints.value = false;
+        }
+        if (name == 'clients') {
+          clientsJson = decoded;
+          loadingClients.value = false;
+        }
+        if (name == 'activeWorkers') {
+          activeWorkersJson = decoded;
+          loadingActiveWorkers.value = false;
+        }
         if (name == 'complaintsByDept') complaintsByDeptJson = decoded;
-        if (name == "dashStatic") dashStatic = decoded;
+        if (name == "dashStatic") {
+          dashStatic = decoded;
+          loadingTopCards.value = false;
+        }
       }
 
       // Fallback: if headerJson is missing or doesn't look right, try to find it among other decoded maps
@@ -194,6 +224,13 @@ class DashboardController extends GetxController {
       print('fetchDashboard unexpected error: $e\n$st');
     } finally {
       loading.value = false;
+      // Reset individual loading states if still true
+      loadingHeader.value = false;
+      loadingTopCards.value = false;
+      loadingPriorityChart.value = false;
+      loadingClients.value = false;
+      loadingRecentComplaints.value = false;
+      loadingActiveWorkers.value = false;
     }
   }
 

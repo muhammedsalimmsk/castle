@@ -203,7 +203,10 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/newComplaint', page: () => NewComplaintRegister()),
         GetPage(name: '/assignWork', page: () {
           final args = Get.arguments as Map<String, dynamic>;
-          return AssignWorkPage(complaintId: args['complaintId'] as String);
+          return AssignWorkPage(
+            complaintId: args['complaintId'] as String,
+            isUpdating: args['isUpdating'] as bool? ?? false,
+          );
         }),
         
         // Parts Request Pages

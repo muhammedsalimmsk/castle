@@ -10,7 +10,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../Colors/Colors.dart';
 import '../../Controlls/DashboardController/AdminDashboardController.dart';
 import 'package:get/get.dart';
-import 'Widgets/LinkinOverlay.dart';
 
 class DashboardPage extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
@@ -111,14 +110,12 @@ class DashboardPage extends StatelessWidget {
                 top: 0,
                 left: 16,
                 right: 16,
-                child: TopWidgetOfAdminHome(
-                  data: controller.dashStaticModel.value,
-                ),
+                child: controller.loadingHeader.value
+                    ? _buildHeaderLoading()
+                    : TopWidgetOfAdminHome(
+                        data: controller.dashStaticModel.value,
+                      ),
               )),
-          // show LinkedIn-style skeleton overlay while loading
-          Obx(() => controller.loading.value
-              ? LinkedInLoadingOverlay()
-              : SizedBox.shrink()),
         ],
       ),
     );
@@ -126,157 +123,229 @@ class DashboardPage extends StatelessWidget {
 
   Widget _buildTopCards() {
     return Obx(() {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
+      if (controller.loadingTopCards.value) {
+        return Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Row(
             children: [
-              _InfoCard(
-                title: 'Complaints',
-                value: controller.totalComplaints.value.toString(),
-                subtitle: 'Total open',
-                icon: Icons.report_problem_rounded,
-                width: 140,
-              ),
+              Expanded(child: _buildCardSkeleton()),
               const SizedBox(width: 12),
-              _InfoCard(
-                title: 'Clients',
-                value: controller.totalClients.value.toString(),
-                subtitle: 'Active',
-                icon: Icons.people_rounded,
-                width: 140,
-              ),
+              Expanded(child: _buildCardSkeleton()),
               const SizedBox(width: 12),
-              _InfoCard(
-                title: 'Equipment',
-                value: controller.totalEquipment.value.toString(),
-                subtitle: 'Total',
-                icon: Icons.precision_manufacturing_rounded,
-                width: 140,
-              ),
+              Expanded(child: _buildCardSkeleton()),
             ],
           ),
+        );
+      }
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: _InfoCard(
+                title: 'Complaints',
+                value: controller.dashStaticModel.value.complaints?.total
+                        ?.toString() ??
+                    controller.totalComplaints.value.toString(),
+                subtitle: 'Total open',
+                icon: Icons.report_problem_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _InfoCard(
+                title: 'Clients',
+                value: controller.dashStaticModel.value.users?.clients?.total
+                        ?.toString() ??
+                    controller.totalClients.value.toString(),
+                subtitle: 'Active',
+                icon: Icons.people_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _InfoCard(
+                title: 'Equipment',
+                value: controller.dashStaticModel.value.equipment?.total
+                        ?.toString() ??
+                    controller.totalEquipment.value.toString(),
+                subtitle: 'Total',
+                icon: Icons.precision_manufacturing_rounded,
+              ),
+            ),
+          ],
         ),
       );
     });
   }
 
   Widget _priorityChartCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: dividerColor,
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: cardShadowColor.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
+    return Obx(() {
+      if (controller.loadingPriorityChart.value) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: _buildCardSkeleton(height: 200),
+        );
+      }
+
+      final priorityData =
+          controller.dashStaticModel.value.complaintsByPriority;
+      final urgentCount = priorityData?.urgent ?? controller.urgent.value;
+      final mediumCount = priorityData?.medium ?? controller.medium.value;
+      final highCount = priorityData?.high ?? controller.high.value;
+      final lowCount = priorityData?.low ?? 0;
+
+      final total = urgentCount + mediumCount + highCount + lowCount;
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: dividerColor,
+              width: 1,
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 4,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: buttonColor,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Complaints by Priority',
-                        style: TextStyle(
-                          color: containerColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 120,
-                    child: PieChart(
-                      PieChartData(
-                        sections: [
-                          PieChartSectionData(
-                            color: notWorkingTextColor,
-                            value: controller.urgent.value.toDouble(),
-                            title: 'Urgent',
-                            radius: 45,
-                            titleStyle: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: backgroundColor,
-                            ),
-                          ),
-                          PieChartSectionData(
-                            color: buttonColor,
-                            value: controller.medium.value.toDouble(),
-                            title: 'Medium',
-                            radius: 45,
-                            titleStyle: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: backgroundColor,
-                            ),
-                          ),
-                          PieChartSectionData(
-                            color: workingTextColor,
-                            value: controller.high.value.toDouble(),
-                            title: 'High',
-                            radius: 45,
-                            titleStyle: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: backgroundColor,
-                            ),
-                          ),
-                        ],
-                        sectionsSpace: 3,
-                        centerSpaceRadius: 30,
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: total == 0
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Text(
+                      'No priority data available',
+                      style: TextStyle(
+                        color: subtitleColor,
+                        fontSize: 14,
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 20),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _priorityLegend(
-                    'Urgent', controller.urgent.value, notWorkingTextColor),
-                const SizedBox(height: 12),
-                _priorityLegend('Medium', controller.medium.value, buttonColor),
-                const SizedBox(height: 12),
-                _priorityLegend(
-                    'High', controller.high.value, workingTextColor),
-              ],
-            )
-          ],
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 4,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: buttonColor,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Complaints by Priority',
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 120,
+                            child: PieChart(
+                              PieChartData(
+                                sections: [
+                                  if (urgentCount > 0)
+                                    PieChartSectionData(
+                                      color: notWorkingTextColor,
+                                      value: urgentCount.toDouble(),
+                                      title: 'Urgent',
+                                      radius: 45,
+                                      titleStyle: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: backgroundColor,
+                                      ),
+                                    ),
+                                  if (mediumCount > 0)
+                                    PieChartSectionData(
+                                      color: buttonColor,
+                                      value: mediumCount.toDouble(),
+                                      title: 'Medium',
+                                      radius: 45,
+                                      titleStyle: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: backgroundColor,
+                                      ),
+                                    ),
+                                  if (highCount > 0)
+                                    PieChartSectionData(
+                                      color: workingTextColor,
+                                      value: highCount.toDouble(),
+                                      title: 'High',
+                                      radius: 45,
+                                      titleStyle: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: backgroundColor,
+                                      ),
+                                    ),
+                                  if (lowCount > 0)
+                                    PieChartSectionData(
+                                      color: Colors.green,
+                                      value: lowCount.toDouble(),
+                                      title: 'Low',
+                                      radius: 45,
+                                      titleStyle: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: backgroundColor,
+                                      ),
+                                    ),
+                                ],
+                                sectionsSpace: 3,
+                                centerSpaceRadius: 30,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (urgentCount > 0)
+                          _priorityLegend(
+                              'Urgent', urgentCount, notWorkingTextColor),
+                        if (urgentCount > 0) const SizedBox(height: 12),
+                        if (mediumCount > 0)
+                          _priorityLegend('Medium', mediumCount, buttonColor),
+                        if (mediumCount > 0) const SizedBox(height: 12),
+                        if (highCount > 0)
+                          _priorityLegend('High', highCount, workingTextColor),
+                        if (highCount > 0 && lowCount > 0)
+                          const SizedBox(height: 12),
+                        if (lowCount > 0)
+                          _priorityLegend('Low', lowCount, Colors.green),
+                      ],
+                    )
+                  ],
+                ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _priorityLegend(String label, int value, Color dotColor) {
@@ -325,178 +394,207 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _recentComplaintsCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: dividerColor,
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: cardShadowColor.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
+    return Obx(() {
+      if (controller.loadingRecentComplaints.value) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: _buildCardSkeleton(height: 400),
+        );
+      }
+
+      final complaints = controller.recentComplaints;
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: dividerColor,
+              width: 1,
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 4,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: buttonColor,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Recent Complaints',
-                      style: TextStyle(
-                        color: containerColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    foregroundColor: buttonColor,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        'View All',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                      Container(
+                        width: 4,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_ios, size: 14),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Recent Complaints',
+                        style: TextStyle(
+                          color: containerColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
                     ],
                   ),
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 350,
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: controller.recentComplaints.length,
-                separatorBuilder: (_, __) => Divider(
-                  height: 1,
-                  color: dividerColor,
-                ),
-                itemBuilder: (context, index) {
-                  final r = controller.recentComplaints[index];
-                  return Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(12),
+                  TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      foregroundColor: buttonColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_ios, size: 14),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 16),
+              complaints.isEmpty
+                  ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(
-                          children: [
-                            _priorityBadge(r.priority),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    r.title ?? '-',
-                                    style: TextStyle(
-                                      color: containerColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    r.description ?? '',
-                                    style: TextStyle(
-                                      color: subtitleColor,
-                                      fontSize: 13,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: (r.status == 'resolved'
-                                        ? workingWidgetColor
-                                        : buttonColor.withOpacity(0.1)),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    r.status ?? '',
-                                    style: TextStyle(
-                                      color: r.status == 'resolved'
-                                          ? workingTextColor
-                                          : buttonColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  DateFormat('dd MMM')
-                                      .format(r.reportedAt ?? DateTime.now()),
-                                  style: TextStyle(
-                                    color: subtitleColor,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                        padding: const EdgeInsets.all(40),
+                        child: Text(
+                          'No recent complaints',
+                          style: TextStyle(
+                            color: subtitleColor,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            )
-          ],
+                    )
+                  : SizedBox(
+                      height: 350,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: complaints.length,
+                        separatorBuilder: (_, __) => Divider(
+                          height: 1,
+                          color: dividerColor,
+                        ),
+                        itemBuilder: (context, index) {
+                          final r = complaints[index];
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {},
+                              borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: Row(
+                                  children: [
+                                    _priorityBadge(r.priority),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            r.title ?? '-',
+                                            style: TextStyle(
+                                              color: containerColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 15,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            r.description ?? '',
+                                            style: TextStyle(
+                                              color: subtitleColor,
+                                              fontSize: 13,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: (r.status == 'resolved'
+                                                ? workingWidgetColor
+                                                : buttonColor.withOpacity(0.1)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            r.status ?? '',
+                                            style: TextStyle(
+                                              color: r.status == 'resolved'
+                                                  ? workingTextColor
+                                                  : buttonColor,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          DateFormat('dd MMM').format(
+                                              r.reportedAt ?? DateTime.now()),
+                                          style: TextStyle(
+                                            color: subtitleColor,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _priorityBadge(String? priority) {
@@ -539,154 +637,411 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _clientsHorizontalCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Obx(() {
+      if (controller.loadingClients.value) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 4,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: buttonColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: buttonColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    "Clients",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                "Clients",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: containerColor,
-                  letterSpacing: -0.3,
+              const SizedBox(height: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildCardSkeleton(width: 200),
+                    const SizedBox(width: 12),
+                    _buildCardSkeleton(width: 200),
+                    const SizedBox(width: 12),
+                    _buildCardSkeleton(width: 200),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(
-                controller.clientStats.length,
-                (index) {
-                  final client = controller.clientStats[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _buildClientCard(
-                      name: client.clientName ?? "Unknown",
-                      equipment:
-                          client.equipment?.total.toString() ?? "No Equipment",
-                      complaints: client.complaints?.total?.toString() ?? "0",
-                      clientId: client.id!,
+        );
+      }
+
+      final clients = controller.clientStats;
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: buttonColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  "Clients",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: containerColor,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            clients.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'No clients available',
+                        style: TextStyle(
+                          color: subtitleColor,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
-                  );
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        clients.length,
+                        (index) {
+                          final client = clients[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: _buildClientCard(
+                              name: client.clientName ?? "Unknown",
+                              equipment: client.equipment?.total.toString() ??
+                                  "No Equipment",
+                              complaints:
+                                  client.complaints?.total?.toString() ?? "0",
+                              clientId: client.id!,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _activeWorkersCard() {
+    return Obx(() {
+      if (controller.loadingActiveWorkers.value) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: buttonColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Active Workers',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: containerColor,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: 6,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 0.75,
+                ),
+                itemBuilder: (context, index) {
+                  return _buildWorkerSkeleton();
                 },
               ),
+            ],
+          ),
+        );
+      }
+
+      final workers = controller.activeWorkers;
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: buttonColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Active Workers',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: containerColor,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
             ),
-          )
+            const SizedBox(height: 20),
+            workers.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'No active workers data',
+                        style: TextStyle(
+                          color: subtitleColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  )
+                : GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: workers.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) {
+                      final a = workers[index];
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [
+                                  buttonColor,
+                                  buttonColor.withOpacity(0.7),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: buttonColor.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${a.count ?? 0}',
+                                style: TextStyle(
+                                  color: backgroundColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            a.department ?? '-',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: containerColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ],
+        ),
+      );
+    });
+  }
+
+  // Loading skeleton widgets
+  Widget _buildCardSkeleton({double? width, double? height}) {
+    return Container(
+      width: width,
+      height: height ?? 120,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: dividerColor,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 60,
+            height: 16,
+            decoration: BoxDecoration(
+              color: dividerColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: width != null ? width * 0.6 : 80,
+            height: 24,
+            decoration: BoxDecoration(
+              color: dividerColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: width != null ? width * 0.4 : 60,
+            height: 14,
+            decoration: BoxDecoration(
+              color: dividerColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _activeWorkersCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildHeaderLoading() {
+    return Container(
+      width: double.infinity,
+      height: 160,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: containerColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          )
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 4,
-                height: 20,
+                width: 100,
+                height: 16,
                 decoration: BoxDecoration(
-                  color: buttonColor,
-                  borderRadius: BorderRadius.circular(2),
+                  color: backgroundColor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Active Workers',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: containerColor,
-                  letterSpacing: -0.3,
+              const SizedBox(height: 12),
+              Container(
+                width: 60,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: backgroundColor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: controller.activeWorkers.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 20,
-              childAspectRatio: 0.75,
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: backgroundColor.withOpacity(0.3),
+              shape: BoxShape.circle,
             ),
-            itemBuilder: (context, index) {
-              final a = controller.activeWorkers[index];
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          buttonColor,
-                          buttonColor.withOpacity(0.7),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: buttonColor.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${a.count ?? 0}',
-                        style: TextStyle(
-                          color: backgroundColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    a.department ?? '-',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: containerColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              );
-            },
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWorkerSkeleton() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: dividerColor.withOpacity(0.5),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: 60,
+          height: 12,
+          decoration: BoxDecoration(
+            color: dividerColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -814,13 +1169,13 @@ class _InfoCard extends StatelessWidget {
   final String value;
   final String subtitle;
   final IconData icon;
-  final double width;
+  final double? width;
   const _InfoCard({
     required this.title,
     required this.value,
     required this.subtitle,
     required this.icon,
-    required this.width,
+    this.width,
   });
 
   @override

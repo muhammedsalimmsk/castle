@@ -1,6 +1,5 @@
 import 'package:castle/Controlls/AssignRoutineController/RoutineController.dart';
-import 'package:castle/Screens/RoutineScreens/AssignRoutinePage/AssignRoutinePage.dart';
-import 'package:castle/Screens/RoutineScreens/RoutineDetails/RoutineDetails.dart';
+
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:flutter/material.dart';

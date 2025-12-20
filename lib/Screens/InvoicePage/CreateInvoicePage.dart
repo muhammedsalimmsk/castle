@@ -401,25 +401,482 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
         return const SizedBox.shrink();
       }
 
-      return TextFormField(
-        controller: controller.complaintIdController,
-        decoration: InputDecoration(
-          labelText: 'Complaint ID *',
-          hintText: 'Enter complaint ID',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: borderColor),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: TextEditingController(
+              text: controller.selectedComplaint.value != null
+                  ? controller.selectedComplaint.value!.title ??
+                      controller.selectedComplaint.value!.id ??
+                      ''
+                  : '',
+            ),
+            readOnly: true,
+            decoration: InputDecoration(
+              labelText: 'Complaint *',
+              hintText: 'Select a complaint',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: buttonColor, width: 2),
+              ),
+              prefixIcon: Icon(Icons.report_problem, color: buttonColor),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  controller.selectedComplaint.value != null
+                      ? Icons.clear
+                      : Icons.arrow_drop_down,
+                  color: buttonColor,
+                ),
+                onPressed: () {
+                  if (controller.selectedComplaint.value != null) {
+                    controller.selectComplaint(null);
+                  } else {
+                    _showComplaintSearchDialog();
+                  }
+                },
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            onTap: () => _showComplaintSearchDialog(),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: buttonColor, width: 2),
-          ),
-          prefixIcon: Icon(Icons.report_problem, color: buttonColor),
-          filled: true,
-          fillColor: Colors.white,
-        ),
+          if (controller.selectedComplaint.value != null) ...[
+            const SizedBox(height: 8),
+            _buildComplaintDetailsCard(),
+          ],
+        ],
       );
     });
+  }
+
+  Widget _buildComplaintDetailsCard() {
+    final complaint = controller.selectedComplaint.value!;
+
+    String formatApiString(String? rawString) {
+      if (rawString == null || rawString.isEmpty) {
+        return "N/A";
+      }
+      final words = rawString.replaceAll('_', ' ').toLowerCase().split(' ');
+      final capitalizedWords = words.map((word) {
+        if (word.isEmpty) return '';
+        return word[0].toUpperCase() + word.substring(1);
+      });
+      return capitalizedWords.join(' ');
+    }
+
+    Color getPriorityColor(String? priority) {
+      switch (priority?.toUpperCase()) {
+        case "URGENT":
+          return Colors.redAccent;
+        case "HIGH":
+          return Colors.orange;
+        case "MEDIUM":
+          return Colors.blue;
+        case "LOW":
+          return Colors.green;
+        default:
+          return Colors.grey;
+      }
+    }
+
+    Color getStatusColor(String? status) {
+      switch (status?.toUpperCase()) {
+        case "OPEN":
+          return containerColor;
+        case "IN_PROGRESS":
+          return Colors.green;
+        case "RESOLVED":
+          return Colors.green;
+        case "CLOSED":
+          return containerColor;
+        default:
+          return containerColor;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: buttonColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: buttonColor.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, color: buttonColor, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Complaint Details',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: containerColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Title
+          if (complaint.title != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.title, color: buttonColor, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      complaint.title!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: containerColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          // Description
+          if (complaint.description != null &&
+              complaint.description!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.description, color: buttonColor, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      complaint.description!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 8),
+          // Status and Priority badges
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (complaint.status != null)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: getStatusColor(complaint.status).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: getStatusColor(complaint.status),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    formatApiString(complaint.status),
+                    style: TextStyle(
+                      color: getStatusColor(complaint.status),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              if (complaint.priority != null)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color:
+                        getPriorityColor(complaint.priority).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: getPriorityColor(complaint.priority),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.flag,
+                          size: 12,
+                          color: getPriorityColor(complaint.priority)),
+                      const SizedBox(width: 4),
+                      Text(
+                        formatApiString(complaint.priority),
+                        style: TextStyle(
+                          color: getPriorityColor(complaint.priority),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          // Equipment info
+          if (complaint.equipment?.name != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.precision_manufacturing,
+                    color: buttonColor, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Equipment: ${complaint.equipment!.name}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showComplaintSearchDialog() {
+    final searchController = TextEditingController();
+    controller.complaintSearchQuery.value = '';
+    controller.filteredComplaints.value = controller.complaints;
+
+    // Fetch complaints if not already loaded
+    if (controller.complaints.isEmpty) {
+      controller.fetchComplaints();
+    }
+
+    showDialog(
+      context: Get.context!,
+      builder: (context) => Dialog(
+        backgroundColor: backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Select Complaint',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: containerColor),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: searchController,
+                textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  hintText: 'Search by complaint title, description, or ID...',
+                  prefixIcon: Icon(Icons.search, color: buttonColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: borderColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: buttonColor, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: backgroundColor,
+                ),
+                onChanged: (value) {
+                  controller.searchComplaints(value);
+                },
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoadingComplaints.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.filteredComplaints.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.report_off,
+                              size: 64, color: subtitleColor),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No complaints found',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: subtitleColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: controller.filteredComplaints.length,
+                    itemBuilder: (context, index) {
+                      final complaint = controller.filteredComplaints[index];
+
+                      String formatApiString(String? rawString) {
+                        if (rawString == null || rawString.isEmpty) {
+                          return "N/A";
+                        }
+                        final words = rawString
+                            .replaceAll('_', ' ')
+                            .toLowerCase()
+                            .split(' ');
+                        final capitalizedWords = words.map((word) {
+                          if (word.isEmpty) return '';
+                          return word[0].toUpperCase() + word.substring(1);
+                        });
+                        return capitalizedWords.join(' ');
+                      }
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        elevation: 2,
+                        shadowColor: buttonColor.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: borderColor.withOpacity(0.5)),
+                        ),
+                        color: backgroundColor,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: progressBackround,
+                            child:
+                                Icon(Icons.report_problem, color: buttonColor),
+                          ),
+                          title: Text(
+                            complaint.title ?? 'No Title',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: containerColor,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (complaint.description != null &&
+                                  complaint.description!.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    complaint.description!.length > 50
+                                        ? '${complaint.description!.substring(0, 50)}...'
+                                        : complaint.description!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: subtitleColor,
+                                    ),
+                                  ),
+                                ),
+                              if (complaint.status != null ||
+                                  complaint.priority != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 4,
+                                    children: [
+                                      if (complaint.status != null)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                containerColor.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            formatApiString(complaint.status),
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: subtitleColor,
+                                            ),
+                                          ),
+                                        ),
+                                      if (complaint.priority != null)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: buttonColor.withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            formatApiString(complaint.priority),
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: buttonColor,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                          trailing: controller.selectedComplaint.value?.id ==
+                                  complaint.id
+                              ? Icon(Icons.check_circle, color: buttonColor)
+                              : Icon(Icons.chevron_right, color: subtitleColor),
+                          onTap: () {
+                            controller.selectComplaint(complaint);
+                            Get.back();
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildDueDateField(BuildContext context) {

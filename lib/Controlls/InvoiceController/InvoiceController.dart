@@ -5,6 +5,8 @@ import 'package:castle/Controlls/ClientController/ClientController.dart';
 import 'package:castle/Model/invoice_model/invoice_model.dart';
 import 'package:castle/Model/invoice_model/invoice_data.dart';
 import 'package:castle/Model/client_model/datum.dart';
+import 'package:castle/Model/complaint_model/complaint_model.dart';
+import 'package:castle/Model/complaint_model/datum.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +55,13 @@ class InvoiceController extends GetxController {
   RxString clientSearchQuery = ''.obs;
   RxList<ClientData> filteredClients = <ClientData>[].obs;
   RxBool isLoadingClients = false.obs;
+
+  // Complaint selection
+  RxList<ComplaintDetails> complaints = <ComplaintDetails>[].obs;
+  Rx<ComplaintDetails?> selectedComplaint = Rx<ComplaintDetails?>(null);
+  RxString complaintSearchQuery = ''.obs;
+  RxList<ComplaintDetails> filteredComplaints = <ComplaintDetails>[].obs;
+  RxBool isLoadingComplaints = false.obs;
 
   // Report types
   final List<String> reportTypes = [
@@ -146,6 +155,74 @@ class InvoiceController extends GetxController {
       clientIdController.text = client.id ?? '';
     } else {
       clientIdController.clear();
+    }
+  }
+
+  // Fetch complaints
+  Future<void> fetchComplaints() async {
+    if (isLoadingComplaints.value) return;
+
+    isLoadingComplaints.value = true;
+    try {
+      final role = userDetailModel?.data?.role?.toLowerCase() ?? 'admin';
+      final endpoint = '/api/v1/$role/complaints?page=1&limit=100';
+
+      final response =
+          await _apiService.getRequest(endpoint, bearerToken: token);
+
+      if (response.isOk) {
+        final model = ComplaintModel.fromJson(response.body);
+        complaints.value = model.data ?? [];
+        filteredComplaints.value = complaints;
+      } else {
+        print('Error fetching complaints: ${response.body}');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch complaints',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('Error fetching complaints: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to fetch complaints: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoadingComplaints.value = false;
+    }
+  }
+
+  // Search complaints
+  void searchComplaints(String query) {
+    complaintSearchQuery.value = query;
+    if (query.isEmpty) {
+      filteredComplaints.value = complaints;
+    } else {
+      filteredComplaints.value = complaints.where((complaint) {
+        final title = (complaint.title ?? '').toLowerCase();
+        final description = (complaint.description ?? '').toLowerCase();
+        final id = (complaint.id ?? '').toLowerCase();
+        final searchLower = query.toLowerCase();
+        return title.contains(searchLower) ||
+            description.contains(searchLower) ||
+            id.contains(searchLower);
+      }).toList();
+    }
+  }
+
+  // Select complaint
+  void selectComplaint(ComplaintDetails? complaint) {
+    selectedComplaint.value = complaint;
+    if (complaint != null) {
+      complaintIdController.text = complaint.id ?? '';
+    } else {
+      complaintIdController.clear();
     }
   }
 
@@ -767,6 +844,9 @@ class InvoiceController extends GetxController {
     selectedClient.value = null;
     clientSearchQuery.value = '';
     filteredClients.value = clients;
+    selectedComplaint.value = null;
+    complaintSearchQuery.value = '';
+    filteredComplaints.value = complaints;
   }
 
   // Select due date (date only, no time)

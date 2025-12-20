@@ -52,6 +52,8 @@ class AssignRoutineController extends GetxController {
   final selectedDayOfWeek = 0.obs;
   final selectedDayOfMonth = 1.obs;
   final selectedEquipmentId = ''.obs;
+  RxList<String> readings = <String>[].obs;
+  final readingController = TextEditingController();
   String? role;
   final isSubmitting = false.obs;
   late TaskedRoutineDetailModel taskedRoutineDetailModel =
@@ -126,6 +128,9 @@ class AssignRoutineController extends GetxController {
     if (selectedFrequency.value == "MONTHLY") {
       routineData["dayOfMonth"] = selectedDayOfMonth.value;
     }
+
+    // Add readings array
+    routineData["readings"] = readings.toList();
 
     final endpoint = "/api/v1/admin/routines";
     print(routineData);

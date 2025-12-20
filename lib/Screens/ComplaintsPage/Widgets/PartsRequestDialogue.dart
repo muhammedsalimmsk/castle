@@ -4,11 +4,15 @@ import 'package:get/get.dart';
 import '../../../Colors/Colors.dart';
 import '../../../Controlls/ComplaintController/ComplaintController.dart';
 
-class PartRequestDialog extends StatelessWidget {
+class PartRequestDialog extends StatefulWidget {
   final String complaintId;
-  final String type;
-  PartRequestDialog({super.key, required this.complaintId, required this.type});
+  const PartRequestDialog({super.key, required this.complaintId});
 
+  @override
+  State<PartRequestDialog> createState() => _PartRequestDialogState();
+}
+
+class _PartRequestDialogState extends State<PartRequestDialog> {
   final ComplaintController controller = Get.find();
 
   final TextEditingController quantityController = TextEditingController();
@@ -17,6 +21,32 @@ class PartRequestDialog extends StatelessWidget {
   final RxString selectedPartId = ''.obs;
   final RxInt selectedStock = 0.obs;
   final RxString urgency = 'MEDIUM'.obs;
+  final RxString requestType = 'CLIENT_PROVIDED'.obs;
+  final RxBool isLoadingParts = true.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPartsList();
+  }
+
+  Future<void> _loadPartsList() async {
+    try {
+      isLoadingParts.value = true;
+      await controller.getPartsList();
+    } catch (e) {
+      Get.snackbar("Error", "Failed to load parts list");
+    } finally {
+      isLoadingParts.value = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    quantityController.dispose();
+    reasonController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,28 +68,85 @@ class PartRequestDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Part Dropdown
+                // Request Type Dropdown
                 Obx(() => DropdownButtonFormField<String>(
-                      dropdownColor: backgroundColor,
-                      value: selectedPartId.value.isNotEmpty
-                          ? selectedPartId.value
-                          : null,
-                      items: controller.partsList.map((part) {
-                        return DropdownMenuItem(
-                          value: part.id,
-                          child: Text(part.partName ?? ''),
-                        );
-                      }).toList(),
+                      value: requestType.value,
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: 'CLIENT_PROVIDED',
+                          child: Row(
+                            children: [
+                              Icon(Icons.person, size: 18, color: buttonColor),
+                              const SizedBox(width: 8),
+                              const Text("Request from Client"),
+                            ],
+                          ),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'ADMIN_INVENTORY',
+                          child: Row(
+                            children: [
+                              Icon(Icons.admin_panel_settings,
+                                  size: 18, color: buttonColor),
+                              const SizedBox(width: 8),
+                              const Text("Request from Admin"),
+                            ],
+                          ),
+                        ),
+                      ],
                       onChanged: (value) {
                         if (value != null) {
-                          selectedPartId.value = value;
-                          final selected = controller.partsList
-                              .firstWhere((p) => p.id == value);
-                          selectedStock.value = selected.currentStock ?? 0;
+                          requestType.value = value;
                         }
                       },
-                      decoration: _inputDecoration("Select Part"),
+                      decoration: _inputDecoration("Request Type"),
                     )),
+                const SizedBox(height: 20),
+
+                // Part Dropdown
+                Obx(() => isLoadingParts.value
+                    ? Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              color: buttonColor,
+                              strokeWidth: 2,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              "Loading parts...",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      )
+                    : DropdownButtonFormField<String>(
+                        dropdownColor: backgroundColor,
+                        value: selectedPartId.value.isNotEmpty
+                            ? selectedPartId.value
+                            : null,
+                        items: controller.partsList.map((part) {
+                          return DropdownMenuItem(
+                            value: part.id,
+                            child: Text(part.partName ?? ''),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            selectedPartId.value = value;
+                            final selected = controller.partsList
+                                .firstWhere((p) => p.id == value);
+                            selectedStock.value = selected.currentStock ?? 0;
+                          }
+                        },
+                        decoration: _inputDecoration("Select Part"),
+                      )),
 
                 Obx(() => selectedPartId.value.isNotEmpty
                     ? Padding(
@@ -201,7 +288,7 @@ class PartRequestDialog extends StatelessWidget {
                               return;
                             }
                             await controller.requestMultipleParts(
-                                complaintId, type);
+                                widget.complaintId, requestType.value);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,

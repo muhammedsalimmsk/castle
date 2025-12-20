@@ -618,56 +618,26 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                           padding: const EdgeInsets.only(bottom: 12),
                           child: sectionTitle("Parts Request"),
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  await complaintController.getPartsList();
-                                  Get.dialog(PartRequestDialog(
-                                    complaintId: complaint.id!,
-                                    type: 'CLIENT_PROVIDED',
-                                  ));
-                                },
-                                icon: const Icon(Icons.build, size: 20),
-                                label: const Text("Parts-Client"),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
-                                  foregroundColor: Colors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
-                                ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Get.dialog(PartRequestDialog(
+                                complaintId: complaint.id!,
+                              ));
+                            },
+                            icon: const Icon(Icons.build, size: 20),
+                            label: const Text("Parts Request"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                              elevation: 2,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  await complaintController.getPartsList();
-                                  Get.dialog(PartRequestDialog(
-                                    complaintId: complaint.id!,
-                                    type: 'ADMIN_INVENTORY',
-                                  ));
-                                },
-                                icon: const Icon(Icons.build, size: 20),
-                                label: const Text("Parts-Admin"),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
-                                  foregroundColor: Colors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 12),
                         SizedBox(
@@ -957,7 +927,12 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Get.toNamed('/assignWork', arguments: {'complaintId': widget.complaintId});
+                          final isUpdating =
+                              complaint.assignedWorkers!.isNotEmpty;
+                          Get.toNamed('/assignWork', arguments: {
+                            'complaintId': widget.complaintId,
+                            'isUpdating': isUpdating,
+                          });
                         },
                         icon: Icon(
                           complaint.assignedWorkers!.isEmpty
@@ -1071,7 +1046,9 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
     for (int i = 0; i < items.length; i++) {
       result.add(items[i]);
       if (i < items.length - 1) {
-        result.add(SizedBox(height: 24,));
+        result.add(SizedBox(
+          height: 24,
+        ));
       }
     }
     return result;

@@ -1,5 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/InvoiceController/InvoiceController.dart';
+import 'package:castle/Model/requested_parts_model/datum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -387,6 +388,10 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
             if (value != null) {
               controller.selectedReportTypeForm.value = value;
               controller.reportTypeController.text = value;
+              // Clear complaint if switching to a report type that doesn't support complaints
+              if (value != 'INVOICE' && value != 'COMPLAINT_REPORT') {
+                controller.selectComplaint(null);
+              }
             }
           },
         ));
@@ -394,10 +399,11 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
 
   Widget _buildComplaintIdField() {
     return Obx(() {
-      final isComplaintReport =
-          controller.selectedReportTypeForm.value == 'COMPLAINT_REPORT';
+      final reportType = controller.selectedReportTypeForm.value;
+      final showComplaintField =
+          reportType == 'INVOICE' || reportType == 'COMPLAINT_REPORT';
 
-      if (!isComplaintReport) {
+      if (!showComplaintField) {
         return const SizedBox.shrink();
       }
 
@@ -414,7 +420,9 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
             ),
             readOnly: true,
             decoration: InputDecoration(
-              labelText: 'Complaint *',
+              labelText: reportType == 'COMPLAINT_REPORT'
+                  ? 'Complaint *'
+                  : 'Complaint ',
               hintText: 'Select a complaint',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -448,6 +456,8 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
           if (controller.selectedComplaint.value != null) ...[
             const SizedBox(height: 8),
             _buildComplaintDetailsCard(),
+            const SizedBox(height: 16),
+            _buildPartsDetailsSection(),
           ],
         ],
       );
@@ -658,14 +668,276 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
     );
   }
 
+  Widget _buildPartsDetailsSection() {
+    return Obx(() {
+      if (controller.isLoadingParts.value) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: progressBackround,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: borderColor),
+          ),
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+
+      if (controller.partsDetails.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.inventory_2, color: buttonColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Requested Parts Details',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: containerColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...controller.partsDetails.asMap().entries.map((entry) {
+            final index = entry.key;
+            final partRequest = entry.value;
+            return _buildPartCard(partRequest, index);
+          }).toList(),
+        ],
+      );
+    });
+  }
+
+  Widget _buildPartCard(RequestedParts partRequest, int index) {
+    final part = partRequest.part;
+    final quantity = partRequest.quantity ?? 1;
+    final unitPrice = part?.unitPrice ?? 0;
+    final totalPrice = quantity * unitPrice;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: buttonColor.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  part?.partName ?? 'Unnamed Part',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: containerColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (part?.partNumber != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.tag, color: subtitleColor, size: 16),
+                const SizedBox(width: 6),
+                Text(
+                  'Part Number: ${part!.partNumber}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: subtitleColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (part?.description != null && part!.description!.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              part.description!,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[700],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 12),
+          // Price information row
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: buttonColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: buttonColor.withOpacity(0.2)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Quantity',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: subtitleColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$quantity',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: containerColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Unit Price',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: subtitleColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '\$${unitPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: containerColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Total Price',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: subtitleColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '\$${totalPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: buttonColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: [
+              if (part?.category != null)
+                _buildInfoChip(
+                  Icons.category,
+                  'Category',
+                  part!.category!,
+                ),
+              if (part?.currentStock != null)
+                _buildInfoChip(
+                  Icons.inventory,
+                  'Stock',
+                  '${part!.currentStock}',
+                ),
+              if (part?.supplier != null)
+                _buildInfoChip(
+                  Icons.local_shipping,
+                  'Supplier',
+                  part!.supplier!,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: progressBackround,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: borderColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: subtitleColor),
+          const SizedBox(width: 4),
+          Text(
+            '$label: $value',
+            style: TextStyle(
+              fontSize: 11,
+              color: subtitleColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showComplaintSearchDialog() {
+    // Check if client is selected
+    if (controller.selectedClient.value == null) {
+      Get.snackbar(
+        'Error',
+        'Please select a client first',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     final searchController = TextEditingController();
     controller.complaintSearchQuery.value = '';
     controller.filteredComplaints.value = controller.complaints;
 
-    // Fetch complaints if not already loaded
+    // Fetch complaints for the selected client if not already loaded
     if (controller.complaints.isEmpty) {
-      controller.fetchComplaints();
+      controller.fetchComplaints(
+        clientId: controller.selectedClient.value?.id,
+      );
     }
 
     showDialog(
@@ -1057,10 +1329,21 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
       subtotal += (item['quantity'] ?? 0.0) * (item['unitPrice'] ?? 0.0);
     }
 
+    // Calculate parts total from requested parts
+    double partsTotal = 0.0;
+    for (var partRequest in controller.partsDetails) {
+      final quantity = partRequest.quantity ?? 0;
+      final unitPrice = partRequest.part?.unitPrice ?? 0;
+      partsTotal += quantity * unitPrice;
+    }
+
+    // Add parts total to subtotal
+    final totalSubtotal = subtotal + partsTotal;
+
     final taxRate = double.tryParse(controller.taxRateController.text) ?? 0.0;
     final discount = double.tryParse(controller.discountController.text) ?? 0.0;
-    final taxAmount = (subtotal - discount) * (taxRate / 100);
-    final total = subtotal - discount + taxAmount;
+    final taxAmount = (totalSubtotal - discount) * (taxRate / 100);
+    final total = totalSubtotal - discount + taxAmount;
 
     return Card(
       elevation: 3,
@@ -1085,7 +1368,9 @@ class _CreateInvoicePageState extends State<CreateInvoicePage> {
         ),
         child: Column(
           children: [
-            _buildSummaryRow('Subtotal', subtotal),
+            _buildSummaryRow('Items Subtotal', subtotal),
+            if (partsTotal > 0) _buildSummaryRow('Parts Total', partsTotal),
+            _buildSummaryRow('Subtotal', totalSubtotal),
             if (discount > 0) _buildSummaryRow('Discount', -discount),
             if (taxRate > 0) _buildSummaryRow('Tax ($taxRate%)', taxAmount),
             const Divider(height: 24),

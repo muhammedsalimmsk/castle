@@ -33,6 +33,7 @@ class AssignRoutineController extends GetxController {
   EquipmentModel equipmentModel = EquipmentModel();
   RxList<EquipmentDetailData> equipmentDetail = <EquipmentDetailData>[].obs;
   final TextEditingController notesController = TextEditingController();
+  List<Map<String, dynamic>>? taskReadings;
 
   int taskPage = 1;
   int taskLimit = 1;
@@ -234,12 +235,17 @@ class AssignRoutineController extends GetxController {
     }
   }
 
-  Future updateRoutineStatus(String routineId, String status) async {
+  Future updateRoutineStatus(String routineId, String status,
+      {String? notes, List<Map<String, dynamic>>? readings}) async {
     final endpoint = "/api/v1/worker/routine-tasks/$routineId/status";
-    final data = {"status": "IN_PROGRESS", "notes": "string"};
+    final data = {
+      "status": status,
+      "notes": notes ?? "string",
+      if (readings != null) "readings": readings,
+    };
     try {
-      final response =
-          await _apiService.patchRequest(endpoint, bearerToken: token);
+      final response = await _apiService.patchRequest(endpoint,
+          data: data, bearerToken: token);
       if (response.isOk) {}
     } catch (e) {
       rethrow;
@@ -294,6 +300,7 @@ class AssignRoutineController extends GetxController {
       if (response.isOk) {
         print(response.body);
         taskModel = RoutineTaskModel.fromJson(response.body);
+        print(response.body);
         if (taskIsRefresh || taskPage == 1) {
           taskDetails.value = taskModel.data!;
         } else {
@@ -311,7 +318,7 @@ class AssignRoutineController extends GetxController {
   }
 
   Future<WorkerTaskDetail?> fetchRoutineTask(String routineId) async {
-    final endpoint = "/api/v1/worker/routine-tasks/$routineId";
+    final endpoint = "/api/v1/common/routine-tasks/$routineId";
     try {
       final response =
           await _apiService.getRequest(endpoint, bearerToken: token);
@@ -331,9 +338,14 @@ class AssignRoutineController extends GetxController {
     }
   }
 
-  Future updateRoutineTask(String routineId, String status, String note) async {
+  Future updateRoutineTask(String routineId, String status, String note,
+      {List<Map<String, dynamic>>? readings}) async {
     final endpoint = "/api/v1/worker/routine-tasks/$routineId/status";
-    final data = {'status': status, "notes": note};
+    final data = {
+      'status': status,
+      'notes': note,
+      if (readings != null) 'readings': readings,
+    };
     isLoading.value = true;
     try {
       final response = await _apiService.patchRequest(endpoint,

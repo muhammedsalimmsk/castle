@@ -1,5 +1,4 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
-import 'package:castle/Model/routine_model/datum.dart';
 import 'package:castle/Model/routine_task_model/datum.dart';
 import 'package:castle/Model/routine_task_model/routine_task_model.dart';
 import 'package:castle/Services/ApiService.dart';
@@ -69,5 +68,11 @@ class WorkerTaskController extends GetxController {
     if (isMoreDataAvailable.value && !isLoading.value) {
       await fetchTasks();
     }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchTasks(isRefresh: true);
   }
 }

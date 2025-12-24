@@ -8,6 +8,7 @@ class WorkerTaskDetail {
   dynamic completedAt;
   String? status;
   dynamic notes;
+  dynamic readings;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? routineId;
@@ -22,6 +23,7 @@ class WorkerTaskDetail {
     this.completedAt,
     this.status,
     this.notes,
+    this.readings,
     this.createdAt,
     this.updatedAt,
     this.routineId,
@@ -40,6 +42,7 @@ class WorkerTaskDetail {
         completedAt: json['completedAt'] as dynamic,
         status: json['status'] as String?,
         notes: json['notes'] as dynamic,
+        readings: json['readings'] as dynamic,
         createdAt: json['createdAt'] == null
             ? null
             : DateTime.parse(json['createdAt'] as String),
@@ -61,6 +64,7 @@ class WorkerTaskDetail {
         'completedAt': completedAt,
         'status': status,
         'notes': notes,
+        'readings': readings,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'routineId': routineId,

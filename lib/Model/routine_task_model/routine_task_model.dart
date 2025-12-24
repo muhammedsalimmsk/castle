@@ -9,11 +9,25 @@ class RoutineTaskModel {
   RoutineTaskModel({this.success, this.data, this.meta});
 
   factory RoutineTaskModel.fromJson(Map<String, dynamic> json) {
+    // Handle both array and single object responses
+    dynamic dataValue = json['data'];
+    List<TaskDetail>? dataList;
+
+    if (dataValue != null) {
+      if (dataValue is List) {
+        // Array response (list endpoints)
+        dataList = (dataValue as List<dynamic>)
+            .map((e) => TaskDetail.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else if (dataValue is Map) {
+        // Single object response (detail endpoints)
+        dataList = [TaskDetail.fromJson(dataValue as Map<String, dynamic>)];
+      }
+    }
+
     return RoutineTaskModel(
       success: json['success'] as bool?,
-      data: (json['data'] as List<dynamic>?)
-          ?.map((e) => TaskDetail.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      data: dataList,
       meta: json['meta'] == null
           ? null
           : Meta.fromJson(json['meta'] as Map<String, dynamic>),

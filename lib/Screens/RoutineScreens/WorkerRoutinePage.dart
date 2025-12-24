@@ -27,10 +27,14 @@ class WorkerRoutinePage extends StatelessWidget {
 
   String formatStatus(String? status) {
     if (status == null || status.isEmpty) return "Unknown";
-    return status.replaceAll('_', ' ').split(' ').map((word) {
-      if (word.isEmpty) return '';
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return status
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return '';
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   @override
@@ -77,7 +81,9 @@ class WorkerRoutinePage extends StatelessWidget {
                       Obx(
                         () => Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: buttonColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -101,11 +107,9 @@ class WorkerRoutinePage extends StatelessWidget {
                 ),
                 // Search Bar and Filter
                 Padding(
-                  padding:
-                      ResponsiveHelper.getResponsivePadding(context).copyWith(
-                    top: 12,
-                    bottom: 16,
-                  ),
+                  padding: ResponsiveHelper.getResponsivePadding(
+                    context,
+                  ).copyWith(top: 12, bottom: 16),
                   child: Row(
                     children: [
                       Expanded(
@@ -189,10 +193,12 @@ class WorkerRoutinePage extends StatelessWidget {
                           ),
                           items:
                               ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'SKIPPED']
-                                  .map((status) => DropdownMenuItem(
-                                        value: status,
-                                        child: Text(formatStatus(status)),
-                                      ))
+                                  .map(
+                                    (status) => DropdownMenuItem(
+                                      value: status,
+                                      child: Text(formatStatus(status)),
+                                    ),
+                                  )
                                   .toList(),
                           onChanged: (value) {
                             if (value != null) {
@@ -208,7 +214,9 @@ class WorkerRoutinePage extends StatelessWidget {
                 // Task List
                 Expanded(
                   child: Obx(
-                    () => controller.isRefreshing.value &&
+                    () =>
+                        (controller.isLoading.value ||
+                                controller.isRefreshing.value) &&
                             controller.taskDetail.isEmpty
                         ? Center(
                             child: Column(
@@ -216,7 +224,8 @@ class WorkerRoutinePage extends StatelessWidget {
                               children: [
                                 CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      buttonColor),
+                                    buttonColor,
+                                  ),
                                   strokeWidth: 3,
                                 ),
                                 const SizedBox(height: 16),
@@ -231,135 +240,121 @@ class WorkerRoutinePage extends StatelessWidget {
                             ),
                           )
                         : controller.taskDetail.isEmpty
-                            ? RefreshIndicator(
-                                onRefresh: () => controller.refreshTasks(),
-                                color: buttonColor,
-                                child: ListView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  children: [
-                                    const SizedBox(height: 100),
-                                    Center(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(24),
-                                            decoration: BoxDecoration(
-                                              color: searchBackgroundColor,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.task_outlined,
-                                              size: 64,
-                                              color: subtitleColor,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 24),
-                                          Text(
-                                            "No tasks found",
-                                            style: TextStyle(
-                                              color: containerColor,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            "No tasks available for this status",
-                                            style: TextStyle(
-                                              color: subtitleColor,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ],
+                        ? RefreshIndicator(
+                            onRefresh: () => controller.refreshTasks(),
+                            color: buttonColor,
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 100),
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(24),
+                                        decoration: BoxDecoration(
+                                          color: searchBackgroundColor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.task_outlined,
+                                          size: 64,
+                                          color: subtitleColor,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : ResponsiveHelper.isLargeScreen(context)
-                                ? RefreshIndicator(
-                                    onRefresh: () => controller.refreshTasks(),
-                                    color: buttonColor,
-                                    child: GridView.builder(
-                                      padding:
-                                          ResponsiveHelper.getResponsivePadding(
-                                                  context)
-                                              .copyWith(
-                                        top: 0,
+                                      const SizedBox(height: 24),
+                                      Text(
+                                        "No tasks found",
+                                        style: TextStyle(
+                                          color: containerColor,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: ResponsiveHelper
-                                            .getGridCrossAxisCount(context),
-                                        crossAxisSpacing: 16,
-                                        mainAxisSpacing: 12,
-                                        childAspectRatio:
-                                            ResponsiveHelper.isDesktop(context)
-                                                ? 1.3
-                                                : 1.2,
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "No tasks available for this status",
+                                        style: TextStyle(
+                                          color: subtitleColor,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                      itemCount:
-                                          controller.taskDetail.length + 1,
-                                      itemBuilder: (context, index) {
-                                        if (index <
-                                            controller.taskDetail.length) {
-                                          final task =
-                                              controller.taskDetail[index];
-                                          return _buildTaskCard(task);
-                                        } else {
-                                          if (controller
-                                              .isMoreDataAvailable.value) {
-                                            controller.loadMoreTasks();
-                                            return const Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(12.0),
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            );
-                                          } else {
-                                            return const SizedBox.shrink();
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  )
-                                : RefreshIndicator(
-                                    onRefresh: () => controller.refreshTasks(),
-                                    color: buttonColor,
-                                    child: ListView.builder(
-                                      padding:
-                                          ResponsiveHelper.getResponsivePadding(
-                                                  context)
-                                              .copyWith(
-                                        top: 0,
-                                      ),
-                                      itemCount:
-                                          controller.taskDetail.length + 1,
-                                      itemBuilder: (context, index) {
-                                        if (index <
-                                            controller.taskDetail.length) {
-                                          final task =
-                                              controller.taskDetail[index];
-                                          return _buildTaskCard(task);
-                                        } else {
-                                          if (controller
-                                              .isMoreDataAvailable.value) {
-                                            controller.loadMoreTasks();
-                                            return const Padding(
-                                              padding: EdgeInsets.all(12.0),
-                                              child: Center(
-                                                  child:
-                                                      CircularProgressIndicator()),
-                                            );
-                                          } else {
-                                            return const SizedBox.shrink();
-                                          }
-                                        }
-                                      },
-                                    ),
+                                    ],
                                   ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ResponsiveHelper.isLargeScreen(context)
+                        ? RefreshIndicator(
+                            onRefresh: () => controller.refreshTasks(),
+                            color: buttonColor,
+                            child: GridView.builder(
+                              padding: ResponsiveHelper.getResponsivePadding(
+                                context,
+                              ).copyWith(top: 0),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        ResponsiveHelper.getGridCrossAxisCount(
+                                          context,
+                                        ),
+                                    crossAxisSpacing: 16,
+                                    mainAxisSpacing: 12,
+                                    childAspectRatio:
+                                        ResponsiveHelper.isDesktop(context)
+                                        ? 1.3
+                                        : 1.2,
+                                  ),
+                              itemCount: controller.taskDetail.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index < controller.taskDetail.length) {
+                                  final task = controller.taskDetail[index];
+                                  return _buildTaskCard(task);
+                                } else {
+                                  if (controller.isMoreDataAvailable.value) {
+                                    controller.loadMoreTasks();
+                                    return const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                }
+                              },
+                            ),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: () => controller.refreshTasks(),
+                            color: buttonColor,
+                            child: ListView.builder(
+                              padding: ResponsiveHelper.getResponsivePadding(
+                                context,
+                              ).copyWith(top: 0),
+                              itemCount: controller.taskDetail.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index < controller.taskDetail.length) {
+                                  final task = controller.taskDetail[index];
+                                  return _buildTaskCard(task);
+                                } else {
+                                  if (controller.isMoreDataAvailable.value) {
+                                    controller.loadMoreTasks();
+                                    return const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -387,10 +382,7 @@ class WorkerRoutinePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: dividerColor,
-                width: 1,
-              ),
+              border: Border.all(color: dividerColor, width: 1),
               boxShadow: [
                 BoxShadow(
                   color: cardShadowColor.withOpacity(0.3),
@@ -408,10 +400,7 @@ class WorkerRoutinePage extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        buttonColor,
-                        buttonColor.withOpacity(0.7),
-                      ],
+                      colors: [buttonColor, buttonColor.withOpacity(0.7)],
                     ),
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
@@ -451,7 +440,9 @@ class WorkerRoutinePage extends StatelessWidget {
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: statusColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
@@ -500,11 +491,7 @@ class WorkerRoutinePage extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 // Actions
-                Icon(
-                  Icons.chevron_right,
-                  color: subtitleColor,
-                  size: 18,
-                ),
+                Icon(Icons.chevron_right, color: subtitleColor, size: 18),
               ],
             ),
           ),

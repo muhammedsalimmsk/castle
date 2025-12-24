@@ -9,6 +9,7 @@ class TaskDetail {
   dynamic completedAt;
   String? status;
   dynamic notes;
+  dynamic readings;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? routineId;
@@ -24,6 +25,7 @@ class TaskDetail {
     this.completedAt,
     this.status,
     this.notes,
+    this.readings,
     this.createdAt,
     this.updatedAt,
     this.routineId,
@@ -42,6 +44,7 @@ class TaskDetail {
         completedAt: json['completedAt'] as dynamic,
         status: json['status'] as String?,
         notes: json['notes'] as dynamic,
+        readings: json['readings'] as dynamic,
         createdAt: json['createdAt'] == null
             ? null
             : DateTime.parse(json['createdAt'] as String),
@@ -67,6 +70,7 @@ class TaskDetail {
         'completedAt': completedAt,
         'status': status,
         'notes': notes,
+        'readings': readings,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'routineId': routineId,

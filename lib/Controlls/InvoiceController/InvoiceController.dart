@@ -7,6 +7,8 @@ import 'package:castle/Model/invoice_model/invoice_data.dart';
 import 'package:castle/Model/client_model/datum.dart';
 import 'package:castle/Model/complaint_model/complaint_model.dart';
 import 'package:castle/Model/complaint_model/datum.dart';
+import 'package:castle/Model/requested_parts_model/requested_parts_model.dart';
+import 'package:castle/Model/requested_parts_model/datum.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +64,10 @@ class InvoiceController extends GetxController {
   RxString complaintSearchQuery = ''.obs;
   RxList<ComplaintDetails> filteredComplaints = <ComplaintDetails>[].obs;
   RxBool isLoadingComplaints = false.obs;
+
+  // Parts details (part requests with nested part data)
+  RxList<RequestedParts> partsDetails = <RequestedParts>[].obs;
+  RxBool isLoadingParts = false.obs;
 
   // Report types
   final List<String> reportTypes = [
@@ -153,19 +159,31 @@ class InvoiceController extends GetxController {
     selectedClient.value = client;
     if (client != null) {
       clientIdController.text = client.id ?? '';
+      // Fetch complaints for the selected client
+      fetchComplaints(clientId: client.id);
     } else {
       clientIdController.clear();
+      // Clear complaints when client is deselected
+      complaints.clear();
+      filteredComplaints.clear();
+      selectedComplaint.value = null;
+      partsDetails.clear();
     }
   }
 
-  // Fetch complaints
-  Future<void> fetchComplaints() async {
+  // Fetch complaints (optionally filtered by clientId)
+  Future<void> fetchComplaints({String? clientId}) async {
     if (isLoadingComplaints.value) return;
 
     isLoadingComplaints.value = true;
     try {
       final role = userDetailModel?.data?.role?.toLowerCase() ?? 'admin';
-      final endpoint = '/api/v1/$role/complaints?page=1&limit=100';
+      String endpoint = '/api/v1/$role/complaints?page=1&limit=100';
+
+      // Add clientId to endpoint if provided
+      if (clientId != null && clientId.isNotEmpty) {
+        endpoint += '&clientId=$clientId';
+      }
 
       final response =
           await _apiService.getRequest(endpoint, bearerToken: token);
@@ -221,8 +239,44 @@ class InvoiceController extends GetxController {
     selectedComplaint.value = complaint;
     if (complaint != null) {
       complaintIdController.text = complaint.id ?? '';
+      // Fetch parts details for the selected complaint
+      fetchPartsDetailsByComplaintId(complaint.id ?? '');
     } else {
       complaintIdController.clear();
+      partsDetails.clear();
+    }
+  }
+
+  // Fetch parts details by complaint ID
+  Future<void> fetchPartsDetailsByComplaintId(String complaintId) async {
+    if (complaintId.isEmpty) {
+      partsDetails.clear();
+      return;
+    }
+
+    if (isLoadingParts.value) return;
+
+    isLoadingParts.value = true;
+    try {
+      final role = userDetailModel?.data?.role?.toLowerCase() ?? 'admin';
+      final endpoint = '/api/v1/$role/part-requests/complaint/$complaintId';
+
+      final response =
+          await _apiService.getRequest(endpoint, bearerToken: token);
+
+      if (response.isOk) {
+        final model = RequestedPartsModel.fromJson(response.body);
+        partsDetails.value = model.data ?? [];
+      } else {
+        print('Error fetching parts details: ${response.body}');
+        partsDetails.clear();
+        // Don't show error snackbar as this is optional information
+      }
+    } catch (e) {
+      print('Error fetching parts details: $e');
+      partsDetails.clear();
+    } finally {
+      isLoadingParts.value = false;
     }
   }
 
@@ -841,12 +895,11 @@ class InvoiceController extends GetxController {
     invoiceItems.clear();
     selectedDueDate.value = null;
     selectedReportTypeForm.value = '';
-    selectedClient.value = null;
+    // Use selectClient to properly clear client and related data
+    selectClient(null);
     clientSearchQuery.value = '';
     filteredClients.value = clients;
-    selectedComplaint.value = null;
     complaintSearchQuery.value = '';
-    filteredComplaints.value = complaints;
   }
 
   // Select due date (date only, no time)

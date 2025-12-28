@@ -262,10 +262,14 @@ class AssignRoutineController extends GetxController {
         print("sssssssssssss${response.body}");
         isRefresh = true;
         await getRoutine("admin");
-        Get.back();
-        Get.back();
+        Get.back(); // Close update page
+        // Show snackbar before second navigation
         Get.snackbar("Updated", "Routine updated successfully",
             backgroundColor: Colors.green, colorText: Colors.white);
+        // Navigate back to list after snackbar is shown
+        Future.delayed(const Duration(milliseconds: 100), () {
+          Get.back(); // Close details page to go back to list
+        });
       } else {
         print(response.body);
         Get.snackbar("Error", "Failed to upload routine",

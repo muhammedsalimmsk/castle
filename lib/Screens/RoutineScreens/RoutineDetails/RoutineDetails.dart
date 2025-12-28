@@ -3,18 +3,69 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Colors/Colors.dart';
 import '../../../Utils/ResponsiveHelper.dart';
-import '../../../Widget/CustomAppBarWidget.dart';
+import '../../../Controlls/AssignRoutineController/RoutineController.dart';
 
-class RoutineDetailsPage extends StatelessWidget {
+class RoutineDetailsPage extends StatefulWidget {
   final RoutineDetail detail;
   const RoutineDetailsPage({super.key, required this.detail});
 
   @override
+  State<RoutineDetailsPage> createState() => _RoutineDetailsPageState();
+}
+
+class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
+  late final AssignRoutineController controller;
+  bool isLoadingTasks = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put(AssignRoutineController());
+    _fetchTasks();
+  }
+
+  Future<void> _fetchTasks() async {
+    if (widget.detail.id == null) return;
+
+    setState(() {
+      isLoadingTasks = true;
+    });
+
+    try {
+      controller.taskIsRefresh = true;
+      await controller.getRoutinetask('', widget.detail.id!);
+    } catch (e) {
+      // Handle error silently or show snackbar
+      print("Error fetching tasks: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoadingTasks = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(detail.id);
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: CustomAppBar(),
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        title: Text(
+          "Routine Details",
+          style: TextStyle(
+            color: containerColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: buttonColor),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -67,8 +118,9 @@ class RoutineDetailsPage extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
-                                Get.toNamed('/routineUpdate',
-                                    arguments: {'routineDetail': detail});
+                                Get.toNamed('/routineUpdate', arguments: {
+                                  'routineDetail': widget.detail
+                                });
                               },
                               borderRadius: BorderRadius.circular(12),
                               child: Padding(
@@ -101,11 +153,12 @@ class RoutineDetailsPage extends StatelessWidget {
                     title: "Routine Info",
                     icon: Icons.schedule_rounded,
                     children: [
-                      _infoTile("Name", detail.name!),
-                      _infoTile("Description", detail.description ?? "N/A"),
-                      _infoTile("Frequency", detail.frequency!),
-                      if (detail.timeSlot != null)
-                        _infoTile("Time Slot", detail.timeSlot!),
+                      _infoTile("Name", widget.detail.name!),
+                      _infoTile(
+                          "Description", widget.detail.description ?? "N/A"),
+                      _infoTile("Frequency", widget.detail.frequency!),
+                      if (widget.detail.timeSlot != null)
+                        _infoTile("Time Slot", widget.detail.timeSlot!),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -113,11 +166,12 @@ class RoutineDetailsPage extends StatelessWidget {
                     title: "Equipment",
                     icon: Icons.precision_manufacturing_outlined,
                     children: [
-                      _infoTile("Name", detail.equipment!.name ?? "-"),
-                      _infoTile("Model", detail.equipment!.model ?? "-"),
-                      _infoTile("Location", detail.equipment!.location ?? "-"),
+                      _infoTile("Name", widget.detail.equipment!.name ?? "-"),
+                      _infoTile("Model", widget.detail.equipment!.model ?? "-"),
                       _infoTile(
-                          "Client", detail.equipment!.client!.hotelName ?? "-"),
+                          "Location", widget.detail.equipment!.location ?? "-"),
+                      _infoTile("Client",
+                          widget.detail.equipment!.client!.hotelName ?? "-"),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -126,10 +180,13 @@ class RoutineDetailsPage extends StatelessWidget {
                     icon: Icons.person_outline,
                     children: [
                       _infoTile("Name",
-                          "${detail.assignedWorker!.firstName ?? ''} ${detail.assignedWorker!.lastName ?? ''}"),
-                      _infoTile("Phone", detail.assignedWorker!.phone ?? "-"),
+                          "${widget.detail.assignedWorker!.firstName ?? ''} ${widget.detail.assignedWorker!.lastName ?? ''}"),
+                      _infoTile(
+                          "Phone", widget.detail.assignedWorker!.phone ?? "-"),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  _buildReadingsSection(),
                   const SizedBox(height: 24),
                   Container(
                     decoration: BoxDecoration(
@@ -153,7 +210,7 @@ class RoutineDetailsPage extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           Get.toNamed('/routineTask',
-                              arguments: {'routineId': detail.id!});
+                              arguments: {'routineId': widget.detail.id!});
                         },
                         borderRadius: BorderRadius.circular(16),
                         child: Container(
@@ -291,5 +348,137 @@ class RoutineDetailsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildReadingsSection() {
+    return Obx(() {
+      // Get all tasks with readings from controller
+      final tasksWithReadings = controller.taskDetails
+          .where((task) =>
+              task.readings != null &&
+              task.readings is List &&
+              (task.readings as List).isNotEmpty)
+          .toList();
+
+      if (isLoadingTasks || controller.taskIsLoading.value) {
+        return _sectionCard(
+          title: "Readings",
+          icon: Icons.speed_rounded,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+
+      if (tasksWithReadings.isEmpty) {
+        return _sectionCard(
+          title: "Readings",
+          icon: Icons.speed_rounded,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: Text(
+                  "No readings available",
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+
+      // Extract readings from tasks
+      List<Widget> readingsWidgets = [];
+      for (var task in tasksWithReadings) {
+        if (task.readings is List) {
+          final readingsList = task.readings as List;
+          if (readingsList.isNotEmpty && readingsList[0] is Map) {
+            final readingsMap = readingsList[0] as Map<String, dynamic>;
+            final scheduledDate = task.scheduledDate != null
+                ? task.scheduledDate!.toLocal().toString().split(' ')[0]
+                : 'N/A';
+
+            readingsWidgets.add(
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: dividerColor,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Date: $scheduledDate",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: containerColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...readingsMap.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                child: Text(
+                                  "${entry.key}:",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  entry.value.toString(),
+                                  style: TextStyle(
+                                    color: containerColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+        }
+      }
+
+      return _sectionCard(
+        title: "Readings",
+        icon: Icons.speed_rounded,
+        children: readingsWidgets,
+      );
+    });
   }
 }

@@ -15,6 +15,7 @@ class RoutineDetail {
   DateTime? updatedAt;
   String? equipmentId;
   String? assignedWorkerId;
+  List<String>? readings;
   Equipment? equipment;
   AssignedWorker? assignedWorker;
   Count? count;
@@ -32,6 +33,7 @@ class RoutineDetail {
     this.updatedAt,
     this.equipmentId,
     this.assignedWorkerId,
+    this.readings,
     this.equipment,
     this.assignedWorker,
     this.count,
@@ -54,6 +56,9 @@ class RoutineDetail {
             : DateTime.parse(json['updatedAt'] as String),
         equipmentId: json['equipmentId'] as String?,
         assignedWorkerId: json['assignedWorkerId'] as String?,
+        readings: (json['readings'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
         equipment: json['equipment'] == null
             ? null
             : Equipment.fromJson(json['equipment'] as Map<String, dynamic>),
@@ -79,6 +84,7 @@ class RoutineDetail {
         'updatedAt': updatedAt?.toIso8601String(),
         'equipmentId': equipmentId,
         'assignedWorkerId': assignedWorkerId,
+        'readings': readings,
         'equipment': equipment?.toJson(),
         'assignedWorker': assignedWorker?.toJson(),
         '_count': count?.toJson(),

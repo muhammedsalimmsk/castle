@@ -23,7 +23,7 @@ const RESOURCES = {"flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
 "assets/assets/images/complaint.jpeg": "cd9e0b8c50cd3f37e555f0ef28609c11",
 "assets/assets/images/Restaurant_10.json": "c44d712774fe6ab7632103c8ebb54c39",
 "assets/assets/images/water.jpg": "7f5566865db7af10b4bb752df6daf88f",
-"assets/fonts/MaterialIcons-Regular.otf": "058ba5c0515993309444aff7e064c28f",
+"assets/fonts/MaterialIcons-Regular.otf": "fa5d45c2e372e8e9fe3cb99146c1c3d2",
 "assets/NOTICES": "b84670b59d7ca96a4088bfb98b3597d2",
 "assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w200.ttf": "6c63d0c1ccd5ae46d2311b6585494b95",
 "assets/packages/lucide_icons_flutter/assets/build_font/LucideVariable-w600.ttf": "ee7b0f7221dcb59b5a356e73e7285d83",
@@ -888,9 +888,9 @@ const RESOURCES = {"flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
 "canvaskit/canvaskit.js.symbols": "bdcd3835edf8586b6d6edfce8749fb77",
 "canvaskit/skwasm.js.symbols": "e72c79950c8a8483d826a7f0560573a1",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"flutter_bootstrap.js": "943e8d800721e2fca86d3d103a9c737a",
+"flutter_bootstrap.js": "9707c11714df7e43c1b71a91e446bef0",
 "version.json": "d46b2de12a0039d480a14b579c921069",
-"main.dart.js": "e81d9e0b66b2f3ea80c335eb026122b3"};
+"main.dart.js": "e50b9f33f29ed34fd3fb3b24632e01c5"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",

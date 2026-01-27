@@ -43,9 +43,7 @@ class DashboardPage extends StatelessWidget {
       }
     } else {
       // Already granted
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Notifications already enabled ✅")),
-      );
+    
       await OneSignal.User.addTags({
         "role": userDetailModel!.data!.role,
       });
@@ -247,13 +245,16 @@ class DashboardPage extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Text(
-                                'Complaints by Priority',
-                                style: TextStyle(
-                                  color: containerColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: -0.3,
+                              Expanded(
+                                child: Text(
+                                  'Complaints by Priority',
+                                  style: TextStyle(
+                                    color: containerColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],

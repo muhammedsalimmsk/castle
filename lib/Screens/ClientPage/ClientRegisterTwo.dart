@@ -118,6 +118,51 @@ class ClientRegisterPageTwo extends StatelessWidget {
                         ],
                       );
                     }).toList(),
+                    const SizedBox(height: 16),
+                    // Job Coordinator Dropdown
+                    Obx(() => DropdownButtonFormField<String>(
+                          dropdownColor: backgroundColor,
+                          value: controller.selectedJobCoordinatorId.value.isEmpty
+                              ? null
+                              : controller.selectedJobCoordinatorId.value,
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 20,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: borderColor),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: borderColor),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: buttonColor),
+                            ),
+                            hintText: "Select Job Coordinator",
+                            hintStyle: TextStyle(color: subtitleColor),
+                            prefixIcon: Icon(Icons.person_outline, color: subtitleColor),
+                          ),
+                          validator: (value) => null, // Optional field
+                          items: controller.workerList.map((worker) {
+                            return DropdownMenuItem<String>(
+                              value: worker.id,
+                              child: Text(
+                                "${worker.firstName ?? 'Unnamed'} ${worker.lastName ?? 'Unnamed'}",
+                                style: TextStyle(color: containerColor),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            controller.selectedJobCoordinatorId.value = value ?? '';
+                          },
+                          icon: Icon(Icons.arrow_drop_down, color: buttonColor),
+                          style: TextStyle(color: containerColor),
+                        )),
                   ],
                 ),
               ),

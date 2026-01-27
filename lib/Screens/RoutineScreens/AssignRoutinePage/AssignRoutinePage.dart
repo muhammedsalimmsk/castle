@@ -183,13 +183,34 @@ class AssignRoutinePage extends StatelessWidget {
                           )
                         : const SizedBox()),
 
+                    // Client Selector
+                    Obx(() => _buildSelectorButton(
+                          label: controller.selectedClientName.value.isEmpty
+                              ? "Select Client"
+                              : controller.selectedClientName.value,
+                          icon: Icons.business_outlined,
+                          onPressed: () => _showClientDialog(context),
+                        )),
+                    const SizedBox(height: 16),
                     // Equipment Selector
                     Obx(() => _buildSelectorButton(
                           label: controller.selectedEquipmentName.value.isEmpty
-                              ? "Select Equipment"
+                              ? controller.selectedClientId.isEmpty
+                                  ? "Select Client First"
+                                  : "Select Equipment"
                               : controller.selectedEquipmentName.value,
                           icon: Icons.precision_manufacturing_outlined,
-                          onPressed: () => _showEquipmentDialog(context),
+                          onPressed: controller.selectedClientId.isEmpty
+                              ? () {
+                                  Get.snackbar(
+                                    "Select Client First",
+                                    "Please select a client before selecting equipment",
+                                    backgroundColor: Colors.orange,
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              : () => _showEquipmentDialog(context),
+                          isDisabled: controller.selectedClientId.isEmpty,
                         )),
                     const SizedBox(height: 16),
                     // Worker Selector
@@ -284,6 +305,7 @@ class AssignRoutinePage extends StatelessWidget {
     required String label,
     required IconData icon,
     required VoidCallback onPressed,
+    bool isDisabled = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -317,25 +339,37 @@ class AssignRoutinePage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: buttonColor.withOpacity(0.1),
+                    color: isDisabled
+                        ? subtitleColor.withOpacity(0.1)
+                        : buttonColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(icon, color: buttonColor, size: 20),
+                  child: Icon(
+                    icon,
+                    color: isDisabled ? subtitleColor : buttonColor,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: label.contains("Select")
+                      color: isDisabled
                           ? subtitleColor
-                          : containerColor,
+                          : label.contains("Select")
+                              ? subtitleColor
+                              : containerColor,
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: subtitleColor, size: 20),
+                Icon(
+                  Icons.chevron_right,
+                  color: isDisabled ? subtitleColor.withOpacity(0.5) : subtitleColor,
+                  size: 20,
+                ),
               ],
             ),
           ),
@@ -947,8 +981,8 @@ class AssignRoutinePage extends StatelessWidget {
     RxBool isLoading = true.obs;
     RxBool isError = false.obs;
 
-    // Call API when dialog opens
-    assignController.getEquipment().then((_) {
+    // Call API when dialog opens with selected client ID
+    assignController.getEquipment(clientId: assignController.selectedClientId).then((_) {
       isLoading.value = false;
       isError.value = false;
       filteredList.assignAll(assignController.equipmentDetail);
@@ -1032,7 +1066,7 @@ class AssignRoutinePage extends StatelessWidget {
                             onPressed: () {
                               isLoading.value = true;
                               isError.value = false;
-                              assignController.getEquipment().then((_) {
+                              assignController.getEquipment(clientId: assignController.selectedClientId).then((_) {
                                 isLoading.value = false;
                                 filteredList.assignAll(
                                     assignController.equipmentDetail);
@@ -1191,6 +1225,284 @@ class AssignRoutinePage extends StatelessWidget {
                                                 Expanded(
                                                   child: Text(
                                                     equipment.name,
+                                                    style: TextStyle(
+                                                      color: containerColor,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showClientDialog(BuildContext context) async {
+    final assignController = Get.find<AssignRoutineController>();
+    final TextEditingController searchController = TextEditingController();
+    RxList filteredList = <dynamic>[].obs;
+    RxBool isLoading = true.obs;
+    RxBool isError = false.obs;
+
+    // Call API when dialog opens
+    assignController.getClients().then((_) {
+      isLoading.value = false;
+      isError.value = false;
+      filteredList.assignAll(assignController.clientList);
+    }).catchError((error) {
+      isLoading.value = false;
+      isError.value = true;
+    });
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          constraints: const BoxConstraints(maxHeight: 500, maxWidth: 500),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: buttonColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    "Select Client",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: containerColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close, color: subtitleColor),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: Obx(() {
+                  if (isLoading.value) {
+                    return const Padding(
+                      padding: EdgeInsets.all(40.0),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else if (isError.value) {
+                    return Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.error_outline,
+                              size: 48, color: notWorkingTextColor),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Failed to load clients.",
+                            style: TextStyle(color: containerColor),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              isLoading.value = true;
+                              isError.value = false;
+                              assignController.getClients().then((_) {
+                                isLoading.value = false;
+                                filteredList.assignAll(assignController.clientList);
+                              }).catchError((error) {
+                                isLoading.value = false;
+                                isError.value = true;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: buttonColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Retry",
+                              style: TextStyle(color: backgroundColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: cardShadowColor.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            style: TextStyle(color: containerColor),
+                            decoration: InputDecoration(
+                              labelText: 'Search Client',
+                              labelStyle: TextStyle(color: subtitleColor),
+                              hintText: 'Type to search...',
+                              hintStyle: TextStyle(color: subtitleColor),
+                              prefixIcon:
+                                  Icon(Icons.search, color: buttonColor),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 16),
+                              filled: true,
+                              fillColor: backgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: dividerColor,
+                                  width: 1,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: dividerColor,
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: buttonColor,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              filteredList.value = assignController.clientList
+                                  .where((client) =>
+                                      (client.clientName ?? '')
+                                          .toLowerCase()
+                                          .contains(value.toLowerCase()))
+                                  .toList();
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Flexible(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: searchBackgroundColor,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: dividerColor,
+                                width: 1,
+                              ),
+                            ),
+                            child: Obx(() => filteredList.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(40.0),
+                                    child: Center(
+                                      child: Text(
+                                        "No clients found",
+                                        style: TextStyle(color: subtitleColor),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: filteredList.length,
+                                    itemBuilder: (context, index) {
+                                      final client = filteredList[index];
+                                      return Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            assignController.selectedClientName.value =
+                                                client.clientName ?? '';
+                                            assignController.selectedClientId =
+                                                client.id ?? '';
+                                            // Clear equipment selection when client changes
+                                            assignController.selectedEquipmentName.value = '';
+                                            assignController.selectedEquipmentId.value = '';
+                                            Navigator.pop(context);
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 12),
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: backgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: dividerColor,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 40,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    color: buttonColor
+                                                        .withOpacity(0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.business,
+                                                    color: buttonColor,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Text(
+                                                    client.clientName ?? 'Unknown',
                                                     style: TextStyle(
                                                       color: containerColor,
                                                       fontWeight:

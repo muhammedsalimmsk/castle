@@ -255,7 +255,7 @@ class EquipmentController extends GetxController {
           'limit': limit.toString(),
           if (search != null && search.isNotEmpty) 'search': search,
         };
-        final uri = Uri.parse('/api/v1/admin/clients')
+        final uri = Uri.parse('/api/v1/common/clients')
             .replace(queryParameters: queryParams);
 
         final response = await _apiService.getRequest(
@@ -379,7 +379,7 @@ class EquipmentController extends GetxController {
     int page = 1,
     int limit = 10,
   }) async {
-    final baseUrl = '/api/v1/$role/equipment';
+    final baseUrl = '/api/v1/common/equipment';
     
     final queryParams = <String, String>{
       'page': page.toString(),

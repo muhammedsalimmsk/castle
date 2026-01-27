@@ -4,6 +4,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../Controlls/ClientController/ClientController.dart';
 import '../../Colors/Colors.dart';
 import '../../Widget/CustomTextField.dart';
+import '../../Widget/PasswordStrengthIndicator.dart';
 
 class ClientRegisterOne extends StatefulWidget {
   const ClientRegisterOne({super.key});
@@ -263,7 +264,9 @@ class _ClientRegisterOneState extends State<ClientRegisterOne> {
                             ),
                           ),
                         )),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
+                    PasswordStrengthIndicator(controller: controller.password),
+                    const SizedBox(height: 8),
                     Obx(() => TextFormField(
                           controller: controller.conformPass,
                           validator: (val) {

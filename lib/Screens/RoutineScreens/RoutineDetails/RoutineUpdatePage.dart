@@ -5,16 +5,29 @@ import '../../../Controlls/AssignRoutineController/RoutineController.dart';
 import '../../../Model/routine_model/datum.dart';
 import '../../../Utils/ResponsiveHelper.dart';
 
-class UpdateRoutinePage extends StatelessWidget {
+class UpdateRoutinePage extends StatefulWidget {
   final RoutineDetail routineDetail;
 
-  UpdateRoutinePage({super.key, required this.routineDetail});
+  const UpdateRoutinePage({super.key, required this.routineDetail});
 
+  @override
+  State<UpdateRoutinePage> createState() => _UpdateRoutinePageState();
+}
+
+class _UpdateRoutinePageState extends State<UpdateRoutinePage> {
   final AssignRoutineController controller = Get.find<AssignRoutineController>();
+  bool _hasPrefilled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prefill data only once when the page is first created
+    _prefillData();
+    _hasPrefilled = true;
+  }
 
   @override
   Widget build(BuildContext context) {
-    _prefillData();
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -23,7 +36,9 @@ class UpdateRoutinePage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: buttonColor),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            Get.back(closeOverlays: false);
+          },
         ),
         title: Text(
           "Update Routine",
@@ -201,15 +216,40 @@ class UpdateRoutinePage extends StatelessWidget {
                     _buildReadingsSection(),
                     const SizedBox(height: 32),
                     // Submit Button
-                    Obx(() => controller.isSubmitting.value
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(buttonColor),
-                              strokeWidth: 3,
-                            ),
-                          )
-                        : Container(
+                    Obx(() {
+                      if (controller.isSubmitting.value) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                "Updating Routine...",
+                                style: TextStyle(
+                                  color: buttonColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -229,16 +269,48 @@ class UpdateRoutinePage extends StatelessWidget {
                             ),
                             child: ElevatedButton(
                               onPressed: () {
+                                // Form validation
+                                final name = controller.nameController.text.trim();
+                                final timeSlot = controller.selectedTime.value;
+                                final workerId = controller.selectedWorkerId;
+
+                                if (name.isEmpty) {
+                                  Get.snackbar("Validation Error", "Please enter a routine name",
+                                      backgroundColor: Colors.redAccent, colorText: Colors.white);
+                                  return;
+                                }
+
+                                if (timeSlot.isEmpty) {
+                                  Get.snackbar("Validation Error", "Please select a time",
+                                      backgroundColor: Colors.redAccent, colorText: Colors.white);
+                                  return;
+                                }
+
+                                // Validate time format (HH:MM)
+                                final timeRegex = RegExp(r'^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$');
+                                if (!timeRegex.hasMatch(timeSlot)) {
+                                  Get.snackbar("Validation Error", "Please select a valid time",
+                                      backgroundColor: Colors.redAccent, colorText: Colors.white);
+                                  return;
+                                }
+
+                                if (workerId.isEmpty) {
+                                  Get.snackbar("Validation Error", "Please select a worker",
+                                      backgroundColor: Colors.redAccent, colorText: Colors.white);
+                                  return;
+                                }
+
                                 final data = {
-                                  "name": controller.nameController.text.trim(),
-                                  "description":
-                                      controller.descriptionController.text.trim(),
+                                  "name": name,
+                                  "description": controller.descriptionController.text.trim(),
                                   "frequency": controller.selectedFrequency.value,
-                                  "timeSlot": controller.selectedTime.value,
-                                  "assignedWorkerId": controller.selectedWorkerId,
+                                  "timeSlot": timeSlot,
+                                  "assignedWorkerId": workerId,
                                   "readings": controller.readings.toList(),
                                 };
 
+                                print("DEBUG: Update button pressed");
+                                print("DEBUG: Form data: $data");
                                 // Conditionally add fields
                                 if (controller.selectedFrequency.value == "WEEKLY") {
                                   data["dayOfWeek"] = controller.selectedDayOfWeek.value;
@@ -248,7 +320,7 @@ class UpdateRoutinePage extends StatelessWidget {
                                   data["dayOfMonth"] = controller.selectedDayOfMonth.value;
                                 }
 
-                                controller.updateRoutine(routineDetail.id!, data);
+                                controller.updateRoutine(widget.routineDetail.id!, data);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -267,7 +339,8 @@ class UpdateRoutinePage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          )),
+                          );
+                        }),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -280,19 +353,36 @@ class UpdateRoutinePage extends StatelessWidget {
   }
 
   void _prefillData() {
-    controller.nameController.text = routineDetail.name ?? '';
-    controller.descriptionController.text = routineDetail.description ?? '';
-    controller.selectedFrequency.value = routineDetail.frequency ?? 'DAILY';
-    controller.selectedTime.value = routineDetail.timeSlot ?? '';
-    controller.selectedDayOfWeek.value = routineDetail.dayOfWeek ?? 0;
-    controller.selectedDayOfMonth.value = routineDetail.dayOfMonth ?? 1;
-    controller.selectedWorkerId = routineDetail.assignedWorkerId ?? '';
+    // Only prefill if we haven't already done so
+    if (_hasPrefilled) return;
+    
+    controller.nameController.text = widget.routineDetail.name ?? '';
+    controller.descriptionController.text = widget.routineDetail.description ?? '';
+    controller.selectedFrequency.value = widget.routineDetail.frequency ?? 'DAILY';
+    controller.selectedTime.value = widget.routineDetail.timeSlot ?? '';
+    controller.selectedDayOfWeek.value = widget.routineDetail.dayOfWeek ?? 0;
+    controller.selectedDayOfMonth.value = widget.routineDetail.dayOfMonth ?? 1;
+    controller.selectedWorkerId = widget.routineDetail.assignedWorkerId ?? '';
     controller.selectedWorkerName.value =
-        "${routineDetail.assignedWorker?.firstName ?? ''} ${routineDetail.assignedWorker?.lastName ?? ''}";
+        "${widget.routineDetail.assignedWorker?.firstName ?? ''} ${widget.routineDetail.assignedWorker?.lastName ?? ''}";
+    // Prefill equipment if available
+    if (widget.routineDetail.equipment != null) {
+      controller.selectedEquipmentName.value = widget.routineDetail.equipment!.name ?? '';
+      controller.selectedEquipmentId.value = widget.routineDetail.equipmentId ?? '';
+    }
+    // Prefill client if available (client is associated with equipment)
+    if (widget.routineDetail.equipment?.client != null) {
+      controller.selectedClientName.value = widget.routineDetail.equipment!.client!.hotelName ?? '';
+      // Client ID is not available in routine model, but client is linked via equipment
+    }
     // Prefill readings from routineDetail if they exist
     controller.readings.clear();
-    if (routineDetail.readings != null && routineDetail.readings!.isNotEmpty) {
-      controller.readings.addAll(routineDetail.readings!);
+    if (widget.routineDetail.readings != null && widget.routineDetail.readings!.isNotEmpty) {
+      print("DEBUG: Prefilling readings: ${widget.routineDetail.readings}");
+      controller.readings.addAll(widget.routineDetail.readings!);
+      print("DEBUG: Controller readings after prefill: ${controller.readings}");
+    } else {
+      print("DEBUG: No readings to prefill or readings is null/empty");
     }
   }
 
@@ -584,7 +674,9 @@ class UpdateRoutinePage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Obx(() => controller.readings.isEmpty
+                Obx(() {
+                  print("DEBUG: Building readings UI - readings count: ${controller.readings.length}, readings: ${controller.readings}");
+                  return controller.readings.isEmpty
                     ? Padding(
                         padding: const EdgeInsets.only(bottom: 16),
                         child: Center(
@@ -602,13 +694,11 @@ class UpdateRoutinePage extends StatelessWidget {
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children:
-                              controller.readings.asMap().entries.map((entry) {
+                          children: controller.readings.asMap().entries.map((entry) {
                             final index = entry.key;
                             final reading = entry.value;
                             return Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
                                 color: buttonColor.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
@@ -650,13 +740,10 @@ class UpdateRoutinePage extends StatelessWidget {
                             );
                           }).toList(),
                         ),
-                      )),
-              ],
-            ),
-          ),
+                      );
+                })
         ],
-      ),
-    );
+            ))]));
   }
 
   InputDecoration _inputDecoration(String label) {

@@ -5,6 +5,7 @@ class Data {
   String? lastName;
   String? phone;
   String? role;
+  List<String>? badges;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -15,6 +16,7 @@ class Data {
     this.lastName,
     this.phone,
     this.role,
+    this.badges,
     this.createdAt,
     this.updatedAt,
   });
@@ -26,6 +28,9 @@ class Data {
         lastName: json['lastName'] as String?,
         phone: json['phone'] as String?,
         role: json['role'] as String?,
+        badges: json['badges'] == null
+            ? null
+            : List<String>.from(json['badges'] as List),
         createdAt: json['createdAt'] == null
             ? null
             : DateTime.parse(json['createdAt'] as String),
@@ -41,6 +46,7 @@ class Data {
         'lastName': lastName,
         'phone': phone,
         'role': role,
+        'badges': badges,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
       };

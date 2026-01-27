@@ -1,6 +1,4 @@
 import 'package:castle/Colors/Colors.dart';
-import 'package:castle/Screens/ClientPage/ClientRegisterPage.dart';
-import 'package:castle/Screens/LoginDetailsPage/LoginDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
@@ -133,6 +131,28 @@ class ClientDetailPage extends StatelessWidget {
                 _infoTile(LucideIcons.mapPin, "Address", client.clientAddress),
                 _infoTile(
                     LucideIcons.user, "Contact Person", client.contactPerson),
+                
+                // Job Coordinator Section
+                if (client.jobCoordinator != null) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Job Coordinator",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _infoTile(
+                      LucideIcons.user,
+                      "Name",
+                      "${client.jobCoordinator?.firstName ?? ''} ${client.jobCoordinator?.lastName ?? ''}".trim().isEmpty
+                          ? "-"
+                          : "${client.jobCoordinator?.firstName ?? ''} ${client.jobCoordinator?.lastName ?? ''}".trim()),
+                  _infoTile(LucideIcons.mail, "Email", client.jobCoordinator?.email),
+                  _infoTile(LucideIcons.phone, "Phone", client.jobCoordinator?.phone),
+                ],
+                
                 _infoTile(
                     LucideIcons.calendar,
                     "Created At",

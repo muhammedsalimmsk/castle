@@ -9,6 +9,7 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 
 import '../../Controlls/DepartmentController/DepartmentController.dart';
 import '../../Widget/CustomTextField.dart';
+import '../../Widget/PasswordStrengthIndicator.dart';
 
 class CreateWorker extends StatefulWidget {
   final String? workerId;
@@ -182,6 +183,12 @@ class _CreateWorkerState extends State<CreateWorker> {
                           hintStyle: TextStyle(color: subtitleColor),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        controller: controller.customBadge,
+                        hint: "Badge (Optional)",
+                        validator: null,
+                      ),
                     ],
                   ),
                 ),
@@ -262,9 +269,11 @@ class _CreateWorkerState extends State<CreateWorker> {
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: borderColor),
                               ),
-                            ),
-                          )),
-                      const SizedBox(height: 16),
+                          ),
+                        )),
+                      const SizedBox(height: 8),
+                      PasswordStrengthIndicator(controller: controller.password),
+                      const SizedBox(height: 8),
                       Obx(() => TextFormField(
                             validator: (val) {
                               if (!controller.isUpdateWorker) {

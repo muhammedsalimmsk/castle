@@ -16,8 +16,6 @@ class DepartmentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.getDepartment();
-
     return Stack(
       children: [
         Scaffold(
@@ -288,7 +286,7 @@ class DepartmentPage extends StatelessWidget {
 
         /// Loading Overlay
         Obx(() {
-          return controller.isCreating.value || controller.isDeleting.value
+          return controller.isDeleting.value
               ? Container(
                   color: Colors.black.withOpacity(0.3),
                   child: const Center(child: CircularProgressIndicator()),
@@ -508,36 +506,180 @@ class DepartmentPage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(
-                              isEdit ? "Edit Department" : "New Department",
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 15),
-                            TextField(
-                              controller: controller.nameCtrl,
-                              decoration: const InputDecoration(
-                                labelText: "Department Name",
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: controller.descCtrl,
-                              maxLines: 3,
-                              decoration: const InputDecoration(
-                                labelText: "Description",
-                                border: OutlineInputBorder(),
-                              ),
+                            Row(
+                              children: [
+                                Icon(
+                                  isEdit ? Icons.edit : Icons.add_circle,
+                                  color: buttonColor,
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  isEdit ? "Edit Department" : "New Department",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: containerColor,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: searchBackgroundColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: dividerColor.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: TextField(
+                                controller: controller.nameCtrl,
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontSize: 16,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: "Department Name",
+                                  labelStyle: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.business,
+                                    color: buttonColor,
+                                    size: 20,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: buttonColor,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  filled: true,
+                                  fillColor: searchBackgroundColor,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: searchBackgroundColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: dividerColor.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: TextField(
+                                controller: controller.descCtrl,
+                                maxLines: 3,
+                                style: TextStyle(
+                                  color: containerColor,
+                                  fontSize: 16,
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: "Description (Optional)",
+                                  labelStyle: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: 14,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.description,
+                                    color: buttonColor,
+                                    size: 20,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: buttonColor,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  filled: true,
+                                  fillColor: searchBackgroundColor,
+                                  alignLabelWithHint: true,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
                             Obx(() {
                               if (controller.isCreating.value) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
+                                return Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: searchBackgroundColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        isEdit ? "Updating..." : "Creating...",
+                                        style: TextStyle(
+                                          color: buttonColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               }
-                              return SizedBox(
+                              return Container(
                                 width: double.infinity,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      buttonColor,
+                                      buttonColor.withOpacity(0.8),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: buttonColor.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
                                 child: ElevatedButton(
                                   onPressed: () async {
                                     if (isEdit) {
@@ -554,17 +696,20 @@ class DepartmentPage extends StatelessWidget {
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: buttonColor,
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
                                   ),
                                   child: Text(
-                                    isEdit ? "Update" : "Create",
+                                    isEdit ? "Update Department" : "Create Department",
                                     style: const TextStyle(
-                                        fontSize: 16, color: Colors.white),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               );

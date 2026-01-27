@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:castle/Colors/Colors.dart';
 import '../../../Utils/ResponsiveHelper.dart';
 import '../../../Controlls/AssignRoutineController/RoutineController.dart';
+import '../../ComplaintsPage/NewComplaint/CreateComplaintPage.dart';
 
 class RoutineDetailsPage extends StatefulWidget {
   final RoutineDetail detail;
@@ -63,7 +64,10 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: buttonColor),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            // Use Navigator.pop to avoid GetX snackbar controller issues
+            Navigator.of(context).pop();
+          },
         ),
       ),
       body: SafeArea(
@@ -351,134 +355,124 @@ class _RoutineDetailsPageState extends State<RoutineDetailsPage> {
   }
 
   Widget _buildReadingsSection() {
-    return Obx(() {
-      // Get all tasks with readings from controller
-      final tasksWithReadings = controller.taskDetails
-          .where((task) =>
-              task.readings != null &&
-              task.readings is List &&
-              (task.readings as List).isNotEmpty)
-          .toList();
+    // Get readings from routine detail
+    final readings = widget.detail.readings;
 
-      if (isLoadingTasks || controller.taskIsLoading.value) {
-        return _sectionCard(
-          title: "Readings",
-          icon: Icons.speed_rounded,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+    if (readings == null || readings.isEmpty) {
+      return _sectionCard(
+        title: "Readings",
+        icon: Icons.speed_rounded,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Center(
+              child: Text(
+                "No readings configured",
+                style: TextStyle(
+                  color: subtitleColor,
+                  fontSize: 14,
                 ),
               ),
             ),
-          ],
-        );
-      }
+          ),
+        ],
+      );
+    }
 
-      if (tasksWithReadings.isEmpty) {
-        return _sectionCard(
-          title: "Readings",
-          icon: Icons.speed_rounded,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: Text(
-                  "No readings available",
-                  style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 14,
+    // Display readings as a list of reading types
+    return _sectionCard(
+      title: "Readings",
+      icon: Icons.speed_rounded,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: readings.map((reading) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: buttonColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: buttonColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.speed,
+                    size: 16,
+                    color: buttonColor,
                   ),
-                ),
-              ),
-            ),
-          ],
-        );
-      }
-
-      // Extract readings from tasks
-      List<Widget> readingsWidgets = [];
-      for (var task in tasksWithReadings) {
-        if (task.readings is List) {
-          final readingsList = task.readings as List;
-          if (readingsList.isNotEmpty && readingsList[0] is Map) {
-            final readingsMap = readingsList[0] as Map<String, dynamic>;
-            final scheduledDate = task.scheduledDate != null
-                ? task.scheduledDate!.toLocal().toString().split(' ')[0]
-                : 'N/A';
-
-            readingsWidgets.add(
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: dividerColor,
-                      width: 1,
+                  const SizedBox(width: 6),
+                  Text(
+                    reading,
+                    style: TextStyle(
+                      color: containerColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 12),
+        // Create Complaint Button - Small style
+        Align(
+          alignment: Alignment.centerRight,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.red.shade600,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  // Navigate to CreateComplaintPage with pre-filled data
+                  Get.to(() => CreateComplaintPage(
+                    equipmentId: widget.detail.equipmentId,
+                    readings: widget.detail.readings,
+                    routineName: widget.detail.name,
+                  ));
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
+                      Icon(Icons.report_problem,
+                          color: backgroundColor, size: 16),
+                      const SizedBox(width: 6),
                       Text(
-                        "Date: $scheduledDate",
+                        "Create Complaint",
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: containerColor,
-                          fontSize: 14,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: backgroundColor,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      ...readingsMap.entries.map((entry) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                child: Text(
-                                  "${entry.key}:",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: subtitleColor,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  entry.value.toString(),
-                                  style: TextStyle(
-                                    color: containerColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
                     ],
                   ),
                 ),
               ),
-            );
-          }
-        }
-      }
-
-      return _sectionCard(
-        title: "Readings",
-        icon: Icons.speed_rounded,
-        children: readingsWidgets,
-      );
-    });
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

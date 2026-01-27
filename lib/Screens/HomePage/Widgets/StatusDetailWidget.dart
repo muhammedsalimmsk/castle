@@ -513,24 +513,23 @@ class _TopWidgetOfAdminHomeState extends State<TopWidgetOfAdminHome>
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withOpacity(0.4), width: 1),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.circle, size: 8, color: color),
-          const SizedBox(width: 4),
-          Text(
-            '$label: ',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Text(
-            '$value',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
+          Icon(Icons.circle, size: 6, color: color),
+          const SizedBox(width: 2),
+          Flexible(
+            child: Text(
+              '$label: $value',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
+              ),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
             ),
           ),
         ],

@@ -1,13 +1,12 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/WorkerRoutineController/WorkerRoutineController.dart';
-import 'package:castle/Controlls/WorkersController/WorkerController.dart';
+import 'package:castle/Controlls/ClientController/ClientController.dart';
 import 'package:castle/Model/routine_model/datum.dart';
 import 'package:castle/Model/routine_model/routine_model.dart';
 import 'package:castle/Model/routine_task_model/datum.dart';
 import 'package:castle/Model/routine_task_model/routine_task_model.dart';
 import 'package:castle/Model/routine_task_model/tasked_routine_detail_model/data.dart';
 import 'package:castle/Model/routine_task_model/tasked_routine_detail_model/tasked_routine_detail_model.dart';
-import 'package:castle/Screens/RoutineScreens/WorkerRoutinePage.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,6 +15,8 @@ import '../../Model/equipment_model/datum.dart';
 import '../../Model/equipment_model/equipment_model.dart';
 import '../../Model/workers_model/datum.dart';
 import '../../Model/workers_model/workers_model.dart';
+import '../../Model/client_model/datum.dart';
+import '../../Colors/Colors.dart';
 
 class AssignRoutineController extends GetxController {
   final nameController = TextEditingController();
@@ -24,7 +25,11 @@ class AssignRoutineController extends GetxController {
   RxString selectedWorkerName = ''.obs;
   String selectedWorkerId = "";
   RxString selectedEquipmentName = ''.obs;
+  RxString selectedClientName = ''.obs;
+  String selectedClientId = "";
   final descriptionController = TextEditingController();
+  late ClientRegisterController clientController = Get.put(ClientRegisterController());
+  RxList<ClientData> clientList = <ClientData>[].obs;
   late RoutineModel routineModel = RoutineModel();
   RxList<RoutineDetail> routineList = <RoutineDetail>[].obs;
   late RoutineTaskModel taskModel = RoutineTaskModel();
@@ -252,6 +257,204 @@ class AssignRoutineController extends GetxController {
     }
   }
 
+  void _showSuccessDialog(String message) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 48,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "Success",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: subtitleColor,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      buttonColor,
+                      buttonColor.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: buttonColor.withOpacity(0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Get.back(),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        "OK",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: backgroundColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: cardShadowColor.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: notWorkingTextColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  color: notWorkingTextColor,
+                  size: 48,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "Error",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: subtitleColor,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      notWorkingTextColor,
+                      notWorkingTextColor.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: notWorkingTextColor.withOpacity(0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Get.back(),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        "OK",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: backgroundColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
   Future updateRoutine(String routineId, dynamic data) async {
     final endpoint = "/api/v1/admin/routines/$routineId";
     isSubmitting.value = true;
@@ -262,20 +465,46 @@ class AssignRoutineController extends GetxController {
         print("sssssssssssss${response.body}");
         isRefresh = true;
         await getRoutine("admin");
-        Get.back(); // Close update page
-        // Show snackbar before second navigation
-        Get.snackbar("Updated", "Routine updated successfully",
-            backgroundColor: Colors.green, colorText: Colors.white);
-        // Navigate back to list after snackbar is shown
-        Future.delayed(const Duration(milliseconds: 100), () {
-          Get.back(); // Close details page to go back to list
+        isRefresh = false;
+        
+        // Navigate back FIRST
+        Get.back(closeOverlays: false);
+        
+        // Show success dialog on the previous page after navigation completes
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _showSuccessDialog("Routine updated successfully");
+        });
+        
+        // Clear form data after navigation (don't clear while still on update page)
+        Future.delayed(const Duration(milliseconds: 400), () {
+          nameController.clear();
+          descriptionController.clear();
+          selectedFrequency.value = 'DAILY';
+          selectedTime.value = '';
+          selectedDayOfWeek.value = 0;
+          selectedDayOfMonth.value = 1;
+          selectedWorkerId = '';
+          selectedWorkerName.value = '';
+          readings.clear();
+          readingController.clear();
         });
       } else {
-        print(response.body);
-        Get.snackbar("Error", "Failed to upload routine",
-            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        print("ERROR: Update routine failed");
+        print("Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+        print("Request Data: $data");
+
+        String errorMessage = "Failed to update routine";
+        if (response.body != null && response.body is Map && response.body.containsKey('error')) {
+          errorMessage = response.body['error'] ?? errorMessage;
+        } else if (response.body != null && response.body is Map && response.body.containsKey('message')) {
+          errorMessage = response.body['message'] ?? errorMessage;
+        }
+
+        _showErrorDialog(errorMessage);
       }
     } catch (e) {
+      _showErrorDialog("An error occurred while updating the routine. Please try again.");
       rethrow;
     } finally {
       isSubmitting.value = false;
@@ -372,15 +601,32 @@ class AssignRoutineController extends GetxController {
     }
   }
 
-  Future getEquipment() async {
-    final endpoint = '/api/v1/admin/equipment';
+  Future getEquipment({String? clientId}) async {
+    final baseUrl = '/api/v1/common/equipment';
+    final queryParams = <String, String>{};
+    if (clientId != null && clientId.isNotEmpty) {
+      queryParams['clientId'] = clientId;
+    }
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
     try {
       final response =
-          await _apiService.getRequest(endpoint, bearerToken: token);
+          await _apiService.getRequest(uri.toString(), bearerToken: token);
       if (response.isOk) {
         equipmentModel = EquipmentModel.fromJson(response.body);
         equipmentDetail.value = equipmentModel.data!;
       }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future getClients() async {
+    try {
+      if (clientController.clientData.isEmpty) {
+        await clientController.getClientList();
+      }
+      clientList.value = clientController.clientData;
     } catch (e) {
       print(e);
       rethrow;

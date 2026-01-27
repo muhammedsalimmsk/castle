@@ -14,24 +14,39 @@ class DepartmentController extends GetxController {
   var isLoading = false.obs;
   TextEditingController nameCtrl = TextEditingController();
   TextEditingController descCtrl = TextEditingController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    getDepartment();
+  }
   Future createDepartment(String name, String descr) async {
     final data = {"name": name, "description": descr};
     final endpoint = '/api/v1/admin/departments';
     isCreating.value = true;
+    update();
     try {
       final response =
           await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
-        Get.snackbar("Success", "Created");
+        Get.snackbar("Success", "Department created successfully");
+        // Refresh the department list
+        await getDepartment();
+        // Close the bottom sheet
+        Get.back();
+        // Clear the text fields
+        nameCtrl.clear();
+        descCtrl.clear();
       } else {
         print(response.body);
-        Get.snackbar("Error", response.body['error'],
+        Get.snackbar("Error", response.body['error'] ?? "Failed to create department",
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       print(e);
-      rethrow;
+      Get.snackbar("Error", "Something went wrong. Please try again.",
+          snackPosition: SnackPosition.BOTTOM);
     } finally {
       isCreating.value = false;
       update();
@@ -85,6 +100,7 @@ class DepartmentController extends GetxController {
     print(departId);
     final endpoint = '/api/v1/admin/departments/$departId';
     isCreating.value = true;
+    update();
     try {
       final response = await _apiService.patchRequest(endpoint,
           data: data, bearerToken: token);
@@ -106,16 +122,22 @@ class DepartmentController extends GetxController {
           departDetails.refresh();
           update(); // 🚨 Required for RxList to update UI
         }
-        Get.snackbar("Success", "Updated successfully");
+        Get.snackbar("Success", "Department updated successfully");
+        // Close the bottom sheet
+        Get.back();
+        // Clear the text fields
+        nameCtrl.clear();
+        descCtrl.clear();
       } else {
         print(response.body);
         print(departId);
-        Get.snackbar("Error", response.body['error'],
+        Get.snackbar("Error", response.body['error'] ?? "Failed to update department",
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       print(e);
-      rethrow;
+      Get.snackbar("Error", "Something went wrong. Please try again.",
+          snackPosition: SnackPosition.BOTTOM);
     } finally {
       isCreating.value = false;
       update();

@@ -1,3 +1,4 @@
+import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Model/depart_workers_model/depart_workers_model.dart';
 import 'package:castle/Model/depart_workers_model/worker.dart';
@@ -19,6 +20,7 @@ class WorkerController extends GetxController {
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final password = TextEditingController();
+  final customBadge = TextEditingController();
   final ApiService _apiService = ApiService();
   late WorkersModel workersModel = WorkersModel();
   late DepartWorkersModel departWorkersModel = DepartWorkersModel();
@@ -77,6 +79,7 @@ class WorkerController extends GetxController {
     emailController.clear();
     phoneController.clear();
     password.clear();
+    customBadge.clear();
     primaryDepartment.value = '';
     selectedDepartments.clear();
   }
@@ -90,7 +93,9 @@ class WorkerController extends GetxController {
       "lastName": lastName.text.trim(),
       "phone": phoneController.text,
       "departmentIds": selectedDepartments,
-      "primaryDepartmentId": primaryDepartment.value.toString()
+      "primaryDepartmentId": primaryDepartment.value.toString(),
+      if (customBadge.text.trim().isNotEmpty)
+        "customBadge": customBadge.text.trim()
     };
     print(data);
     isLoading.value = true;
@@ -100,13 +105,18 @@ class WorkerController extends GetxController {
       if (response.isOk) {
         print(response.body);
         resetController();
-        Get.snackbar("Success", "Successfully created worker");
         await getWorkers();
         Get.offNamed('/workers');
+        // Show dialog after navigation completes
+        Future.delayed(const Duration(milliseconds: 300), () {
+          _showSuccessDialog("Success", "Successfully created worker");
+        });
       } else {
         print(response.body);
+        _showErrorDialog("Error", response.body['error'] ?? "Failed to create worker");
       }
     } catch (e) {
+      _showErrorDialog("Error", "Something went wrong. Please try again later.");
       rethrow;
     } finally {
       isLoading.value = false;
@@ -128,6 +138,8 @@ class WorkerController extends GetxController {
           : phoneController.text.trim(),
       "departmentIds": selectedDepartments,
       "primaryDepartmentId": primaryDepartment.value.toString(),
+      if (customBadge.text.trim().isNotEmpty)
+        "customBadge": customBadge.text.trim()
     };
 
     try {
@@ -146,19 +158,165 @@ class WorkerController extends GetxController {
         }
         Get.back();
         Get.back();
-        Get.snackbar("Success", "Successfully updated",
-            snackPosition: SnackPosition.BOTTOM, colorText: Colors.green);
+        _showSuccessDialog("Success", "Successfully updated worker");
       } else {
         print(response.body);
-
-        Get.snackbar("Error", response.body['error']);
+        _showErrorDialog("Error", response.body['error'] ?? "Failed to update worker");
       }
     } catch (e) {
-      Get.snackbar("Error", "Something error please try later");
+      _showErrorDialog("Error", "Something went wrong. Please try again later.");
       rethrow;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _showSuccessDialog(String title, String message) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: subtitleColor,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    try {
+                      Get.back(closeOverlays: false);
+                    } catch (e) {
+                      if (Get.context != null) {
+                        Navigator.of(Get.context!).pop();
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("OK"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: subtitleColor,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    try {
+                      Get.back(closeOverlays: false);
+                    } catch (e) {
+                      if (Get.context != null) {
+                        Navigator.of(Get.context!).pop();
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("OK"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   Future getWorkerByDepartment(String departmentId) async {
@@ -230,6 +388,7 @@ class WorkerController extends GetxController {
     firstName.clear();
     lastName.clear();
     password.clear();
+    customBadge.clear();
   }
 
   @override

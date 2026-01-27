@@ -11,6 +11,7 @@ class WorkerData {
   DateTime? createdAt;
   List<WorkerDepartment>? workerDepartments;
   Count? count;
+  List<String>? badges;
 
   WorkerData(
       {this.id,
@@ -21,7 +22,8 @@ class WorkerData {
       this.isActive,
       this.createdAt,
       this.count,
-      this.workerDepartments});
+      this.workerDepartments,
+      this.badges});
 
   factory WorkerData.fromJson(Map<String, dynamic> json) => WorkerData(
         id: json['id'] as String?,
@@ -39,6 +41,9 @@ class WorkerData {
         workerDepartments: (json['workerDepartments'] as List<dynamic>?)
             ?.map((e) => WorkerDepartment.fromJson(e as Map<String, dynamic>))
             .toList(),
+        badges: json['badges'] == null
+            ? null
+            : List<String>.from(json['badges'] as List),
       );
 
   Map<String, dynamic> toJson() => {
@@ -51,5 +56,6 @@ class WorkerData {
         'createdAt': createdAt?.toIso8601String(),
         '_count': count?.toJson(),
         'workerDepartments': workerDepartments?.map((e) => e.toJson()).toList(),
+        'badges': badges,
       };
 }

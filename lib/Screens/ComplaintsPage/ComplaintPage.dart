@@ -1,7 +1,6 @@
 import 'package:castle/Colors/Colors.dart';
 import 'package:castle/Controlls/ComplaintController/ComplaintController.dart';
 import 'package:castle/Controlls/WorkersController/WorkerController.dart';
-import 'package:castle/Screens/ComplaintsPage/ComplaintDetailsPage.dart';
 import 'package:castle/Widget/CustomAppBarWidget.dart';
 import 'package:castle/Widget/CustomDrawer.dart';
 import 'package:castle/Utils/ResponsiveHelper.dart';
@@ -12,6 +11,7 @@ import 'package:intl/intl.dart';
 
 import '../../Controlls/AuthController/AuthController.dart';
 import 'Widgets/FilterPage.dart';
+import 'NewComplaint/CreateComplaintPage.dart';
 
 class ComplaintPage extends StatelessWidget {
   ComplaintPage({super.key});
@@ -84,58 +84,24 @@ class ComplaintPage extends StatelessWidget {
               children: [
                 // Modern Header Section
                 Container(
-                  padding: ResponsiveHelper.getResponsivePadding(context),
               decoration: BoxDecoration(
                 color: backgroundColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: cardShadowColor.withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Complaints",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: containerColor,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  Obx(
-                    () => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: buttonColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: buttonColor.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        "${complaintController.details.length} Complaints",
-                        style: TextStyle(
-                          color: buttonColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                "Complaints",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: containerColor,
+                  letterSpacing: -0.5,
+                ),
               ),
             ),
                 // Search Bar
                 Padding(
                   padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
-                    top: 12,
-                    bottom: 16,
+                  
+                  
                   ),
                   child: Row(
                 children: [
@@ -295,6 +261,57 @@ class ComplaintPage extends StatelessWidget {
                             role: userDetailModel!.data!.role!.toLowerCase(),
                           );
                         },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Complaint Count and Create Button
+            Padding(
+              padding: ResponsiveHelper.getResponsivePadding(context).copyWith(
+                top: 0,
+                bottom: 16,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(
+                    () => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: buttonColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: buttonColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        "${complaintController.details.length} Complaints",
+                        style: TextStyle(
+                          color: buttonColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Get.to(() => CreateComplaintPage());
+                    },
+                    icon: Icon(Icons.add, size: 18),
+                    label: Text('Create Complaint'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),

@@ -5,6 +5,8 @@ import 'package:castle/Model/client_model/client_model.dart';
 import 'package:castle/Model/client_model/datum.dart';
 import 'package:castle/Model/login_details_model/login_details_model.dart';
 import 'package:castle/Model/login_details_model/data.dart';
+import 'package:castle/Model/workers_model/workers_model.dart';
+import 'package:castle/Model/workers_model/datum.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +41,9 @@ class ClientRegisterController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLoadingLoginDetails = false.obs;
   LoginDetailsData? loginDetailsData;
+  RxString selectedJobCoordinatorId = ''.obs;
+  late WorkersModel workersModel = WorkersModel();
+  RxList<WorkerData> workerList = <WorkerData>[].obs;
   
   Future<LoginDetailsData?> getLoginDetails(String userId) async {
     final endpoint = "/api/v1/admin/users/$userId/devices";
@@ -73,7 +78,9 @@ class ClientRegisterController extends GetxController {
       "clientAddress": clientAddress.text.trim(),
       "clientPhone": phone.text.trim(),
       "clientEmail": clientEmail.text.trim(),
-      "contactPerson": contactPerson.text.trim()
+      "contactPerson": contactPerson.text.trim(),
+      if (selectedJobCoordinatorId.value.isNotEmpty)
+        "jobCoordinatorId": selectedJobCoordinatorId.value
     };
     isLoading.value = true;
     try {
@@ -110,6 +117,7 @@ class ClientRegisterController extends GetxController {
     clientPhone.text = client.phone?.toString() ?? '';
     clientEmail.text = client.clientEmail ?? '';
     contactPerson.text = client.contactPerson ?? '';
+    selectedJobCoordinatorId.value = client.jobCoordinatorId ?? '';
   }
 
   Future<ClientDetailsData?> getClientById(String clientId) async {
@@ -149,7 +157,9 @@ class ClientRegisterController extends GetxController {
       "clientAddress": clientAddress.text.trim(),
       "clientPhone": phone.text.trim(),
       "clientEmail": clientEmail.text.trim(),
-      "contactPerson": contactPerson.text.trim()
+      "contactPerson": contactPerson.text.trim(),
+      if (selectedJobCoordinatorId.value.isNotEmpty)
+        "jobCoordinatorId": selectedJobCoordinatorId.value
     };
     try {
       final response = await _apiService.patchRequest(endpoint,
@@ -184,7 +194,7 @@ class ClientRegisterController extends GetxController {
           'limit': limit.toString(),
           if (search != null && search.isNotEmpty) 'search': search,
         };
-        final uri = Uri.parse('/api/v1/admin/clients')
+        final uri = Uri.parse('/api/v1/common/clients')
             .replace(queryParameters: queryParams);
 
         final response = await _apiService.getRequest(
@@ -265,6 +275,7 @@ class ClientRegisterController extends GetxController {
     clientPhone.clear();
     clientEmail.clear();
     contactPerson.clear();
+    selectedJobCoordinatorId.value = '';
   }
 
   void searchClients(String query) {
@@ -302,6 +313,7 @@ class ClientRegisterController extends GetxController {
         clientAddress.text = data.clientAddress ?? '';
         clientEmail.text = data.clientEmail ?? '';
         contactPerson.text = data.contactPerson ?? '';
+        selectedJobCoordinatorId.value = data.jobCoordinatorId ?? '';
 
         isExistingClient.value = true;
       }
@@ -325,7 +337,27 @@ class ClientRegisterController extends GetxController {
     clientAddress.clear();
     contactPerson.clear();
     password.clear();
+    selectedJobCoordinatorId.value = '';
     showSuggestions.value = true;
+  }
+
+  Future getWorkers() async {
+    try {
+      final response = await _apiService.getRequest('/api/v1/admin/workers',
+          bearerToken: token);
+      if (response.isOk) {
+        print(response.body);
+        workersModel = WorkersModel.fromJson(
+          response.body,
+        );
+        workerList.value = workersModel.data!;
+      } else {
+        print(response.body);
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   @override
@@ -334,6 +366,7 @@ class ClientRegisterController extends GetxController {
     super.onInit();
     if (userDetailModel!.data!.role == "ADMIN") {
       await getClientList();
+      await getWorkers();
     }
   }
 }

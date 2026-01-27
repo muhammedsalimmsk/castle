@@ -1,5 +1,6 @@
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
+import 'package:castle/Controlls/ComplaintController/ComplaintController.dart';
 import 'package:castle/Services/ApiService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,13 @@ class NewComplaintController extends GetxController {
   final ApiService _apiService = ApiService();
   final TextEditingController email = TextEditingController();
   final contactPerson = TextEditingController();
-  EquipmentController controller = Get.find();
+  EquipmentController get controller {
+    try {
+      return Get.find<EquipmentController>();
+    } catch (e) {
+      return Get.put(EquipmentController());
+    }
+  }
   var isDeleting = false.obs;
 
   void nextPage() {
@@ -27,7 +34,7 @@ class NewComplaintController extends GetxController {
   Future complaintRegister(String role, String title, String description,
       String priority, String equipmentId) async {
     isLoading.value = true;
-    final endpoint = '/api/v1/$role/complaints';
+    final endpoint = '/api/v1/common/complaints';
     final data = {
       "title": title,
       "description": description,
@@ -40,12 +47,32 @@ class NewComplaintController extends GetxController {
       if (response.isOk) {
         print(response.body);
         await controller.getEquipmentDetail(role);
-        Get.back();
-
+        
+        // Refresh complaint list
+        try {
+          final complaintController = Get.find<ComplaintController>();
+          complaintController.hasMore = true;
+          complaintController.isRefresh = true;
+          complaintController.page = 1;
+          await complaintController.getComplaint(role: role);
+          complaintController.isRefresh = false;
+          complaintController.update();
+        } catch (e) {
+          print('Error refreshing complaint list: $e');
+        }
+        
         Get.snackbar("Success", "Successfully registered complaint",
             snackPosition: SnackPosition.BOTTOM);
+        
+        // Wait a bit for snackbar to show, then navigate back
+        await Future.delayed(Duration(milliseconds: 500));
+        Get.back();
       } else {
         print(response.body);
+        Get.snackbar("Error", "Failed to register complaint",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
       }
     } catch (e) {
       print(e);
@@ -56,7 +83,7 @@ class NewComplaintController extends GetxController {
   }
 
   Future deleteEquip(String id) async {
-    final endpoint = "/api/v1/admin/equipment/$id";
+    final endpoint = "/api/v1/common/equipment/$id";
     isDeleting.value = true;
     try {
       final response =

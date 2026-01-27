@@ -1,5 +1,6 @@
 import 'created_complaint.dart';
 import 'equipment.dart';
+import 'job_coordinator.dart';
 
 class ClientDetailsData {
   String? id;
@@ -11,6 +12,8 @@ class ClientDetailsData {
   String? clientAddress;
   String? clientEmail;
   String? contactPerson;
+  String? jobCoordinatorId;
+  JobCoordinator? jobCoordinator;
   bool? isActive;
   DateTime? createdAt;
   List<Equipment>? equipment;
@@ -26,6 +29,8 @@ class ClientDetailsData {
     this.clientAddress,
     this.clientEmail,
     this.contactPerson,
+    this.jobCoordinatorId,
+    this.jobCoordinator,
     this.isActive,
     this.createdAt,
     this.equipment,
@@ -42,6 +47,10 @@ class ClientDetailsData {
         clientName: json['clientName'] as String?,
         clientEmail: json['clientEmail'] as String?,
         contactPerson: json['contactPerson'] as String?,
+        jobCoordinatorId: json['jobCoordinatorId'] as String?,
+        jobCoordinator: json['jobCoordinator'] == null
+            ? null
+            : JobCoordinator.fromJson(json['jobCoordinator'] as Map<String, dynamic>),
         clientAddress: json['clientAddress'] as String?,
         isActive: json['isActive'] as bool?,
         createdAt: json['createdAt'] == null
@@ -63,6 +72,8 @@ class ClientDetailsData {
         'phone': phone,
         'clientName': clientName,
         'clientAddress': clientAddress,
+        'jobCoordinatorId': jobCoordinatorId,
+        'jobCoordinator': jobCoordinator?.toJson(),
         'isActive': isActive,
         'createdAt': createdAt?.toIso8601String(),
         'equipment': equipment?.map((e) => e.toJson()).toList(),

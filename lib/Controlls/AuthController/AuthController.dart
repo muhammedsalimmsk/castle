@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 String? token;
 
 UserDetailModel? userDetailModel;
+AuthModel? authModel;
 
 class AuthController extends GetxController {
   TextEditingController userNameController = TextEditingController();
@@ -38,6 +39,7 @@ class AuthController extends GetxController {
       if (response.isOk) {
         print(response.body);
         model = AuthModel.fromJson(response.body);
+        authModel = model;
 
         final prefs = await SharedPreferences.getInstance();
         token = model.data!.token;

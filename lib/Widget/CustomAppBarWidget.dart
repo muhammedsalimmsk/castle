@@ -41,12 +41,43 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         fontSize: 18,
                       ),
                     ),
-                    Text(
-                      userDetailModel!.data!.role!,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold),
+                    Row(
+                      children: [
+                        Text(
+                          userDetailModel!.data!.role!,
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        if (userDetailModel!.data!.badges != null &&
+                            userDetailModel!.data!.badges!.isNotEmpty)
+                          ...userDetailModel!.data!.badges!.map((badge) {
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 6.0),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: buttonColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: buttonColor.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  badge,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: buttonColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                      ],
                     ),
                   ],
                 ),

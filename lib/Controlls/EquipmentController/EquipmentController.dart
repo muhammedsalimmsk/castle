@@ -339,19 +339,47 @@ class EquipmentController extends GetxController {
           await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
-        print('successfully');
         resetForm();
         await getEquipment();
         await getEquipmentDetail("admin");
         controller.dispose();
         Get.back();
         Get.back();
+        Get.snackbar(
+          "Success",
+          "Equipment created successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       } else {
         print(response.body);
+        String message = "Failed to create equipment";
+        try {
+          final body = response.body;
+          if (body is Map && body['message'] != null) {
+            message = body['message'].toString();
+          } else if (body is String && body.isNotEmpty) {
+            message = body;
+          }
+        } catch (_) {}
+        Get.snackbar(
+          "Error",
+          message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       print(e);
-      rethrow;
+      Get.snackbar(
+        "Error",
+        "Something went wrong. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

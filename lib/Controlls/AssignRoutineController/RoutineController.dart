@@ -520,7 +520,7 @@ class AssignRoutineController extends GetxController {
       taskHasMore = true;
     }
     if (taskIsLoading.value || !taskHasMore) return;
-    String endpoint = "/api/v1/admin/routine-tasks?page=1&limit=10";
+    String endpoint = "/api/v1/common/routine-tasks?page=1&limit=10";
     endpoint += "&routineId=$routineId";
     if (status != '') {
       endpoint += "&status=$status";

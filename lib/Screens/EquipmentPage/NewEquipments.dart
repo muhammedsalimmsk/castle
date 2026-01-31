@@ -44,6 +44,12 @@ class NewEquipmentsRequest extends StatelessWidget {
     final controller = Get.put(EquipmentController());
     final workerController = Get.put(WorkerController());
 
+    if (controller.equipType.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.getEquipmentTypes();
+      });
+    }
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -175,9 +181,11 @@ class NewEquipmentsRequest extends StatelessWidget {
                     validator: (value) => value == null || value.isEmpty
                         ? 'Please select equipment type'
                         : null,
-                    items: controller.equipType.map((type) {
+                    items: controller.equipType
+                        .where((type) => type.id != null && type.id!.isNotEmpty)
+                        .map((type) {
                       return DropdownMenuItem<String>(
-                        value: type.id,
+                        value: type.id!,
                         child: Text(type.name ?? 'Unnamed'),
                       );
                     }).toList(),

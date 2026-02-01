@@ -174,10 +174,10 @@ class AssignRoutineController extends GetxController {
     if (isLoading2.value || !hasMore) return;
     final String endpoint;
     if (role == "admin") {
-      endpoint = "/api/v1/$role/routines?page=$currentPage&limit=$limit";
+      endpoint = "/api/v1/common/routines?page=$currentPage&limit=$limit";
       //"&search=$searchQuery&frequency=$filteredFree";
     } else {
-      endpoint = "/api/v1/worker/routine-tasks?page=$currentPage&limit=$limit";
+      endpoint = "/api/v1/common/routine-tasks?page=$currentPage&limit=$limit";
       // "&search=ss&status=PENDING";
     }
 

@@ -74,8 +74,28 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
       ));
     }
 
-    // Sort by time descending
+    // Sort by time descending (newest first)
     entries.sort((a, b) => b.time.compareTo(a.time));
+
+    // If API returns multiple "assigned" status updates, show "Re-assigned" for
+    // newer ones (keep "Assigned" only for the chronologically first one).
+    for (int i = 0; i < entries.length; i++) {
+      if (entries[i].type == "STATUS" && entries[i].title == "Assigned") {
+        final hasOlderAssigned = entries.asMap().entries.any((e) =>
+            e.key > i &&
+            e.value.type == "STATUS" &&
+            e.value.title == "Assigned");
+        if (hasOlderAssigned) {
+          entries[i] = TimelineEntry(
+            type: entries[i].type,
+            title: "Re-assigned",
+            subtitle: entries[i].subtitle,
+            time: entries[i].time,
+          );
+        }
+      }
+    }
+
     return entries;
   }
 
@@ -926,13 +946,18 @@ class _ComplaintDetailsPageState extends State<ComplaintDetailsPage> {
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
                           final isUpdating =
                               complaint.assignedWorkers!.isNotEmpty;
-                          Get.toNamed('/assignWork', arguments: {
+                          await Get.toNamed('/assignWork', arguments: {
                             'complaintId': widget.complaintId,
                             'isUpdating': isUpdating,
                           });
+                          // Refresh complaint details when returning from assign page
+                          complaintController.fetchComplaintDetails(
+                            widget.complaintId,
+                            userDetailModel!.data!.role!.toLowerCase(),
+                          );
                         },
                         icon: Icon(
                           complaint.assignedWorkers!.isEmpty

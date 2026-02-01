@@ -561,13 +561,17 @@ class _CreateComplaintPageState extends State<CreateComplaintPage> {
 
                             final role =
                                 userDetailModel!.data!.role!.toLowerCase();
-                            await complaintController.complaintRegister(
-                              role,
-                              titleController.text.trim(),
-                              descriptionController.text.trim(),
-                              selectedPriority.value,
-                              selectedEquipment.value!.id!,
-                            );
+                            
+                              final success =
+                                  await complaintController.complaintRegister(
+                                role,
+                                titleController.text.trim(),
+                                descriptionController.text.trim(),
+                                selectedPriority.value,
+                                selectedEquipment.value!.id!,
+                              );
+                             
+                        
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,

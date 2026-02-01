@@ -100,6 +100,7 @@ class RoutinePage extends StatelessWidget {
                         ],
                       ),
                       child: TextField(
+                        onChanged: (value) => controller.onSearchChanged(value),
                         decoration: InputDecoration(
                           hintText: "Search routines...",
                           hintStyle: TextStyle(
@@ -111,19 +112,51 @@ class RoutinePage extends StatelessWidget {
                             color: buttonColor,
                             size: 22,
                           ),
-                          suffixIcon: PopupMenuButton<String>(
-                            icon: Icon(
-                              Icons.sort,
-                              color: buttonColor,
-                              size: 22,
+                          suffixIcon: Obx(
+                            () => PopupMenuButton<String>(
+                              color: backgroundColor,
+                              tooltip: "Filter by frequency",
+                              onSelected: (value) => controller.setFrequencyFilter(value),
+                              itemBuilder: (_) => [
+                                const PopupMenuItem(
+                                  value: '',
+                                  child: Text('All'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'DAILY',
+                                  child: Text('Daily'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'WEEKLY',
+                                  child: Text('Weekly'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'MONTHLY',
+                                  child: Text('Monthly'),
+                                ),
+                              ],
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.filter_list, color: buttonColor, size: 22),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      controller.listFrequencyFilter.value.isEmpty
+                                          ? 'Filter'
+                                          : controller.listFrequencyFilter.value,
+                                      style: TextStyle(
+                                        color: buttonColor,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Icon(Icons.arrow_drop_down, color: buttonColor, size: 20),
+                                  ],
+                                ),
+                              ),
                             ),
-                            onSelected: (value) => print("Selected: $value"),
-                            itemBuilder: (_) => const [
-                              PopupMenuItem(value: 'name', child: Text('Sort by Name')),
-                              PopupMenuItem(value: 'date', child: Text('Sort by Date')),
-                              PopupMenuItem(
-                                  value: 'priority', child: Text('Sort by Priority')),
-                            ],
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),

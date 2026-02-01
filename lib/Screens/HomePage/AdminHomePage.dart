@@ -147,6 +147,7 @@ class DashboardPage extends StatelessWidget {
                     controller.totalComplaints.value.toString(),
                 subtitle: 'Total open',
                 icon: Icons.report_problem_rounded,
+                onTap: () => Get.toNamed('/complaints'),
               ),
             ),
             const SizedBox(width: 12),
@@ -158,6 +159,7 @@ class DashboardPage extends StatelessWidget {
                     controller.totalClients.value.toString(),
                 subtitle: 'Active',
                 icon: Icons.people_rounded,
+                onTap: () => Get.toNamed('/clients'),
               ),
             ),
             const SizedBox(width: 12),
@@ -169,6 +171,7 @@ class DashboardPage extends StatelessWidget {
                     controller.totalEquipment.value.toString(),
                 subtitle: 'Total',
                 icon: Icons.precision_manufacturing_rounded,
+                onTap: () => Get.toNamed('/equipment'),
               ),
             ),
           ],
@@ -197,25 +200,30 @@ class DashboardPage extends StatelessWidget {
 
       return Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: backgroundColor,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => Get.toNamed('/complaints'),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: dividerColor,
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: cardShadowColor.withOpacity(0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-                spreadRadius: 0,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: dividerColor,
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: cardShadowColor.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 0,
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: total == 0
+              child: total == 0
               ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
@@ -344,6 +352,8 @@ class DashboardPage extends StatelessWidget {
                     )
                   ],
                 ),
+            ),
+          ),
         ),
       );
     });
@@ -454,7 +464,7 @@ class DashboardPage extends StatelessWidget {
                     ],
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => Get.toNamed('/complaints'),
                     style: TextButton.styleFrom(
                       foregroundColor: buttonColor,
                       padding: const EdgeInsets.symmetric(
@@ -505,7 +515,12 @@ class DashboardPage extends StatelessWidget {
                           return Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                if (r.id != null && r.id!.isNotEmpty) {
+                                  Get.toNamed('/complaintDetails',
+                                      arguments: {'complaintId': r.id!});
+                                }
+                              },
                               borderRadius: BorderRadius.circular(12),
                               child: Padding(
                                 padding:
@@ -692,27 +707,37 @@ class DashboardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 4,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: buttonColor,
-                    borderRadius: BorderRadius.circular(2),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Get.toNamed('/clients'),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Clients",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: containerColor,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  "Clients",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: containerColor,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ],
+              ),
             ),
             const SizedBox(height: 16),
             clients.isEmpty
@@ -824,45 +849,56 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Active Workers',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: containerColor,
-                    letterSpacing: -0.3,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => Get.toNamed('/workers'),
+                    behavior: HitTestBehavior.opaque,
+                    child: Text(
+                      'Active Workers',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: containerColor,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-            workers.isEmpty
+                workers.isEmpty
                 ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        'No active workers data',
-                        style: TextStyle(
-                          color: subtitleColor,
-                          fontSize: 14,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'No active workers data',
+                          style: TextStyle(
+                            color: subtitleColor,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                : GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: workers.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 20,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) {
-                      final a = workers[index];
-                      return Column(
+                    )
+                : Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => Get.toNamed('/workers'),
+                      borderRadius: BorderRadius.circular(12),
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: workers.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 20,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemBuilder: (context, index) {
+                          final a = workers[index];
+                          return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
@@ -912,6 +948,8 @@ class DashboardPage extends StatelessWidget {
                         ],
                       );
                     },
+                      ),
+                    ),
                   ),
           ],
         ),
@@ -1056,9 +1094,8 @@ Widget _buildClientCard({
   return Material(
     color: Colors.transparent,
     child: InkWell(
-      onTap: () {
-        // Get.to();
-      },
+      onTap: () =>
+          Get.toNamed('/clientDetails', arguments: {'clientId': clientId}),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: 200,
@@ -1170,13 +1207,13 @@ class _InfoCard extends StatelessWidget {
   final String value;
   final String subtitle;
   final IconData icon;
-  final double? width;
+  final VoidCallback? onTap;
   const _InfoCard({
     required this.title,
     required this.value,
     required this.subtitle,
     required this.icon,
-    this.width,
+    this.onTap,
   });
 
   @override
@@ -1184,10 +1221,9 @@ class _InfoCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: width,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: backgroundColor,

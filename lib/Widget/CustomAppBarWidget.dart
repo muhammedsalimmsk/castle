@@ -52,7 +52,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                         if (userDetailModel!.data!.badges != null &&
                             userDetailModel!.data!.badges!.isNotEmpty)
-                          ...userDetailModel!.data!.badges!.map((badge) {
+                          ...userDetailModel!.data!.badges!
+                              .toSet()
+                              .toList()
+                              .map((badge) {
                             return Padding(
                               padding: const EdgeInsets.only(left: 6.0),
                               child: Container(

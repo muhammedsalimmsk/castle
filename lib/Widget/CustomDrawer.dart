@@ -156,7 +156,7 @@ class CustomDrawer extends StatelessWidget {
                       )),
 
                   // Routine
-                  if (userDetailModel!.data!.role == "ADMIN")
+                  
                     Obx(() => DrawerListTile(
                           title: "Routine",
                           iconWidget: Image.asset(
@@ -174,18 +174,18 @@ class CustomDrawer extends StatelessWidget {
                           },
                         )),
 
-                  if (userDetailModel!.data!.role == "WORKER")
-                    Obx(() => DrawerListTile(
-                          title: "Routine Task",
-                          icon: Icons.repeat,
-                          iSSelected: routineSelected.value,
-                          onTap: () {
-                            resetSelection();
-                            routineSelected.value = true;
-                            Navigator.pop(context);
-                            Get.toNamed('/workerRoutine');
-                          },
-                        )),
+                  // if (userDetailModel!.data!.role == "WORKER")
+                  //   Obx(() => DrawerListTile(
+                  //         title: "Routine Task",
+                  //         icon: Icons.repeat,
+                  //         iSSelected: routineSelected.value,
+                  //         onTap: () {
+                  //           resetSelection();
+                  //           routineSelected.value = true;
+                  //           Navigator.pop(context);
+                  //           Get.toNamed('/workerRoutine');
+                  //         },
+                  //       )),
 
                   // Parts List
                   if (userDetailModel!.data!.role == "ADMIN")

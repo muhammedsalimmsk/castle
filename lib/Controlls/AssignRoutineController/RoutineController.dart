@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/WorkerRoutineController/WorkerRoutineController.dart';
 import 'package:castle/Controlls/ClientController/ClientController.dart';
@@ -53,7 +55,9 @@ class AssignRoutineController extends GetxController {
   RxBool isLoading = false.obs;
   String searchQuery = "";
   String filteredFree = "";
+  Timer? _searchDebounce;
   final selectedFrequency = 'DAILY'.obs;
+  final listFrequencyFilter = ''.obs;
   final selectedTime = ''.obs;
   final selectedDayOfWeek = 0.obs;
   final selectedDayOfMonth = 1.obs;
@@ -166,17 +170,37 @@ class AssignRoutineController extends GetxController {
     }
   }
 
+  Future<void> setFrequencyFilter(String frequency) async {
+    listFrequencyFilter.value = frequency;
+    filteredFree = frequency;
+    isRefresh = true;
+    await getRoutine();
+    isRefresh = false;
+  }
+
+  void onSearchChanged(String query) {
+    searchQuery = query.trim();
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      isRefresh = true;
+      await getRoutine();
+      isRefresh = false;
+    });
+  }
+
   Future getRoutine() async {
     if (isRefresh) {
       currentPage = 1;
       hasMore = true;
     }
     if (isLoading2.value || !hasMore) return;
-    final String endpoint;
-    
-      endpoint = "/api/v1/common/routines?page=$currentPage&limit=$limit";
-      //"&search=$searchQuery&frequency=$filteredFree";
-    
+    var endpoint = "/api/v1/common/routines?page=$currentPage&limit=$limit";
+    if (searchQuery.isNotEmpty) {
+      endpoint += "&search=${Uri.encodeComponent(searchQuery)}";
+    }
+    if (filteredFree.isNotEmpty) {
+      endpoint += "&frequency=$filteredFree";
+    }
 
     isLoading2.value = true;
     try {
@@ -636,5 +660,11 @@ class AssignRoutineController extends GetxController {
     role = userDetailModel!.data!.role == "ADMIN" ? "admin" : "worker";
     super.onInit();
     await getRoutine();
+  }
+
+  @override
+  void onClose() {
+    _searchDebounce?.cancel();
+    super.onClose();
   }
 }

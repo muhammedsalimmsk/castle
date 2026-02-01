@@ -2,8 +2,8 @@ import 'package:castle/Controlls/AuthController/AuthController.dart';
 import 'package:castle/Controlls/EquipmentController/EquipmentController.dart';
 import 'package:castle/Controlls/ComplaintController/ComplaintController.dart';
 import 'package:castle/Services/ApiService.dart';
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NewComplaintController extends GetxController {
   var currentPage = 0.obs; // Observable page index
@@ -31,7 +31,8 @@ class NewComplaintController extends GetxController {
     }
   }
 
-  Future complaintRegister(String role, String title, String description,
+  /// Returns true if complaint was created successfully, false otherwise.
+  Future<bool> complaintRegister(String role, String title, String description,
       String priority, String equipmentId) async {
     isLoading.value = true;
     final endpoint = '/api/v1/common/complaints';
@@ -46,33 +47,43 @@ class NewComplaintController extends GetxController {
           await _apiService.postRequest(endpoint, data, bearerToken: token);
       if (response.isOk) {
         print(response.body);
-        await controller.getEquipmentDetail(role);
-        
-        // Refresh complaint list
+        isLoading.value = false;
+        // Refresh complaint list in background
         try {
           final complaintController = Get.find<ComplaintController>();
           complaintController.hasMore = true;
           complaintController.isRefresh = true;
           complaintController.page = 1;
-          await complaintController.getComplaint(role: role);
-          complaintController.isRefresh = false;
-          complaintController.update();
+          complaintController.getComplaint(role: role).then((_) {
+            complaintController.isRefresh = false;
+            complaintController.update();
+          }).catchError((e) {
+            print('Error refreshing complaint list: $e');
+            complaintController.isRefresh = false;
+          });
+          Get.back();
+          Get.snackbar(
+                                  "Success",
+                                  "Complaint created successfully",
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.green,
+                                  colorText: Colors.white,
+                                );
         } catch (e) {
-          print('Error refreshing complaint list: $e');
+          print('Error finding ComplaintController: $e');
         }
-        
-        Get.snackbar("Success", "Successfully registered complaint",
-            snackPosition: SnackPosition.BOTTOM);
-        
-        // Wait a bit for snackbar to show, then navigate back
-        await Future.delayed(Duration(milliseconds: 500));
-        Get.back();
+        controller.getEquipmentDetail(role).catchError((e) {
+          print('Error refreshing equipment: $e');
+          return null;
+        });
+        return true;
       } else {
         print(response.body);
         Get.snackbar("Error", "Failed to register complaint",
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
             colorText: Colors.white);
+        return false;
       }
     } catch (e) {
       print(e);

@@ -181,7 +181,7 @@ class RoutinePage extends StatelessWidget {
                             ? RefreshIndicator(
                                 onRefresh: () async {
                                   controller.isRefresh = true;
-                                  await controller.getRoutine(role);
+                                  await controller.getRoutine();
                                   controller.isRefresh = false;
                                 },
                                 color: buttonColor,
@@ -233,7 +233,7 @@ class RoutinePage extends StatelessWidget {
                                 ? RefreshIndicator(
                                     onRefresh: () async {
                                       controller.isRefresh = true;
-                                      await controller.getRoutine(role);
+                                      await controller.getRoutine();
                                       controller.isRefresh = false;
                                     },
                                     color: buttonColor,
@@ -257,7 +257,7 @@ class RoutinePage extends StatelessWidget {
                                 : RefreshIndicator(
                                     onRefresh: () async {
                                       controller.isRefresh = true;
-                                      await controller.getRoutine(role);
+                                      await controller.getRoutine();
                                       controller.isRefresh = false;
                                     },
                                     color: buttonColor,

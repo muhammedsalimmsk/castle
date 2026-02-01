@@ -148,7 +148,7 @@ class AssignRoutineController extends GetxController {
       if (response.isOk) {
         print(response.body);
         isRefresh = true;
-        await getRoutine('admin');
+        await getRoutine();
         print(role);
         isRefresh = false;
         Get.back(); // Close the form page
@@ -166,20 +166,17 @@ class AssignRoutineController extends GetxController {
     }
   }
 
-  Future getRoutine(String role) async {
+  Future getRoutine() async {
     if (isRefresh) {
       currentPage = 1;
       hasMore = true;
     }
     if (isLoading2.value || !hasMore) return;
     final String endpoint;
-    if (role == "admin") {
+    
       endpoint = "/api/v1/common/routines?page=$currentPage&limit=$limit";
       //"&search=$searchQuery&frequency=$filteredFree";
-    } else {
-      endpoint = "/api/v1/common/routine-tasks?page=$currentPage&limit=$limit";
-      // "&search=ss&status=PENDING";
-    }
+    
 
     isLoading2.value = true;
     try {
@@ -221,7 +218,7 @@ class AssignRoutineController extends GetxController {
       if (response.isOk) {
         print(response.body);
         isRefresh = true;
-        await getRoutine("admin");
+        await getRoutine();
         isRefresh = false;
         Get.back();
         Get.snackbar("Deleted", "Routine deleted successfully",
@@ -464,7 +461,7 @@ class AssignRoutineController extends GetxController {
       if (response.isOk) {
         print("sssssssssssss${response.body}");
         isRefresh = true;
-        await getRoutine("admin");
+        await getRoutine();
         isRefresh = false;
         
         // Navigate back FIRST
@@ -638,6 +635,6 @@ class AssignRoutineController extends GetxController {
     // TODO: implement onInit
     role = userDetailModel!.data!.role == "ADMIN" ? "admin" : "worker";
     super.onInit();
-    await getRoutine(role!);
+    await getRoutine();
   }
 }
